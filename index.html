@@ -13,6 +13,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FIREBASE SDK v10 (COMPAT LIBRARIES) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   
   <style>
     body {
@@ -79,18 +84,6 @@
       color: #1d4ed8;
       font-weight: 800;
       border-right: 4px solid #2563eb;
-    }
-
-    /* Floating animation for illustrations */
-    @keyframes floatSlow {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
-    .animate-float {
-      animation: floatSlow 4s ease-in-out infinite;
-    }
-    .animate-float-delayed {
-      animation: floatSlow 5s ease-in-out 1.5s infinite;
     }
 
     @media (max-width: 768px) {
@@ -614,6 +607,33 @@
 
   <!-- JAVASCRIPT APPLICATION LOGIC -->
   <script>
+    // ==========================================
+    // KONFIGURASI DEPLOYMENT & FIREBASE LIVE
+    // ==========================================
+    const IS_PREVIEW = true; // Set FALSE jika ingin mengaktifkan Firebase Live Realtime
+
+    const firebaseConfig = {
+      apiKey: "API_KEY_MILIK_ANDA",
+      authDomain: "PROJECT_ID_ANDA.firebaseapp.com",
+      projectId: "PROJECT_ID_ANDA",
+      storageBucket: "PROJECT_ID_ANDA.appspot.com",
+      messagingSenderId: "SENDER_ID_ANDA",
+      appId: "APP_ID_ANDA"
+    };
+
+    // Inisialisasi Firebase Cloud
+    let db = null;
+    let auth = null;
+    if (!IS_PREVIEW && typeof firebase !== 'undefined') {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        auth = firebase.auth();
+      } catch (err) {
+        console.error("Gagal Inisialisasi Firebase:", err);
+      }
+    }
+
     window.currentUser = null;
     window.siswaCurrentPage = 1;
     window.siswaItemsPerPage = 20;
@@ -631,7 +651,7 @@
       setTimeout(() => toast.remove(), 3200);
     };
 
-    // Storage Helper Utilities
+    // Storage Helper Utilities (Dual Support: LocalStorage & Firestore)
     window.getStorageData = function(key) {
       return JSON.parse(localStorage.getItem(key) || '[]');
     };
@@ -674,7 +694,7 @@
         window.setStorageData('master_mapel', initialMapel);
       }
 
-      // 4. Initial Mapping Guru Mengajar (Guru -> Mapel -> Kelas)
+      // 4. Initial Mapping Guru Mengajar
       if (!localStorage.getItem('mapping_guru')) {
         const initialMapping = [
           { id: 'mg-1', guruUsername: 'sulis', guruNama: 'Sulis, S.Pd', mapelNama: 'Geografi', kelasNama: 'X IIS 1' },
@@ -775,12 +795,30 @@
 
     window.handleAdminLogin = function(e) {
       e.preventDefault();
-      window.currentUser = { username: 'admin', nama: 'Administrator Firebase', role: 'admin' };
-      window.showToast('Login Admin Firebase Berhasil', 'success');
-      setupUserInterface();
+      const email = document.getElementById('admin-email').value.trim();
+      const pass = document.getElementById('admin-password').value.trim();
+
+      if (!IS_PREVIEW && auth) {
+        auth.signInWithEmailAndPassword(email, pass)
+          .then(res => {
+            window.currentUser = { username: email, nama: 'Administrator Firebase', role: 'admin' };
+            window.showToast('Login Admin Firebase Berhasil', 'success');
+            setupUserInterface();
+          })
+          .catch(err => {
+            window.showToast('Gagal Login Firebase: ' + err.message, 'error');
+          });
+      } else {
+        window.currentUser = { username: 'admin', nama: 'Administrator Firebase', role: 'admin' };
+        window.showToast('Login Admin Firebase Berhasil (Mode Preview)', 'success');
+        setupUserInterface();
+      }
     };
 
     window.handleLogout = function() {
+      if (!IS_PREVIEW && auth && auth.currentUser) {
+        auth.signOut();
+      }
       window.currentUser = null;
       document.getElementById('main-layout').classList.add('hidden');
       document.getElementById('login-view').classList.remove('hidden');
@@ -1515,7 +1553,6 @@
       const list = window.getStorageData('pembelajaran');
       const target = editId ? list.find(x => x.id === editId) : null;
 
-      // Restrict teacher options to their mapped subjects & classes
       const u = window.currentUser;
       let availableMapels = [];
       let availableKelas = [];
