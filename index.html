@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>E-Learning Sekolah</title>
+  <title>E-Learning System</title>
   
   <!-- PWA Manifest URI -->
   <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkUtTGVhcm5pbmcgQ2FuZHkgU3lzdGVtIiwKICAic2hvcnRfbmFtZSI6ICJFLUxlYXJuaW5nIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGZhZmMiLAogICJ0aGVtZV9jb2xvciI6ICIjMGI1N2QwIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMzQyOS8zNDI5MDcwLnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
@@ -121,7 +121,7 @@
               <i class="fa-solid fa-graduation-cap"></i>
             </div>
             <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">E-Learning</h1>
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">SMK SWASTA</p>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Portal Akademik Terpadu</p>
           </div>
 
           <div class="w-full h-0.5 bg-slate-200 mb-6"></div>
@@ -184,7 +184,7 @@
           </div>
           <div>
             <h2 class="font-extrabold text-slate-900 leading-tight tracking-tight">E-Learning</h2>
-            <span class="text-xs text-blue-700 font-bold uppercase tracking-wider">Sekolah</span>
+            <span class="text-xs text-blue-700 font-bold uppercase tracking-wider">Candy System</span>
           </div>
         </div>
 
@@ -610,16 +610,19 @@
     // ==========================================
     // KONFIGURASI DEPLOYMENT & FIREBASE LIVE
     // ==========================================
-    const IS_PREVIEW = false; // Set FALSE jika ingin mengaktifkan Firebase Live Realtime
-
     const firebaseConfig = {
-      apiKey: "AIzaSyAQG9hn4I_RPvsWVJBY_5zlGA3-h1Z8LjY",
-      authDomain: "e-learning-6e5d5.firebaseapp.com",
-      projectId: "e-learning-6e5d5",
-      storageBucket: "e-learning-6e5d5.firebasestorage.app",
-      messagingSenderId: "367870327146",
-      appId: "1:367870327146:web:bddb8cc0deb2f11f400d13"
+apiKey: "AIzaSyAQG9hn4I_RPvsWVJBY_5zlGA3-h1Z8LjY",
+  authDomain: "e-learning-6e5d5.firebaseapp.com",
+  projectId: "e-learning-6e5d5",
+  storageBucket: "e-learning-6e5d5.firebasestorage.app",
+  messagingSenderId: "367870327146",
+  appId: "1:367870327146:web:bddb8cc0deb2f11f400d13"
     };
+
+    // Otomatis terdeteksi: Jika masih menggunakan placeholder, aktifkan mode LocalStorage (Preview)
+    // Jika sudah diisi dengan API Key asli, otomatis mengaktifkan Firebase Firestore Live
+    const isPlaceholderConfig = !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("API_KEY") || firebaseConfig.projectId.includes("PROJECT_ID");
+    const IS_PREVIEW = isPlaceholderConfig;
 
     // Inisialisasi Firebase Cloud
     let db = null;
@@ -630,7 +633,7 @@
         db = firebase.firestore();
         auth = firebase.auth();
       } catch (err) {
-        console.error("Gagal Inisialisasi Firebase:", err);
+        console.warn("Gagal Inisialisasi Firebase Cloud:", err.message);
       }
     }
 
@@ -659,100 +662,168 @@
       localStorage.setItem(key, JSON.stringify(val));
     };
 
-    function autoSetupDatabase() {
-      // 1. Initial Users
-      if (!localStorage.getItem('users')) {
-        const initialUsers = [
-          { username: '3101', password: 'ryan', nama: 'Ryan Mahfud', role: 'siswa', level: 'X', jurusan: 'IIS', kelas: 'X IIS 1', noHp: '0812345678' },
-          { username: 'siswa', password: 'siswa', nama: 'Siswa Contoh', role: 'siswa', level: 'X', jurusan: 'IIS', kelas: 'X IIS 1', noHp: '0812345679' },
-          { username: 'sulis', password: 'sulis', nama: 'Sulis, S.Pd', role: 'guru', level: '-', jurusan: '-', kelas: '-', noHp: '0852001122' },
-          { username: 'walas1', password: 'walas', nama: 'Guru Walas, M.Pd', role: 'guru', isWalas: true, kelasBinaan: 'X IIS 1', level: '-', jurusan: '-', kelas: '-', noHp: '0852001133' },
-          { username: 'kepsek', password: 'kepsek', nama: 'Drs. Kepala Sekolah', role: 'kepsek', level: '-', jurusan: '-', kelas: '-', noHp: '0852001144' }
-        ];
-        window.setStorageData('users', initialUsers);
+    // FIREBASE FIRESTORE CLOUD SYNC HELPERS
+    window.syncToFirestore = async function(col, id, data) {
+      if (!IS_PREVIEW && db) {
+        try {
+          await db.collection(col).doc(id).set(data, { merge: true });
+          console.log(`[Firestore Sync Success] Collection: ${col}, Doc ID: ${id}`);
+        } catch (e) {
+          console.error(`[Firestore Sync Error] Collection: ${col}:`, e);
+          window.showToast("Gagal sync ke Firestore: " + e.message, "error");
+        }
       }
+    };
 
-      // 2. Initial Kelas Master
-      if (!localStorage.getItem('master_kelas')) {
-        const initialKelas = [
-          { id: 'kls-1', nama: 'X IIS 1' },
-          { id: 'kls-2', nama: 'X IIS 2' },
-          { id: 'kls-3', nama: 'XI MIA 1' },
-          { id: 'kls-4', nama: 'XII MIA 1' }
-        ];
-        window.setStorageData('master_kelas', initialKelas);
+    window.removeFromFirestore = async function(col, id) {
+      if (!IS_PREVIEW && db) {
+        try {
+          await db.collection(col).doc(id).delete();
+          console.log(`[Firestore Delete Success] Collection: ${col}, Doc ID: ${id}`);
+        } catch (e) {
+          console.error(`[Firestore Delete Error] Collection: ${col}:`, e);
+          window.showToast("Gagal hapus dari Firestore: " + e.message, "error");
+        }
       }
+    };
 
-      // 3. Initial Mapel Master
-      if (!localStorage.getItem('master_mapel')) {
-        const initialMapel = [
-          { id: 'mpl-1', nama: 'Geografi' },
-          { id: 'mpl-2', nama: 'Matematika' },
-          { id: 'mpl-3', nama: 'Bahasa Indonesia' },
-          { id: 'mpl-4', nama: 'Fisika' }
-        ];
-        window.setStorageData('master_mapel', initialMapel);
-      }
+    function initFirestoreListeners() {
+      if (IS_PREVIEW || !db) return;
+
+      const cols = ['users', 'master_kelas', 'master_mapel', 'mapping_guru', 'mapping_walas', 'pembelajaran', 'agenda', 'pengumuman'];
+      cols.forEach(col => {
+        db.collection(col).onSnapshot(snapshot => {
+          const items = [];
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            if (!data.id) data.id = doc.id;
+            items.push(data);
+          });
+          if (items.length > 0) {
+            window.setStorageData(col, items);
+            refreshActiveView();
+          }
+        }, err => {
+          console.warn("Firestore Listener Warning on " + col + ": " + err.message);
+        });
+      });
+    }
+
+    function refreshActiveView() {
+      const activeSec = document.querySelector('.view-content:not(.hidden)');
+      if (!activeSec) return;
+      const viewId = activeSec.id.replace('view-', '');
+      if (viewId === 'beranda') loadBerandaData();
+      if (viewId === 'master-mapping') renderMasterMappingView();
+      if (viewId === 'siswa') renderSiswaTable();
+      if (viewId === 'pembelajaran') loadPembelajaranData();
+      if (viewId === 'agenda') loadAgendaData();
+      if (viewId === 'walas') loadWalasAbsensiData();
+      if (viewId === 'monitoring') loadMonitoringData();
+    }
+
+    async function autoSetupDatabase() {
+      // 1. Initial Local Users Defaults
+      const initialUsers = [
+        { username: '3101', password: 'ryan', nama: 'Ryan Mahfud', role: 'siswa', level: 'X', jurusan: 'IIS', kelas: 'X IIS 1', noHp: '0812345678' },
+        { username: 'siswa', password: 'siswa', nama: 'Siswa Contoh', role: 'siswa', level: 'X', jurusan: 'IIS', kelas: 'X IIS 1', noHp: '0812345679' },
+        { username: 'sulis', password: 'sulis', nama: 'Sulis, S.Pd', role: 'guru', level: '-', jurusan: '-', kelas: '-', noHp: '0852001122' },
+        { username: 'walas1', password: 'walas', nama: 'Guru Walas, M.Pd', role: 'guru', isWalas: true, kelasBinaan: 'X IIS 1', level: '-', jurusan: '-', kelas: '-', noHp: '0852001133' },
+        { username: 'kepsek', password: 'kepsek', nama: 'Drs. Kepala Sekolah', role: 'kepsek', level: '-', jurusan: '-', kelas: '-', noHp: '0852001144' }
+      ];
+
+      // 2. Initial Master Kelas
+      const initialKelas = [
+        { id: 'kls-1', nama: 'X IIS 1' },
+        { id: 'kls-2', nama: 'X IIS 2' },
+        { id: 'kls-3', nama: 'XI MIA 1' },
+        { id: 'kls-4', nama: 'XII MIA 1' }
+      ];
+
+      // 3. Initial Master Mapel
+      const initialMapel = [
+        { id: 'mpl-1', nama: 'Geografi' },
+        { id: 'mpl-2', nama: 'Matematika' },
+        { id: 'mpl-3', nama: 'Bahasa Indonesia' },
+        { id: 'mpl-4', nama: 'Fisika' }
+      ];
 
       // 4. Initial Mapping Guru Mengajar
-      if (!localStorage.getItem('mapping_guru')) {
-        const initialMapping = [
-          { id: 'mg-1', guruUsername: 'sulis', guruNama: 'Sulis, S.Pd', mapelNama: 'Geografi', kelasNama: 'X IIS 1' },
-          { id: 'mg-2', guruUsername: 'sulis', guruNama: 'Sulis, S.Pd', mapelNama: 'Geografi', kelasNama: 'X IIS 2' },
-          { id: 'mg-3', guruUsername: 'walas1', guruNama: 'Guru Walas, M.Pd', mapelNama: 'Matematika', kelasNama: 'X IIS 1' }
-        ];
-        window.setStorageData('mapping_guru', initialMapping);
-      }
+      const initialMapping = [
+        { id: 'mg-1', guruUsername: 'sulis', guruNama: 'Sulis, S.Pd', mapelNama: 'Geografi', kelasNama: 'X IIS 1' },
+        { id: 'mg-2', guruUsername: 'sulis', guruNama: 'Sulis, S.Pd', mapelNama: 'Geografi', kelasNama: 'X IIS 2' },
+        { id: 'mg-3', guruUsername: 'walas1', guruNama: 'Guru Walas, M.Pd', mapelNama: 'Matematika', kelasNama: 'X IIS 1' }
+      ];
 
       // 5. Initial Mapping Walas
-      if (!localStorage.getItem('mapping_walas')) {
-        const initialWalas = [
-          { id: 'mw-1', guruUsername: 'walas1', guruNama: 'Guru Walas, M.Pd', kelasNama: 'X IIS 1' }
-        ];
-        window.setStorageData('mapping_walas', initialWalas);
-      }
+      const initialWalas = [
+        { id: 'mw-1', guruUsername: 'walas1', guruNama: 'Guru Walas, M.Pd', kelasNama: 'X IIS 1' }
+      ];
 
       // 6. Initial Pembelajaran
-      if (!localStorage.getItem('pembelajaran')) {
-        const initialMateri = [
-          {
-            id: 'mat-1',
-            tp: 'TP1 (3.2)',
-            pertemuan: '1',
-            mapel: 'Geografi',
-            kelas: 'X IIS 1',
-            materiPokok: 'Konsep Essensial Geografi',
-            pembahasan: '<p><b>Aksara Geografi:</b> Pada pertemuan kali ini kita akan membahas mengenai dasar-dasar konsep geografi terapan.</p><p>Simak penjelasan video berikut:</p><iframe class="w-full aspect-video rounded-xl my-3" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>',
-            guruNama: 'Sulis, S.Pd',
-            guruUsername: 'sulis',
-            tglDibuka: '2026-08-01T08:00',
-            tglDitutup: '2026-08-30T23:59',
-            kuisAktif: 'Aktif',
-            komentarAktif: 'Aktif',
-            uploadAktif: 'Aktif',
-            comments: [
-              { sender: 'Ryan Mahfud', text: 'Pak, untuk tugas rangkuman dikumpul di mana ya?', time: '2026-08-10 09:15' }
-            ]
-          }
-        ];
-        window.setStorageData('pembelajaran', initialMateri);
-      }
+      const initialMateri = [
+        {
+          id: 'mat-1',
+          tp: 'TP1 (3.2)',
+          pertemuan: '1',
+          mapel: 'Geografi',
+          kelas: 'X IIS 1',
+          materiPokok: 'Konsep Essensial Geografi',
+          pembahasan: '<p><b>Aksara Geografi:</b> Pada pertemuan kali ini kita akan membahas mengenai dasar-dasar konsep geografi terapan.</p><p>Simak penjelasan video berikut:</p><iframe class="w-full aspect-video rounded-xl my-3" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>',
+          guruNama: 'Sulis, S.Pd',
+          guruUsername: 'sulis',
+          tglDibuka: '2026-08-01T08:00',
+          tglDitutup: '2026-08-30T23:59',
+          kuisAktif: 'Aktif',
+          komentarAktif: 'Aktif',
+          uploadAktif: 'Aktif',
+          comments: [
+            { sender: 'Ryan Mahfud', text: 'Pak, untuk tugas rangkuman dikumpul di mana ya?', time: '2026-08-10 09:15' }
+          ]
+        }
+      ];
 
       // 7. Initial Agenda
-      if (!localStorage.getItem('agenda')) {
-        const initialAgenda = [
-          {
-            id: 'ag-1',
-            guruNama: 'Sulis, S.Pd',
-            mapel: 'Geografi',
-            pembahasan: 'Pengenalan Konsep Essensial Geografi',
-            kelas: 'X IIS 1',
-            tanggal: '2026-08-10',
-            jamMasuk: '07:30',
-            jamSelesai: '09:00'
+      const initialAgenda = [
+        {
+          id: 'ag-1',
+          guruNama: 'Sulis, S.Pd',
+          mapel: 'Geografi',
+          pembahasan: 'Pengenalan Konsep Essensial Geografi',
+          kelas: 'X IIS 1',
+          tanggal: '2026-08-10',
+          jamMasuk: '07:30',
+          jamSelesai: '09:00'
+        }
+      ];
+
+      if (!localStorage.getItem('users')) window.setStorageData('users', initialUsers);
+      if (!localStorage.getItem('master_kelas')) window.setStorageData('master_kelas', initialKelas);
+      if (!localStorage.getItem('master_mapel')) window.setStorageData('master_mapel', initialMapel);
+      if (!localStorage.getItem('mapping_guru')) window.setStorageData('mapping_guru', initialMapping);
+      if (!localStorage.getItem('mapping_walas')) window.setStorageData('mapping_walas', initialWalas);
+      if (!localStorage.getItem('pembelajaran')) window.setStorageData('pembelajaran', initialMateri);
+      if (!localStorage.getItem('agenda')) window.setStorageData('agenda', initialAgenda);
+
+      // SINKRONISASI OTOMATIS DATA AWAL KE FIRESTORE CLOUD JIKA DATABASE MASIH KOSONG
+      if (!IS_PREVIEW && db) {
+        try {
+          const userSnap = await db.collection('users').get();
+          if (userSnap.empty) {
+            window.showToast("Menginisialisasi Cloud Firestore pertama kali...", "info");
+            for (const u of initialUsers) await db.collection('users').doc(u.username).set(u);
+            for (const k of initialKelas) await db.collection('master_kelas').doc(k.id).set(k);
+            for (const m of initialMapel) await db.collection('master_mapel').doc(m.id).set(m);
+            for (const mg of initialMapping) await db.collection('mapping_guru').doc(mg.id).set(mg);
+            for (const mw of initialWalas) await db.collection('mapping_walas').doc(mw.id).set(mw);
+            for (const mat of initialMateri) await db.collection('pembelajaran').doc(mat.id).set(mat);
+            for (const ag of initialAgenda) await db.collection('agenda').doc(ag.id).set(ag);
+            window.showToast("Database Firebase Cloud Firestore berhasil disiapkan!", "success");
           }
-        ];
-        window.setStorageData('agenda', initialAgenda);
+        } catch (err) {
+          console.error("Firestore AutoSetup error:", err);
+        }
+        initFirestoreListeners();
       }
     }
 
@@ -761,11 +832,6 @@
       document.getElementById('form-login-admin').classList.toggle('hidden', type !== 'admin');
       document.getElementById('tab-user-btn').className = type === 'user' ? 'flex-1 py-2.5 rounded-lg text-center text-blue-700 bg-white shadow-md font-extrabold transition-all' : 'flex-1 py-2.5 rounded-lg text-center text-slate-500 hover:text-slate-800 transition-all';
       document.getElementById('tab-admin-btn').className = type === 'admin' ? 'flex-1 py-2.5 rounded-lg text-center text-blue-700 bg-white shadow-md font-extrabold transition-all' : 'flex-1 py-2.5 rounded-lg text-center text-slate-500 hover:text-slate-800 transition-all';
-    };
-
-    window.fillQuickLogin = function(u, p) {
-      document.getElementById('login-username').value = u;
-      document.getElementById('login-password').value = p;
     };
 
     window.handleUserLogin = function(e) {
@@ -777,7 +843,6 @@
       const matched = users.find(x => x.username === u && x.password === p);
 
       if (matched) {
-        // Sync Walas status from mapping_walas
         const walasMappings = window.getStorageData('mapping_walas');
         const foundWalas = walasMappings.find(w => w.guruUsername === matched.username);
         if (foundWalas) {
@@ -813,6 +878,237 @@
         window.showToast('Login Admin Firebase Berhasil (Mode Preview)', 'success');
         setupUserInterface();
       }
+    };
+
+    window.saveMasterData = function(e, tab) {
+      e.preventDefault();
+
+      if (tab === 'kelas') {
+        const v = document.getElementById('m-val-1').value.trim();
+        const obj = { id: 'kls-' + Date.now(), nama: v };
+        let list = window.getStorageData('master_kelas');
+        list.push(obj);
+        window.setStorageData('master_kelas', list);
+        window.syncToFirestore('master_kelas', obj.id, obj);
+      } else if (tab === 'mapel') {
+        const v = document.getElementById('m-val-1').value.trim();
+        const obj = { id: 'mpl-' + Date.now(), nama: v };
+        let list = window.getStorageData('master_mapel');
+        list.push(obj);
+        window.setStorageData('master_mapel', list);
+        window.syncToFirestore('master_mapel', obj.id, obj);
+      } else if (tab === 'guru') {
+        const u = document.getElementById('m-val-1').value.trim();
+        const n = document.getElementById('m-val-2').value.trim();
+        const p = document.getElementById('m-val-3').value.trim();
+        const obj = { username: u, password: p, nama: n, role: 'guru' };
+        let users = window.getStorageData('users');
+        users.push(obj);
+        window.setStorageData('users', users);
+        window.syncToFirestore('users', u, obj);
+      } else if (tab === 'walas') {
+        const gu = document.getElementById('m-val-1').value;
+        const kl = document.getElementById('m-val-2').value;
+        const gurus = window.getStorageData('users');
+        const targetGuru = gurus.find(g => g.username === gu);
+        const obj = { id: 'mw-' + Date.now(), guruUsername: gu, guruNama: targetGuru ? targetGuru.nama : gu, kelasNama: kl };
+        let list = window.getStorageData('mapping_walas');
+        list.push(obj);
+        window.setStorageData('mapping_walas', list);
+        window.syncToFirestore('mapping_walas', obj.id, obj);
+      } else if (tab === 'mapping') {
+        const gu = document.getElementById('m-val-1').value;
+        const mp = document.getElementById('m-val-2').value;
+        const kl = document.getElementById('m-val-3').value;
+        const gurus = window.getStorageData('users');
+        const targetGuru = gurus.find(g => g.username === gu);
+        const obj = { id: 'mg-' + Date.now(), guruUsername: gu, guruNama: targetGuru ? targetGuru.nama : gu, mapelNama: mp, kelasNama: kl };
+        let list = window.getStorageData('mapping_guru');
+        list.push(obj);
+        window.setStorageData('mapping_guru', list);
+        window.syncToFirestore('mapping_guru', obj.id, obj);
+      }
+
+      closeModal();
+      window.showToast('Master data berhasil disimpan ke Firebase Cloud!', 'success');
+      renderMasterMappingView();
+    };
+
+    window.deleteMaster = function(tab, idKey) {
+      if (!confirm('Hapus item master ini?')) return;
+
+      if (tab === 'kelas') {
+        let list = window.getStorageData('master_kelas').filter(x => x.id !== idKey);
+        window.setStorageData('master_kelas', list);
+        window.removeFromFirestore('master_kelas', idKey);
+      } else if (tab === 'mapel') {
+        let list = window.getStorageData('master_mapel').filter(x => x.id !== idKey);
+        window.setStorageData('master_mapel', list);
+        window.removeFromFirestore('master_mapel', idKey);
+      } else if (tab === 'guru') {
+        let list = window.getStorageData('users').filter(x => x.username !== idKey);
+        window.setStorageData('users', list);
+        window.removeFromFirestore('users', idKey);
+      } else if (tab === 'walas') {
+        let list = window.getStorageData('mapping_walas').filter(x => x.id !== idKey);
+        window.setStorageData('mapping_walas', list);
+        window.removeFromFirestore('mapping_walas', idKey);
+      } else if (tab === 'mapping') {
+        let list = window.getStorageData('mapping_guru').filter(x => x.id !== idKey);
+        window.setStorageData('mapping_guru', list);
+        window.removeFromFirestore('mapping_guru', idKey);
+      }
+
+      window.showToast('Data master telah dihapus dari Firebase.');
+      renderMasterMappingView();
+    };
+
+    window.saveSiswa = function(e, editNis) {
+      e.preventDefault();
+      let users = window.getStorageData('users');
+
+      let targetNis = editNis;
+      if (editNis) {
+        const idx = users.findIndex(x => x.username === editNis);
+        if (idx !== -1) {
+          users[idx].nama = document.getElementById('m-nama').value;
+          users[idx].level = document.getElementById('m-level').value;
+          users[idx].jurusan = document.getElementById('m-jurusan').value;
+          users[idx].kelas = document.getElementById('m-kelas').value;
+          users[idx].password = document.getElementById('m-pass').value;
+        }
+      } else {
+        targetNis = document.getElementById('m-nis').value.trim();
+        users.push({
+          username: targetNis,
+          nama: document.getElementById('m-nama').value.trim(),
+          role: 'siswa',
+          level: document.getElementById('m-level').value.trim(),
+          jurusan: document.getElementById('m-jurusan').value.trim(),
+          kelas: document.getElementById('m-kelas').value.trim(),
+          password: document.getElementById('m-pass').value.trim()
+        });
+      }
+
+      const savedStudent = users.find(x => x.username === targetNis);
+      window.setStorageData('users', users);
+      if (savedStudent) window.syncToFirestore('users', targetNis, savedStudent);
+
+      closeModal();
+      window.showToast('Data siswa berhasil disimpan ke Firebase!', 'success');
+      renderSiswaTable();
+    };
+
+    window.deleteSiswa = function(nis) {
+      if (confirm('Hapus data siswa ini?')) {
+        let users = window.getStorageData('users').filter(x => x.username !== nis);
+        window.setStorageData('users', users);
+        window.removeFromFirestore('users', nis);
+        window.showToast('Siswa telah dihapus.');
+        renderSiswaTable();
+      }
+    };
+
+    window.savePembelajaran = function(e, editId) {
+      e.preventDefault();
+      let list = window.getStorageData('pembelajaran');
+
+      const data = {
+        id: editId || 'mat-' + Date.now(),
+        tp: document.getElementById('m-tp').value,
+        pertemuan: document.getElementById('m-pertemuan').value,
+        mapel: document.getElementById('m-mapel').value,
+        kelas: document.getElementById('m-kelas').value,
+        materiPokok: document.getElementById('m-materi').value,
+        pembahasan: document.getElementById('m-pembahasan').value,
+        guruNama: window.currentUser ? window.currentUser.nama : 'Guru Sulis',
+        guruUsername: window.currentUser ? window.currentUser.username : 'sulis',
+        tglDibuka: document.getElementById('m-opened').value,
+        tglDitutup: document.getElementById('m-closed').value,
+        kuisAktif: document.getElementById('m-kuis').value,
+        komentarAktif: document.getElementById('m-komentar').value,
+        uploadAktif: document.getElementById('m-upload').value
+      };
+
+      if (editId) {
+        const idx = list.findIndex(x => x.id === editId);
+        if (idx !== -1) list[idx] = data;
+      } else {
+        list.push(data);
+      }
+
+      window.setStorageData('pembelajaran', list);
+      window.syncToFirestore('pembelajaran', data.id, data);
+
+      closeModal();
+      window.showToast('Modul materi berhasil disimpan ke Firebase!', 'success');
+      loadPembelajaranData();
+    };
+
+    window.saveAgenda = function(e, editId) {
+      e.preventDefault();
+      let list = window.getStorageData('agenda');
+
+      const data = {
+        id: editId || 'ag-' + Date.now(),
+        guruNama: window.currentUser ? window.currentUser.nama : 'Guru Sulis',
+        mapel: document.getElementById('ag-mapel').value,
+        pembahasan: document.getElementById('ag-pembahasan').value,
+        kelas: document.getElementById('ag-kelas').value,
+        tanggal: document.getElementById('ag-tanggal').value,
+        jamMasuk: document.getElementById('ag-masuk').value,
+        jamSelesai: document.getElementById('ag-selesai').value
+      };
+
+      if (editId) {
+        const idx = list.findIndex(x => x.id === editId);
+        if (idx !== -1) list[idx] = data;
+      } else {
+        list.push(data);
+      }
+
+      window.setStorageData('agenda', list);
+      window.syncToFirestore('agenda', data.id, data);
+
+      closeModal();
+      window.showToast('Jurnal agenda mengajar berhasil disimpan ke Firebase!', 'success');
+      loadAgendaData();
+    };
+
+    window.deleteAgenda = function(id) {
+      if (confirm('Hapus agenda ini?')) {
+        let list = window.getStorageData('agenda').filter(x => x.id !== id);
+        window.setStorageData('agenda', list);
+        window.removeFromFirestore('agenda', id);
+        window.showToast('Agenda telah dihapus.');
+        loadAgendaData();
+      }
+    };
+
+    window.savePengumuman = function(e) {
+      e.preventDefault();
+      const j = document.getElementById('pg-judul').value;
+      const k = document.getElementById('pg-konten').value;
+      const pgId = 'pg-' + Date.now();
+
+      const feed = document.getElementById('pengumuman-feed-list');
+      const div = document.createElement('div');
+      div.className = 'p-4 bg-blue-50 border-2 border-blue-200 rounded-xl';
+      div.innerHTML = `
+        <p class="font-extrabold text-blue-900 text-xs uppercase">${j}</p>
+        <p class="text-xs font-bold text-slate-700 mt-1">${k}</p>
+      `;
+      feed.prepend(div);
+
+      window.syncToFirestore('pengumuman', pgId, { id: pgId, judul: j, konten: k, timestamp: Date.now() });
+
+      closeModal();
+      window.showToast('Pengumuman berhasil diterbitkan ke Firebase!', 'success');
+    };
+
+    window.fillQuickLogin = function(u, p) {
+      document.getElementById('login-username').value = u;
+      document.getElementById('login-password').value = p;
     };
 
     window.handleLogout = function() {
@@ -1139,76 +1435,6 @@
       document.getElementById('modal-container').innerHTML = html;
     };
 
-    window.saveMasterData = function(e, tab) {
-      e.preventDefault();
-
-      if (tab === 'kelas') {
-        const v = document.getElementById('m-val-1').value.trim();
-        let list = window.getStorageData('master_kelas');
-        list.push({ id: 'kls-' + Date.now(), nama: v });
-        window.setStorageData('master_kelas', list);
-      } else if (tab === 'mapel') {
-        const v = document.getElementById('m-val-1').value.trim();
-        let list = window.getStorageData('master_mapel');
-        list.push({ id: 'mpl-' + Date.now(), nama: v });
-        window.setStorageData('master_mapel', list);
-      } else if (tab === 'guru') {
-        const u = document.getElementById('m-val-1').value.trim();
-        const n = document.getElementById('m-val-2').value.trim();
-        const p = document.getElementById('m-val-3').value.trim();
-        let users = window.getStorageData('users');
-        users.push({ username: u, password: p, nama: n, role: 'guru' });
-        window.setStorageData('users', users);
-      } else if (tab === 'walas') {
-        const gu = document.getElementById('m-val-1').value;
-        const kl = document.getElementById('m-val-2').value;
-        const gurus = window.getStorageData('users');
-        const targetGuru = gurus.find(g => g.username === gu);
-
-        let list = window.getStorageData('mapping_walas');
-        list.push({ id: 'mw-' + Date.now(), guruUsername: gu, guruNama: targetGuru ? targetGuru.nama : gu, kelasNama: kl });
-        window.setStorageData('mapping_walas', list);
-      } else if (tab === 'mapping') {
-        const gu = document.getElementById('m-val-1').value;
-        const mp = document.getElementById('m-val-2').value;
-        const kl = document.getElementById('m-val-3').value;
-        const gurus = window.getStorageData('users');
-        const targetGuru = gurus.find(g => g.username === gu);
-
-        let list = window.getStorageData('mapping_guru');
-        list.push({ id: 'mg-' + Date.now(), guruUsername: gu, guruNama: targetGuru ? targetGuru.nama : gu, mapelNama: mp, kelasNama: kl });
-        window.setStorageData('mapping_guru', list);
-      }
-
-      closeModal();
-      window.showToast('Master data berhasil ditambahkan!', 'success');
-      renderMasterMappingView();
-    };
-
-    window.deleteMaster = function(tab, idKey) {
-      if (!confirm('Hapus item master ini?')) return;
-
-      if (tab === 'kelas') {
-        let list = window.getStorageData('master_kelas').filter(x => x.id !== idKey);
-        window.setStorageData('master_kelas', list);
-      } else if (tab === 'mapel') {
-        let list = window.getStorageData('master_mapel').filter(x => x.id !== idKey);
-        window.setStorageData('master_mapel', list);
-      } else if (tab === 'guru') {
-        let list = window.getStorageData('users').filter(x => x.username !== idKey);
-        window.setStorageData('users', list);
-      } else if (tab === 'walas') {
-        let list = window.getStorageData('mapping_walas').filter(x => x.id !== idKey);
-        window.setStorageData('mapping_walas', list);
-      } else if (tab === 'mapping') {
-        let list = window.getStorageData('mapping_guru').filter(x => x.id !== idKey);
-        window.setStorageData('mapping_guru', list);
-      }
-
-      window.showToast('Data master telah dihapus.');
-      renderMasterMappingView();
-    };
-
     window.renderSiswaTable = function() {
       const users = window.getStorageData('users').filter(x => x.role === 'siswa');
       const filterSelect = document.getElementById('filter-siswa-kelas');
@@ -1367,46 +1593,6 @@
         </div>
       `;
       document.getElementById('modal-container').innerHTML = html;
-    };
-
-    window.saveSiswa = function(e, editNis) {
-      e.preventDefault();
-      let users = window.getStorageData('users');
-
-      if (editNis) {
-        const idx = users.findIndex(x => x.username === editNis);
-        if (idx !== -1) {
-          users[idx].nama = document.getElementById('m-nama').value;
-          users[idx].level = document.getElementById('m-level').value;
-          users[idx].jurusan = document.getElementById('m-jurusan').value;
-          users[idx].kelas = document.getElementById('m-kelas').value;
-          users[idx].password = document.getElementById('m-pass').value;
-        }
-      } else {
-        users.push({
-          username: document.getElementById('m-nis').value.trim(),
-          nama: document.getElementById('m-nama').value.trim(),
-          role: 'siswa',
-          level: document.getElementById('m-level').value.trim(),
-          jurusan: document.getElementById('m-jurusan').value.trim(),
-          kelas: document.getElementById('m-kelas').value.trim(),
-          password: document.getElementById('m-pass').value.trim()
-        });
-      }
-
-      window.setStorageData('users', users);
-      closeModal();
-      window.showToast('Data siswa berhasil disimpan!', 'success');
-      renderSiswaTable();
-    };
-
-    window.deleteSiswa = function(nis) {
-      if (confirm('Hapus data siswa ini?')) {
-        let users = window.getStorageData('users').filter(x => x.username !== nis);
-        window.setStorageData('users', users);
-        window.showToast('Siswa telah dihapus.');
-        renderSiswaTable();
-      }
     };
 
     function loadPembelajaranData() {
@@ -1657,40 +1843,6 @@
       document.getElementById('modal-container').innerHTML = html;
     };
 
-    window.savePembelajaran = function(e, editId) {
-      e.preventDefault();
-      let list = window.getStorageData('pembelajaran');
-
-      const data = {
-        id: editId || 'mat-' + Date.now(),
-        tp: document.getElementById('m-tp').value,
-        pertemuan: document.getElementById('m-pertemuan').value,
-        mapel: document.getElementById('m-mapel').value,
-        kelas: document.getElementById('m-kelas').value,
-        materiPokok: document.getElementById('m-materi').value,
-        pembahasan: document.getElementById('m-pembahasan').value,
-        guruNama: window.currentUser ? window.currentUser.nama : 'Guru Sulis',
-        guruUsername: window.currentUser ? window.currentUser.username : 'sulis',
-        tglDibuka: document.getElementById('m-opened').value,
-        tglDitutup: document.getElementById('m-closed').value,
-        kuisAktif: document.getElementById('m-kuis').value,
-        komentarAktif: document.getElementById('m-komentar').value,
-        uploadAktif: document.getElementById('m-upload').value
-      };
-
-      if (editId) {
-        const idx = list.findIndex(x => x.id === editId);
-        if (idx !== -1) list[idx] = data;
-      } else {
-        list.push(data);
-      }
-
-      window.setStorageData('pembelajaran', list);
-      closeModal();
-      window.showToast('Modul materi berhasil disimpan!', 'success');
-      loadPembelajaranData();
-    };
-
     function loadAgendaData() {
       const list = window.getStorageData('agenda');
       const tbody = document.getElementById('tbody-agenda');
@@ -1767,43 +1919,6 @@
         </div>
       `;
       document.getElementById('modal-container').innerHTML = html;
-    };
-
-    window.saveAgenda = function(e, editId) {
-      e.preventDefault();
-      let list = window.getStorageData('agenda');
-
-      const data = {
-        id: editId || 'ag-' + Date.now(),
-        guruNama: window.currentUser ? window.currentUser.nama : 'Guru Sulis',
-        mapel: document.getElementById('ag-mapel').value,
-        pembahasan: document.getElementById('ag-pembahasan').value,
-        kelas: document.getElementById('ag-kelas').value,
-        tanggal: document.getElementById('ag-tanggal').value,
-        jamMasuk: document.getElementById('ag-masuk').value,
-        jamSelesai: document.getElementById('ag-selesai').value
-      };
-
-      if (editId) {
-        const idx = list.findIndex(x => x.id === editId);
-        if (idx !== -1) list[idx] = data;
-      } else {
-        list.push(data);
-      }
-
-      window.setStorageData('agenda', list);
-      closeModal();
-      window.showToast('Jurnal agenda mengajar berhasil disimpan!', 'success');
-      loadAgendaData();
-    };
-
-    window.deleteAgenda = function(id) {
-      if (confirm('Hapus agenda ini?')) {
-        let list = window.getStorageData('agenda').filter(x => x.id !== id);
-        window.setStorageData('agenda', list);
-        window.showToast('Agenda telah dihapus.');
-        loadAgendaData();
-      }
     };
 
     function loadWalasAbsensiData() {
@@ -1900,24 +2015,6 @@
         </div>
       `;
       document.getElementById('modal-container').innerHTML = html;
-    };
-
-    window.savePengumuman = function(e) {
-      e.preventDefault();
-      const j = document.getElementById('pg-judul').value;
-      const k = document.getElementById('pg-konten').value;
-
-      const feed = document.getElementById('pengumuman-feed-list');
-      const div = document.createElement('div');
-      div.className = 'p-4 bg-blue-50 border-2 border-blue-200 rounded-xl';
-      div.innerHTML = `
-        <p class="font-extrabold text-blue-900 text-xs uppercase">${j}</p>
-        <p class="text-xs font-bold text-slate-700 mt-1">${k}</p>
-      `;
-      feed.prepend(div);
-
-      closeModal();
-      window.showToast('Pengumuman berhasil diterbitkan!', 'success');
     };
 
     window.triggerPrintDaftarHadir = function() {
