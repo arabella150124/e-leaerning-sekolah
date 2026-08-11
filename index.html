@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>E-Learning System</title>
+  <title>E-Learning Candy System</title>
   
   <!-- PWA Manifest Data URI -->
   <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkUtTGVhcm5pbmcgQ2FuZHkgU3lzdGVtIiwKICAic2hvcnRfbmFtZSI6ICJFLUxlYXJuaW5nIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGZhZmMiLAogICJ0aGVtZV9jb2xvciI6ICIjMGI1N2QwIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMzQyOS8zNDI5MDcwLnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
@@ -84,8 +84,8 @@
           <div class="w-16 h-16 mx-auto md:mx-0 flex items-center justify-center bg-white p-2 rounded-2xl shadow-md border-2 border-slate-200">
             <img id="login-school-logo-img" src="https://cdn-icons-png.flaticon.com/512/3429/3429070.png" class="w-full h-full object-contain" alt="Logo Sekolah">
           </div>
-          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning</h1>
-          <p class="text-xs font-bold text-blue-700 uppercase tracking-widest">E-LEARNING SYSTEM</p>
+          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning Candy</h1>
+          <p class="text-xs font-bold text-blue-700 uppercase tracking-widest">Portal Akademik Terpadu</p>
           <p class="text-xs font-bold text-slate-600 leading-relaxed bg-white/60 backdrop-blur p-3 rounded-xl border border-slate-200 shadow-sm">
             Platform pembelajaran digital terintegrasi untuk penyampaian modul interaktif, kuis online, rekapitulasi presensi harian, dan pemantauan KBM secara real-time.
           </p>
@@ -98,7 +98,7 @@
             <!-- Login Tabs -->
             <div class="flex border-2 border-slate-200 rounded-xl overflow-hidden p-1 bg-slate-100/80 mb-5 text-xs font-bold">
               <button id="tab-user-btn" onclick="switchLoginTab('user')" class="flex-1 py-2 rounded-lg text-center text-blue-700 bg-white shadow-md font-extrabold transition-all">Siswa / Guru / Kepsek</button>
-              <button id="tab-admin-btn" onclick="switchLoginTab('admin')" class="flex-1 py-2 rounded-lg text-center text-slate-500 hover:text-slate-800 transition-all">Admin</button>
+              <button id="tab-admin-btn" onclick="switchLoginTab('admin')" class="flex-1 py-2 rounded-lg text-center text-slate-500 hover:text-slate-800 transition-all">Admin Firebase</button>
             </div>
 
             <!-- User Login Form -->
@@ -133,7 +133,7 @@
                 <input type="password" id="admin-password" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-slate-800 text-xs font-bold" placeholder="••••••••">
               </div>
               <button type="submit" class="w-full py-3 bg-slate-900 hover:bg-black text-white font-extrabold text-xs rounded-xl shadow-lg transition">
-                <i class="fa-solid fa-shield-halved mr-2"></i> Login Admin
+                <i class="fa-solid fa-shield-halved mr-2"></i> Login Admin Firebase
               </button>
             </form>
 
@@ -154,7 +154,7 @@
           </div>
           <div class="overflow-hidden">
             <h2 id="sidebar-school-name" class="font-extrabold text-slate-900 leading-tight tracking-tight truncate text-sm">E-Learning</h2>
-            <span class="text-[10px] text-blue-700 font-bold uppercase tracking-wider">E-learning System</span>
+            <span class="text-[10px] text-blue-700 font-bold uppercase tracking-wider">Candy System</span>
           </div>
         </div>
 
@@ -680,12 +680,12 @@
     const IS_PREVIEW = false; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE
 
     const firebaseConfig = {
-   apiKey: "AIzaSyAQG9hn4I_RPvsWVJBY_5zlGA3-h1Z8LjY",
-  authDomain: "e-learning-6e5d5.firebaseapp.com",
-  projectId: "e-learning-6e5d5",
-  storageBucket: "e-learning-6e5d5.firebasestorage.app",
-  messagingSenderId: "367870327146",
-  appId: "1:367870327146:web:ac704e4f6325d353400d13"
+        apiKey: "AIzaSyAQG9hn4I_RPvsWVJBY_5zlGA3-h1Z8LjY",
+        authDomain: "e-learning-6e5d5.firebaseapp.com",
+        projectId: "e-learning-6e5d5",
+        storageBucket: "e-learning-6e5d5.firebasestorage.app",
+        messagingSenderId: "367870327146",
+        appId: "1:367870327146:web:ac704e4f6325d353400d13"
     };
 
     let db = null;
