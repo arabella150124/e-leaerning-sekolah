@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>E-Learning System</title>
+  <title>E-Learning Candy System</title>
   
   <!-- PWA Manifest Data URI -->
   <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkUtTGVhcm5pbmcgQ2FuZHkgU3lzdGVtIiwKICAic2hvcnRfbmFtZSI6ICJFLUxlYXJuaW5nIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGZhZmMiLAogICJ0aGVtZV9jb2xvciI6ICIjMGI1N2QwIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMzQyOS8zNDI5MDcwLnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
@@ -73,35 +73,30 @@
 
   <div id="app" class="min-h-screen flex flex-col md:flex-row">
     
-    <!-- LOGIN VIEW (RINGKAS, MUNGIL & SPLIT SCREEN RESPONSIVE) -->
+    <!-- LOGIN VIEW -->
     <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center login-bg-vibrant p-4 md:p-8">
       <div class="absolute inset-0 hex-grid-overlay pointer-events-none z-0"></div>
 
       <div class="w-full max-w-4xl relative z-10 mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-        
-        <!-- Sisi Kiri: Branding & Penjelasan Singkat (Ringkas) -->
         <div class="md:col-span-5 text-center md:text-left space-y-3 p-2">
           <div class="w-16 h-16 mx-auto md:mx-0 flex items-center justify-center bg-white p-2 rounded-2xl shadow-md border-2 border-slate-200">
             <img id="login-school-logo-img" src="https://cdn-icons-png.flaticon.com/512/3429/3429070.png" class="w-full h-full object-contain" alt="Logo Sekolah">
           </div>
-          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning System</h1>
-          <p class="text-xs font-bold text-blue-700 uppercase tracking-widest">E-LEARNING SEKOLAH</p>
+          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning Candy</h1>
+          <p class="text-xs font-bold text-blue-700 uppercase tracking-widest">Portal Akademik Terpadu</p>
           <p class="text-xs font-bold text-slate-600 leading-relaxed bg-white/60 backdrop-blur p-3 rounded-xl border border-slate-200 shadow-sm">
-            Seluruh Guru dan Siswa Sekolah ini menggunakan System Elearning ini untuk mendukung Pembelajaran berbasis Digital. Platform pembelajaran digital terintegrasi untuk penyampaian modul interaktif, kuis online, rekapitulasi presensi harian, dan pemantauan KBM secara real-time.
+            Platform pembelajaran digital terintegrasi untuk penyampaian modul interaktif, kuis online, rekapitulasi presensi harian, dan pemantauan KBM secara real-time.
           </p>
         </div>
 
-        <!-- Sisi Kanan: Form Login Mungil -->
         <div class="md:col-span-7">
           <div class="glass-card-pro p-6 md:p-7 rounded-3xl bg-white/95 shadow-2xl relative z-10 border-2 border-white/80 max-w-md mx-auto">
             
-            <!-- Login Tabs -->
             <div class="flex border-2 border-slate-200 rounded-xl overflow-hidden p-1 bg-slate-100/80 mb-5 text-xs font-bold">
               <button id="tab-user-btn" onclick="switchLoginTab('user')" class="flex-1 py-2 rounded-lg text-center text-blue-700 bg-white shadow-md font-extrabold transition-all">Siswa / Guru / Kepsek</button>
-              <button id="tab-admin-btn" onclick="switchLoginTab('admin')" class="flex-1 py-2 rounded-lg text-center text-slate-500 hover:text-slate-800 transition-all">Admin</button>
+              <button id="tab-admin-btn" onclick="switchLoginTab('admin')" class="flex-1 py-2 rounded-lg text-center text-slate-500 hover:text-slate-800 transition-all">Admin Firebase</button>
             </div>
 
-            <!-- User Login Form -->
             <form id="form-login-user" onsubmit="handleUserLogin(event)" class="space-y-3.5">
               <div>
                 <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 mb-1">Username / NIS / NIP</label>
@@ -122,10 +117,9 @@
               </button>
             </form>
 
-            <!-- Admin Login Form -->
             <form id="form-login-admin" onsubmit="handleAdminLogin(event)" class="space-y-3.5 hidden">
               <div>
-                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 mb-1">Email Admin</label>
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 mb-1">Email Admin Firebase</label>
                 <input type="email" id="admin-email" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-slate-800 text-xs font-bold" placeholder="admin@sekolah.sch.id">
               </div>
               <div>
@@ -133,20 +127,18 @@
                 <input type="password" id="admin-password" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-slate-800 text-xs font-bold" placeholder="••••••••">
               </div>
               <button type="submit" id="btn-submit-admin" class="w-full py-3 bg-slate-900 hover:bg-black text-white font-extrabold text-xs rounded-xl shadow-lg transition">
-                <i class="fa-solid fa-shield-halved mr-2"></i> Login Admin
+                <i class="fa-solid fa-shield-halved mr-2"></i> Login Admin Firebase
               </button>
             </form>
 
           </div>
         </div>
-
       </div>
     </div>
 
     <!-- MAIN APPLICATION LAYOUT -->
     <div id="main-layout" class="hidden flex-1 flex flex-col md:flex-row pb-16 md:pb-0 min-h-screen">
       
-      <!-- DESKTOP SIDEBAR -->
       <aside class="hidden md:flex flex-col w-64 bg-white border-r-2 border-slate-200 min-h-screen sticky top-0 shadow-md">
         <div class="p-4 border-b-2 border-slate-200 flex items-center space-x-3 bg-slate-50">
           <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg font-extrabold overflow-hidden bg-blue-600">
@@ -219,32 +211,7 @@
         </div>
       </aside>
 
-      <!-- MOBILE BOTTOM NAVIGATION -->
-      <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-300 z-40 flex justify-around p-2 shadow-2xl">
-        <button onclick="switchView('beranda')" class="flex flex-col items-center py-1 px-2 text-slate-700 text-[10px] font-extrabold">
-          <i class="fa-solid fa-gauge text-base text-blue-600"></i>
-          <span>Beranda</span>
-        </button>
-        <button onclick="switchView('pembelajaran')" class="flex flex-col items-center py-1 px-2 text-slate-700 text-[10px] font-extrabold">
-          <i class="fa-solid fa-book-open text-base text-emerald-600"></i>
-          <span>Materi</span>
-        </button>
-        <button onclick="switchView('absensi-siswa')" class="student-only flex flex-col items-center py-1 px-2 text-slate-700 text-[10px] font-extrabold">
-          <i class="fa-solid fa-calendar-check text-base text-rose-600"></i>
-          <span>Absensi</span>
-        </button>
-        <button onclick="switchView('agenda')" class="teacher-only flex flex-col items-center py-1 px-2 text-slate-700 text-[10px] font-extrabold">
-          <i class="fa-solid fa-clipboard-list text-base text-amber-600"></i>
-          <span>Agenda</span>
-        </button>
-        <button onclick="switchView('profil')" class="flex flex-col items-center py-1 px-2 text-slate-700 text-[10px] font-extrabold">
-          <i class="fa-solid fa-user text-base text-slate-600"></i>
-          <span>Profil</span>
-        </button>
-      </nav>
-
       <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
-        
         <!-- SECTION: BERANDA -->
         <section id="view-beranda" class="view-content space-y-6">
           <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b-2 border-slate-200 gap-4">
@@ -257,14 +224,12 @@
             </button>
           </div>
 
-          <!-- WIDGET PROGRES SISWA (KHUSUS ROLE SISWA) -->
           <div id="student-progress-widget" class="student-only glass-card-pro p-6 rounded-2xl border-2 border-blue-200 space-y-4 bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
             <h2 class="text-base font-extrabold text-slate-900 flex items-center space-x-2">
               <i class="fa-solid fa-chart-pie text-blue-600"></i>
               <span>Progres Belajar & Kuis Anda</span>
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- Modul Status -->
               <div class="p-4 bg-white rounded-xl border-2 border-slate-200 space-y-2">
                 <p class="text-xs font-extrabold text-slate-700 uppercase">Status Modul Pembelajaran</p>
                 <div class="flex justify-between items-center text-xs font-bold pt-1">
@@ -272,7 +237,6 @@
                   <span class="text-amber-700"><i class="fa-solid fa-clock mr-1"></i> Belum Dipelajari: <strong id="prog-modul-belum">0</strong></span>
                 </div>
               </div>
-              <!-- Kuis Status -->
               <div class="p-4 bg-white rounded-xl border-2 border-slate-200 space-y-2">
                 <p class="text-xs font-extrabold text-slate-700 uppercase">Status Kuis & Evaluasi</p>
                 <div class="flex justify-between items-center text-xs font-bold pt-1">
@@ -315,7 +279,7 @@
           </div>
         </section>
 
-        <!-- SECTION: MASTER DATA & MAPPING (ADMIN ONLY) -->
+        <!-- SECTION: MASTER DATA & MAPPING -->
         <section id="view-master-mapping" class="view-content space-y-6 hidden">
           <div class="pb-4 border-b-2 border-slate-200">
             <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Master Data & Mapping Sekolah</h1>
@@ -600,7 +564,6 @@
             <p class="text-xs font-bold text-slate-500 mt-0.5">Konfirmasi kehadiran Anda sesuai jadwal hari ini.</p>
           </div>
 
-          <!-- BANNER ZOOM MEETING JIKA ADA SISI SISWA -->
           <div id="student-zoom-banner" class="hidden p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shadow-lg flex items-center justify-between max-w-lg mx-auto">
             <div class="flex items-center space-x-3">
               <i class="fa-solid fa-video text-2xl"></i>
@@ -660,7 +623,7 @@
                   <label class="text-slate-700 uppercase">Password Baru</label>
                   <input type="password" id="change-pass-new" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" placeholder="••••••••">
                 </div>
-                <button type="submit" class="px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-extrabold rounded-xl shadow border-2 border-blue-800">
+                <button type="submit" class="px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow border-2 border-blue-800">
                   <i class="fa-solid fa-floppy-disk mr-1.5"></i> Perbarui Password
                 </button>
               </form>
@@ -672,23 +635,21 @@
     </div>
   </div>
 
-  <!-- MODALS & OVERLAYS CONTAINER -->
   <div id="modal-container"></div>
   <div id="confirm-modal-container"></div>
   <div id="print-area" class="p-8 hidden"></div>
   <div id="toast-box" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
   <script>
-    /* SAKLAR DEPLOYMENT & FIREBASE CONFIG */
-    const IS_PREVIEW = false; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE
+    const IS_PREVIEW = false; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE CONFIG ASLI
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
-  authDomain: "elearning44-67ef3.firebaseapp.com",
-  projectId: "elearning44-67ef3",
-  storageBucket: "elearning44-67ef3.firebasestorage.app",
-  messagingSenderId: "364078910579",
-  appId: "1:364078910579:web:04ff94b2cb8ef856c76e06"
+        apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
+        authDomain: "elearning44-67ef3.firebaseapp.com",
+        projectId: "elearning44-67ef3",
+        storageBucket: "elearning44-67ef3.firebasestorage.app",
+        messagingSenderId: "364078910579",
+        appId: "1:364078910579:web:04ff94b2cb8ef856c76e06"
     };
 
     let db = null;
@@ -703,13 +664,11 @@
       }
     }
 
-    /* GLOBAL APPLICATION STATE */
     window.currentUser = null;
     window.siswaCurrentPage = 1;
     window.siswaItemsPerPage = 20;
     window.currentMasterTab = 'pengaturan';
 
-    /* UTILITY FUNCTIONS */
     window.showToast = function(msg, type = 'info') {
       const box = document.getElementById('toast-box');
       if (!box) return;
@@ -761,7 +720,7 @@
         try {
           await db.collection(col).doc(id).set(data, { merge: true });
         } catch (e) {
-          console.error("[Firestore Sync Error] Collection: " + col + ":", e);
+          console.error("[Firestore Sync Error] Collection " + col + ":", e);
         }
       }
     };
@@ -771,12 +730,39 @@
         try {
           await db.collection(col).doc(id).delete();
         } catch (e) {
-          console.error("[Firestore Delete Error] Collection: " + col + ":", e);
+          console.error("[Firestore Delete Error] Collection " + col + ":", e);
         }
       }
     };
 
-    function autoSetupDatabase() {
+    async function fetchAllFromFirestore() {
+      if (IS_PREVIEW || !db) return;
+
+      const collections = [
+        'school_settings', 'users', 'master_jurusan', 'master_kelas', 
+        'master_mapel', 'master_guru', 'mapping_guru', 'mapping_walas', 
+        'pembelajaran', 'agenda', 'pengumuman', 'quizzes', 'quiz_scores',
+        'student_attendance_log', 'student_read_logs', 'pembelajaran_comments', 'active_zoom_session'
+      ];
+
+      for (const col of collections) {
+        try {
+          const snapshot = await db.collection(col).get();
+          if (!snapshot.empty) {
+            const data = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+            window.setStorageData(col, data);
+          }
+        } catch (e) {
+          console.error("[Firestore Fetch Error] " + col + ":", e);
+        }
+      }
+    }
+
+    async function autoSetupDatabase() {
+      if (!IS_PREVIEW && db) {
+        await fetchAllFromFirestore();
+      }
+
       const initialSettings = {
         id: 'config',
         namaSekolah: 'SMK Sanjaya Digital',
@@ -999,7 +985,6 @@
       document.getElementById('stat-rombel').textContent = kelas.length;
       document.getElementById('stat-mapel').textContent = mapel.length;
 
-      // UPDATE WIDGET PROGRES BELAJAR SISWA
       if (window.currentUser && window.currentUser.role === 'siswa') {
         const modulList = window.getStorageData('pembelajaran') || [];
         const readLogs = window.getStorageData('student_read_logs') || [];
@@ -1072,814 +1057,6 @@
       }
     }
     window.loadBerandaData = loadBerandaData;
-
-    /* FITUR ZOOM CLASS / VIRTUAL MEETING */
-    window.openModalZoomMeeting = function(roleType) {
-      const html = `
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div class="glass-card-pro w-full max-w-md p-6 rounded-3xl bg-white shadow-2xl space-y-4 border-2 border-slate-300">
-            <h2 class="text-base font-extrabold text-slate-900 pb-2 border-b-2 border-slate-200">
-              <i class="fa-solid fa-video text-blue-600 mr-2"></i> Atur Sesi Zoom Class (${roleType})
-            </h2>
-            <form onsubmit="saveZoomMeeting(event, '${roleType}')" class="space-y-3 text-xs font-bold">
-              <div>
-                <label class="text-slate-700 uppercase">Topik Pembahasan Meeting</label>
-                <input type="text" id="zoom-topic" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" placeholder="Contoh: Tatap Muka Geografi - Siklus Air">
-              </div>
-              <div>
-                <label class="text-slate-700 uppercase">Link Tautan Zoom / Google Meet</label>
-                <input type="url" id="zoom-link" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" placeholder="https://zoom.us/j/123456789">
-              </div>
-              <div class="flex justify-end space-x-2 pt-2 border-t-2 border-slate-200">
-                <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow border-2 border-blue-700">Aktifkan Zoom</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      `;
-      document.getElementById('modal-container').innerHTML = html;
-    };
-
-    window.saveZoomMeeting = function(e, roleType) {
-      e.preventDefault();
-      const topic = document.getElementById('zoom-topic').value.trim();
-      const link = document.getElementById('zoom-link').value.trim();
-
-      const zoomObj = {
-        id: 'zoom-' + Date.now(),
-        roleType,
-        topic,
-        link,
-        author: window.currentUser ? window.currentUser.nama : 'Guru',
-        active: true
-      };
-
-      window.setStorageData('active_zoom_session', [zoomObj]);
-      window.syncToFirestore('active_zoom_session', 'current', zoomObj);
-      closeModal();
-      window.showToast(`Sesi Zoom Class ${roleType} Diaktifkan!`, 'success');
-      window.checkActiveZoomMeetings();
-    };
-
-    window.checkActiveZoomMeetings = function() {
-      const zoomList = window.getStorageData('active_zoom_session') || [];
-      const currentZoom = zoomList[0];
-
-      const walasBanner = document.getElementById('walas-zoom-banner');
-      const guruBanner = document.getElementById('guru-zoom-banner');
-      const studentBanner = document.getElementById('student-zoom-banner');
-
-      if (currentZoom && currentZoom.active) {
-        if (walasBanner && currentZoom.roleType === 'Walas') {
-          walasBanner.classList.remove('hidden');
-          document.getElementById('walas-zoom-topic').textContent = currentZoom.topic;
-          document.getElementById('walas-zoom-link').href = currentZoom.link;
-        }
-        if (guruBanner && currentZoom.roleType === 'Guru Mapel') {
-          guruBanner.classList.remove('hidden');
-          document.getElementById('guru-zoom-topic').textContent = currentZoom.topic;
-          document.getElementById('guru-zoom-link').href = currentZoom.link;
-        }
-        if (studentBanner) {
-          studentBanner.classList.remove('hidden');
-          document.getElementById('student-zoom-topic').textContent = currentZoom.topic;
-          document.getElementById('student-zoom-link').href = currentZoom.link;
-        }
-      }
-    };
-
-    function loadPembelajaranData() {
-      const list = window.getStorageData('pembelajaran') || [];
-      const grid = document.getElementById('materi-card-grid');
-      if (!grid) return;
-
-      grid.innerHTML = '';
-      const user = window.currentUser || {};
-      const isStudent = user.role === 'siswa';
-      const isTeacher = user.role === 'guru' || user.role === 'admin';
-      const isAdmin = user.role === 'admin';
-
-      let filtered = list.filter(m => {
-        if (m.statusModul === 'Tidak Aktif' && !isTeacher) return false;
-        if (isStudent && m.kelas !== 'Semua' && m.kelas !== user.kelas) return false;
-        return true;
-      });
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-full p-8 text-center text-slate-400 font-bold glass-card-pro rounded-2xl">Belum ada modul pembelajaran yang tersedia.</div>`;
-        return;
-      }
-
-      const scores = window.getStorageData('quiz_scores') || [];
-
-      filtered.forEach(m => {
-        const isMyModule = isTeacher && (m.guruNama === user.nama || isAdmin);
-        const card = document.createElement('div');
-        card.className = 'glass-card-pro p-5 rounded-2xl flex flex-col justify-between space-y-4 border-2 border-slate-200 hover:border-blue-300 transition shadow-sm';
-        
-        let warningHtml = '';
-        if (m.tglDitutup) {
-          const closingDate = new Date(m.tglDitutup);
-          const now = new Date();
-          if (closingDate > now) {
-            warningHtml = `<p class="text-[10px] font-extrabold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 mt-1"><i class="fa-solid fa-clock mr-1"></i> Ditutup: ${m.tglDitutup.replace('T', ' ')}</p>`;
-          } else {
-            warningHtml = `<p class="text-[10px] font-extrabold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200 mt-1"><i class="fa-solid fa-circle-xmark mr-1"></i> Modul Ditutup</p>`;
-          }
-        }
-
-        let attemptsCount = 0;
-        if (isStudent) {
-          attemptsCount = scores.filter(s => s.materiId === m.id && s.studentUsername === user.username).length;
-        }
-
-        card.innerHTML = `
-          <div>
-            <div class="flex items-center justify-between text-xs font-extrabold text-blue-700 mb-2">
-              <span class="px-2.5 py-0.5 bg-blue-100 rounded-md border border-blue-200">${m.tp || 'TP1'}</span>
-              <span class="text-slate-500"><i class="fa-solid fa-layer-group text-slate-400 mr-1"></i> Pertemuan ${m.pertemuan || 1}</span>
-            </div>
-            <h3 class="font-extrabold text-slate-900 text-base leading-snug">${m.materiPokok}</h3>
-            <p class="text-xs font-bold text-slate-500 mt-1"><i class="fa-solid fa-book text-emerald-600 mr-1"></i> ${m.mapel} | Kelas: ${m.kelas}</p>
-            <p class="text-[11px] font-bold text-slate-400 mt-0.5"><i class="fa-solid fa-user-tie text-blue-600 mr-1"></i> ${m.guruNama}</p>
-            ${warningHtml}
-          </div>
-
-          <div class="border-t-2 border-slate-100 pt-3 flex flex-wrap gap-2 items-center justify-between text-xs font-extrabold">
-            <button onclick="readPembelajaranModal('${m.id}')" class="px-3.5 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow border border-blue-800 flex items-center space-x-1.5">
-              <i class="fa-solid fa-book-reader"></i> <span>Baca Modul</span>
-            </button>
-
-            ${m.kuisAktif === 'Aktif' ? `
-              <button onclick="openQuizModal('${m.id}')" ${isStudent && attemptsCount >= (m.maxAttempts || 1) ? 'disabled class="px-3.5 py-2 bg-slate-200 text-slate-400 rounded-xl cursor-not-allowed font-extrabold"' : 'class="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl shadow border border-amber-600 flex items-center space-x-1.5"'}>
-                <i class="fa-solid fa-list-check"></i> <span>${isTeacher ? 'Kelola Kuis' : 'Kerjakan Soal'} ${isStudent ? `(${attemptsCount}/${m.maxAttempts || 1})` : ''}</span>
-              </button>
-            ` : ''}
-
-            ${isMyModule ? `
-              <div class="flex items-center space-x-1 ml-auto">
-                <button onclick="openModalPembelajaran('${m.id}')" class="p-2 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-pen"></i></button>
-                <button onclick="deletePembelajaran('${m.id}')" class="p-2 bg-rose-100 text-rose-800 hover:bg-rose-200 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-trash"></i></button>
-              </div>
-            ` : ''}
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-    window.loadPembelajaranData = loadPembelajaranData;
-
-    function openModalPembelajaran(editId = null) {
-      const list = window.getStorageData('pembelajaran');
-      const target = editId ? list.find(x => x.id === editId) : null;
-      const user = window.currentUser || {};
-
-      let mapelOptions = [];
-      let kelasOptions = [];
-
-      if (user.role === 'guru') {
-        const mappings = window.getStorageData('mapping_guru').filter(m => m.guruUsername === user.username);
-        mapelOptions = Array.from(new Set(mappings.map(m => m.mapelNama)));
-        kelasOptions = Array.from(new Set(mappings.map(m => m.kelasNama)));
-      } else {
-        mapelOptions = window.getStorageData('master_mapel').map(m => m.nama);
-        kelasOptions = window.getStorageData('master_kelas').map(k => k.nama);
-      }
-
-      if (mapelOptions.length === 0) mapelOptions = ['Umum', 'Geografi', 'Matematika'];
-      if (kelasOptions.length === 0) kelasOptions = ['X IIS 1', 'X IIS 2', 'XI MIA 1'];
-
-      const html = `
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div class="glass-card-pro w-full max-w-3xl p-6 md:p-8 rounded-3xl bg-white shadow-2xl border-2 border-slate-300 space-y-4 my-8">
-            <div class="flex items-center justify-between pb-3 border-b-2 border-slate-200">
-              <h2 class="text-lg font-extrabold text-slate-900"><i class="fa-solid fa-book-open text-blue-600 mr-2"></i> ${target ? 'Edit Modul Pembelajaran' : 'Tambah Modul Pembelajaran Baru'}</h2>
-              <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 font-extrabold text-lg">&times;</button>
-            </div>
-
-            <form onsubmit="savePembelajaran(event, '${editId || ''}')" class="space-y-4 text-xs font-bold">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="text-slate-700 uppercase">Materi Pokok / Judul Modul</label>
-                  <input type="text" id="p-materi" required value="${target ? target.materiPokok : ''}" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" placeholder="Contoh: Konsep Esensial Geografi">
-                </div>
-                <div>
-                  <label class="text-slate-700 uppercase">Tujuan Pembelajaran (TP)</label>
-                  <input type="text" id="p-tp" required value="${target ? target.tp || 'TP1' : 'TP1'}" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" placeholder="Contoh: TP1 (3.1)">
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label class="text-slate-700 uppercase">Mata Pelajaran</label>
-                  <select id="p-mapel" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
-                    ${mapelOptions.map(m => `<option value="${m}" ${target && target.mapel === m ? 'selected' : ''}>${m}</option>`).join('')}
-                  </select>
-                </div>
-                <div>
-                  <label class="text-slate-700 uppercase">Kelas Target</label>
-                  <select id="p-kelas" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
-                    <option value="Semua">Semua Kelas</option>
-                    ${kelasOptions.map(k => `<option value="${k}" ${target && target.kelas === k ? 'selected' : ''}>${k}</option>`).join('')}
-                  </select>
-                </div>
-                <div>
-                  <label class="text-slate-700 uppercase">Pertemuan Ke-</label>
-                  <input type="number" id="p-pertemuan" required value="${target ? target.pertemuan || 1 : 1}" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs">
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="text-slate-700 uppercase">Tanggal & Jam Dibuka</label>
-                  <input type="datetime-local" id="p-dibuka" value="${target ? target.tglDibuka || '' : ''}" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs">
-                </div>
-                <div>
-                  <label class="text-slate-700 uppercase">Tanggal & Jam Ditutup</label>
-                  <input type="datetime-local" id="p-ditutup" value="${target ? target.tglDitutup || '' : ''}" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs">
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label class="text-slate-700 uppercase">Status Modul</label>
-                  <select id="p-status" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
-                    <option value="Aktif" ${!target || target.statusModul === 'Aktif' ? 'selected' : ''}>Aktif</option>
-                    <option value="Tidak Aktif" ${target && target.statusModul === 'Tidak Aktif' ? 'selected' : ''}>Tidak Aktif</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="text-slate-700 uppercase">Status Kuis / Soal</label>
-                  <select id="p-kuis" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
-                    <option value="Aktif" ${target && target.kuisAktif === 'Aktif' ? 'selected' : ''}>Aktif</option>
-                    <option value="Tidak Aktif" ${!target || target.kuisAktif !== 'Aktif' ? 'selected' : ''}>Tidak Aktif</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="text-slate-700 uppercase">Batas Pengerjaan Kuis</label>
-                  <select id="p-max-attempts" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
-                    <option value="1" ${target && target.maxAttempts == 1 ? 'selected' : ''}>1 Kali Saja</option>
-                    <option value="2" ${target && target.maxAttempts == 2 ? 'selected' : ''}>2 Kali</option>
-                    <option value="3" ${target && target.maxAttempts == 3 ? 'selected' : ''}>3 Kali</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <div class="flex items-center justify-between mb-1.5">
-                  <label class="text-slate-700 uppercase">Pembahasan Materi (Rich Text / Embed Media)</label>
-                  <button type="button" onclick="openAIMateriGenerator()" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-[11px] font-extrabold shadow flex items-center space-x-1">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span>✨ Generate AI Gemini</span>
-                  </button>
-                </div>
-
-                <div class="flex flex-wrap gap-1 p-2 bg-slate-100 border-2 border-slate-300 rounded-t-xl text-xs">
-                  <button type="button" onclick="execRichCmd('bold')" class="px-2.5 py-1 bg-white border border-slate-300 rounded hover:bg-slate-200 font-extrabold">B</button>
-                  <button type="button" onclick="execRichCmd('italic')" class="px-2.5 py-1 bg-white border border-slate-300 rounded hover:bg-slate-200 italic font-bold">I</button>
-                  <button type="button" onclick="execRichCmd('underline')" class="px-2.5 py-1 bg-white border border-slate-300 rounded hover:bg-slate-200 underline font-bold">U</button>
-                  <button type="button" onclick="execRichCmd('strikeThrough')" class="px-2.5 py-1 bg-white border border-slate-300 rounded hover:bg-slate-200 line-through font-bold">S</button>
-                  <div class="w-px h-5 bg-slate-300 mx-1"></div>
-                  <button type="button" onclick="execRichCmd('justifyLeft')" class="px-2.5 py-1 bg-white border border-slate-300 rounded hover:bg-slate-200"><i class="fa-solid fa-align-left"></i></button>
-                  <button type="button" onclick="execRichCmd('justifyCenter')" class="px-2.5 py-1 bg-white border border-slate-300 rounded hover:bg-slate-200"><i class="fa-solid fa-align-center"></i></button>
-                  <button type="button" onclick="execRichCmd('justifyRight')" class="px-2.5 py-1 bg-white border border-slate-300 rounded hover:bg-slate-200"><i class="fa-solid fa-align-right"></i></button>
-                  <button type="button" onclick="execRichCmd('justifyFull')" class="px-2.5 py-1 bg-white border border-slate-300 rounded hover:bg-slate-200"><i class="fa-solid fa-align-justify"></i></button>
-                  <div class="w-px h-5 bg-slate-300 mx-1"></div>
-                  <button type="button" onclick="insertRichVideo()" class="px-2.5 py-1 bg-red-100 text-red-700 border border-red-300 rounded hover:bg-red-200"><i class="fa-brands fa-youtube mr-1"></i> Video YouTube</button>
-                  <button type="button" onclick="insertRichDoc()" class="px-2.5 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded hover:bg-blue-200"><i class="fa-solid fa-file-pdf mr-1"></i> Drive / PDF</button>
-                  <button type="button" onclick="insertRichImg()" class="px-2.5 py-1 bg-emerald-100 text-emerald-700 border border-emerald-300 rounded hover:bg-emerald-200"><i class="fa-solid fa-image mr-1"></i> Gambar URL</button>
-                </div>
-
-                <div id="editor-materi-content" contenteditable="true" class="w-full min-h-[200px] max-h-[350px] overflow-y-auto p-4 border-2 border-t-0 border-slate-300 rounded-b-xl bg-white text-xs text-slate-800 focus:outline-none leading-relaxed">
-                  ${target ? target.pembahasan : '<p>Tuliskan materi pembahasan pelajaran di sini...</p>'}
-                </div>
-              </div>
-
-              <div class="flex justify-end space-x-2 pt-3 border-t-2 border-slate-200">
-                <button type="button" onclick="closeModal()" class="px-4 py-2.5 bg-slate-200 text-slate-700 rounded-xl hover:bg-slate-300">Batal</button>
-                <button type="submit" class="px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow border-2 border-blue-800"><i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Modul</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      `;
-      document.getElementById('modal-container').innerHTML = html;
-    }
-    window.openModalPembelajaran = openModalPembelajaran;
-
-    window.execRichCmd = function(cmd, value = null) {
-      document.execCommand(cmd, false, value);
-    };
-
-    window.insertRichVideo = function() {
-      const url = prompt("Masukkan URL Video YouTube:");
-      if (!url) return;
-      let videoId = '';
-      if (url.includes('v=')) videoId = url.split('v=')[1].split('&')[0];
-      else if (url.includes('youtu.be/')) videoId = url.split('youtu.be/')[1].split('?')[0];
-      else if (url.includes('embed/')) videoId = url.split('embed/')[1].split('?')[0];
-
-      if (videoId) {
-        const iframeHtml = `<div class="my-3"><iframe src="https://www.youtube.com/embed/${videoId}" class="w-full h-64 rounded-xl shadow-md" frameborder="0" allowfullscreen></iframe></div><p><br></p>`;
-        document.execCommand('insertHTML', false, iframeHtml);
-      } else {
-        window.showToast("URL YouTube tidak valid!", "error");
-      }
-    };
-
-    window.insertRichDoc = function() {
-      const url = prompt("Masukkan Link Google Drive / PDF Viewer URL:");
-      if (!url) return;
-      let embedUrl = url.includes('/view') ? url.replace('/view', '/preview') : url;
-      const docHtml = `<div class="my-3"><iframe src="${embedUrl}" class="w-full h-80 rounded-xl border-2 border-slate-300 shadow-sm" frameborder="0"></iframe></div><p><br></p>`;
-      document.execCommand('insertHTML', false, docHtml);
-    };
-
-    window.insertRichImg = function() {
-      const url = prompt("Masukkan URL Gambar:");
-      if (!url) return;
-      const imgHtml = `<div class="my-3 text-center"><img src="${url}" class="max-w-full h-auto rounded-xl border border-slate-200 shadow-md inline-block" alt="Materi Gambar" onerror="this.src='https://placehold.co/600x400/2563eb/ffffff?text=Gambar+Materi'"></div><p><br></p>`;
-      document.execCommand('insertHTML', false, imgHtml);
-    };
-
-    function savePembelajaran(e, editId) {
-      e.preventDefault();
-      let list = window.getStorageData('pembelajaran');
-      const user = window.currentUser || {};
-
-      const data = {
-        id: editId || 'mat-' + Date.now(),
-        materiPokok: document.getElementById('p-materi').value.trim(),
-        tp: document.getElementById('p-tp').value.trim(),
-        mapel: document.getElementById('p-mapel').value,
-        kelas: document.getElementById('p-kelas').value,
-        pertemuan: document.getElementById('p-pertemuan').value,
-        tglDibuka: document.getElementById('p-dibuka').value,
-        tglDitutup: document.getElementById('p-ditutup').value,
-        statusModul: document.getElementById('p-status').value,
-        kuisAktif: document.getElementById('p-kuis').value,
-        maxAttempts: parseInt(document.getElementById('p-max-attempts').value) || 1,
-        pembahasan: document.getElementById('editor-materi-content').innerHTML,
-        guruNama: user.nama || 'Guru Pengampu'
-      };
-
-      if (editId) {
-        const idx = list.findIndex(x => x.id === editId);
-        if (idx !== -1) list[idx] = { ...list[idx], ...data };
-      } else {
-        list.push(data);
-      }
-
-      window.setStorageData('pembelajaran', list);
-      window.syncToFirestore('pembelajaran', data.id, data);
-      closeModal();
-      window.showToast('Modul pembelajaran berhasil disimpan!', 'success');
-      window.loadPembelajaranData();
-    }
-    window.savePembelajaran = savePembelajaran;
-
-    function deletePembelajaran(id) {
-      window.showConfirm('Apakah Anda yakin ingin menghapus modul pembelajaran ini?', () => {
-        let list = window.getStorageData('pembelajaran').filter(x => x.id !== id);
-        window.setStorageData('pembelajaran', list);
-        window.removeFromFirestore('pembelajaran', id);
-        window.showToast('Modul pembelajaran dihapus.');
-        window.loadPembelajaranData();
-      });
-    }
-    window.deletePembelajaran = deletePembelajaran;
-
-    function readPembelajaranModal(id) {
-      const list = window.getStorageData('pembelajaran');
-      const target = list.find(x => x.id === id);
-      if (!target) return;
-
-      const user = window.currentUser || {};
-      const isStudent = user.role === 'siswa';
-
-      if (isStudent) {
-        let readLogs = window.getStorageData('student_read_logs') || [];
-        const existingIdx = readLogs.findIndex(r => r.materiId === id && r.studentUsername === user.username);
-        if (existingIdx === -1) {
-          readLogs.push({ materiId: id, studentUsername: user.username, studentNama: user.nama, status: 'Hanya Membuka (Belum Selesai)', timestamp: new Date().toLocaleString('id-ID') });
-          window.setStorageData('student_read_logs', readLogs);
-        }
-      }
-
-      const comments = window.getStorageData('pembelajaran_comments') || [];
-      const moduleComments = comments.filter(c => c.materiId === id);
-
-      const html = `
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div class="glass-card-pro w-full max-w-4xl p-6 md:p-8 rounded-3xl bg-white shadow-2xl border-2 border-slate-300 space-y-6 my-8 max-h-[90vh] flex flex-col">
-            <div class="flex items-center justify-between pb-4 border-b-2 border-slate-200">
-              <div>
-                <span class="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-lg text-xs font-extrabold border border-blue-300">${target.tp || 'TP'} - Pertemuan ${target.pertemuan || 1}</span>
-                <h2 class="text-xl font-extrabold text-slate-900 mt-1">${target.materiPokok}</h2>
-                <p class="text-xs font-bold text-slate-500 mt-0.5"><i class="fa-solid fa-book text-emerald-600 mr-1"></i> ${target.mapel} | <i class="fa-solid fa-user-tie text-blue-600 mr-1"></i> ${target.guruNama}</p>
-              </div>
-              <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 font-extrabold text-2xl">&times;</button>
-            </div>
-
-            <div id="modal-reader-scrollable" onscroll="handleReaderScroll('${id}')" class="flex-1 overflow-y-auto p-4 bg-slate-50 rounded-2xl border-2 border-slate-200 space-y-4 rich-editor-content">
-              ${target.pembahasan}
-            </div>
-
-            <div class="pt-4 border-t-2 border-slate-200 space-y-4">
-              <div class="flex items-center justify-between">
-                <a href="https://wa.me/?text=Konfirmasi%20Hadir%20Siswa%3A%20${encodeURIComponent(user.nama || '')}%20pada%20materi%20${encodeURIComponent(target.materiPokok)}" target="_blank" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold shadow flex items-center space-x-2">
-                  <i class="fa-brands fa-whatsapp text-sm"></i> <span>Absen Konfirmasi via WhatsApp</span>
-                </a>
-                <span class="text-xs font-bold text-slate-500"><i class="fa-solid fa-comments text-blue-600 mr-1"></i> ${moduleComments.length} Diskusi</span>
-              </div>
-
-              <div class="max-h-36 overflow-y-auto space-y-2 text-xs font-bold bg-slate-100 p-3 rounded-xl">
-                ${moduleComments.length === 0 ? '<p class="text-slate-400 text-center">Belum ada tanggapan diskusi.</p>' : moduleComments.map(c => `
-                  <div class="p-2.5 bg-white rounded-lg border border-slate-200">
-                    <div class="flex justify-between items-center">
-                      <span class="text-blue-900 font-extrabold">${c.userNama} (${c.role})</span>
-                      <span class="text-[10px] text-slate-400">${c.time}</span>
-                    </div>
-                    <p class="text-slate-700 mt-1">${c.text}</p>
-                  </div>
-                `).join('')}
-              </div>
-
-              <div class="flex space-x-2">
-                <input type="text" id="comment-input-text" placeholder="Tulis tanggapan / pertanyaan..." class="flex-1 px-3.5 py-2 border-2 border-slate-300 rounded-xl text-xs font-bold focus:border-blue-600 focus:outline-none">
-                <button onclick="addModuleComment('${id}')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow">Kirim</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-      document.getElementById('modal-container').innerHTML = html;
-    }
-    window.readPembelajaranModal = readPembelajaranModal;
-
-    window.handleReaderScroll = function(materiId) {
-      const user = window.currentUser;
-      if (!user || user.role !== 'siswa') return;
-
-      const el = document.getElementById('modal-reader-scrollable');
-      if (!el) return;
-
-      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 20) {
-        let readLogs = window.getStorageData('student_read_logs') || [];
-        const idx = readLogs.findIndex(r => r.materiId === materiId && r.studentUsername === user.username);
-        if (idx !== -1 && readLogs[idx].status !== 'Selesai Dibaca') {
-          readLogs[idx].status = 'Selesai Dibaca';
-          window.setStorageData('student_read_logs', readLogs);
-          window.showToast("Status Pembacaan: Selesai Dibaca!", "success");
-        }
-      }
-    };
-
-    window.addModuleComment = function(materiId) {
-      const textEl = document.getElementById('comment-input-text');
-      const text = textEl ? textEl.value.trim() : '';
-      if (!text) return;
-
-      const user = window.currentUser || { nama: 'Pengguna', role: 'Siswa' };
-      let comments = window.getStorageData('pembelajaran_comments') || [];
-      comments.push({
-        id: 'cmt-' + Date.now(),
-        materiId,
-        userNama: user.nama,
-        role: user.role,
-        text,
-        time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-      });
-
-      window.setStorageData('pembelajaran_comments', comments);
-      window.readPembelajaranModal(materiId);
-    };
-
-    function openQuizModal(materiId) {
-      const list = window.getStorageData('pembelajaran');
-      const target = list.find(x => x.id === materiId);
-      if (!target) return;
-
-      const user = window.currentUser || {};
-      const isStudent = user.role === 'siswa';
-
-      let quizzes = window.getStorageData('quizzes') || [];
-      let moduleQuiz = quizzes.find(q => q.materiId === materiId) || { materiId, questions: [] };
-
-      if (isStudent) {
-        if (moduleQuiz.questions.length === 0) {
-          window.showToast('Belum ada soal kuis yang dibuat guru.', 'error');
-          return;
-        }
-
-        const html = `
-          <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-            <div class="glass-card-pro w-full max-w-2xl p-6 md:p-8 rounded-3xl bg-white shadow-2xl border-2 border-slate-300 space-y-6 my-8">
-              <div class="pb-3 border-b-2 border-slate-200 flex justify-between items-center">
-                <div>
-                  <h2 class="text-lg font-extrabold text-slate-900">Pengerjaan Kuis: ${target.materiPokok}</h2>
-                  <p class="text-xs font-bold text-slate-500">Jawab seluruh pertanyaan pilihan ganda berikut.</p>
-                </div>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 font-extrabold text-xl">&times;</button>
-              </div>
-
-              <form onsubmit="submitStudentQuiz(event, '${materiId}')" class="space-y-6 text-xs font-bold">
-                ${moduleQuiz.questions.map((q, idx) => `
-                  <div class="p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-3">
-                    <p class="text-sm font-extrabold text-slate-900">${idx + 1}. ${q.questionText}</p>
-                    <div class="space-y-2">
-                      ${['A', 'B', 'C', 'D'].map(opt => `
-                        <label class="flex items-center space-x-3 p-2.5 bg-white border border-slate-300 rounded-xl cursor-pointer hover:bg-blue-50">
-                          <input type="radio" name="q_${idx}" value="${opt}" required class="text-blue-600 focus:ring-blue-500">
-                          <span class="text-slate-800">${opt}. ${q['opt' + opt]}</span>
-                        </label>
-                      `).join('')}
-                    </div>
-                  </div>
-                `).join('')}
-
-                <div class="flex justify-end space-x-2 pt-3 border-t-2 border-slate-200">
-                  <button type="button" onclick="closeModal()" class="px-4 py-2.5 bg-slate-200 text-slate-700 rounded-xl">Batal</button>
-                  <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow font-extrabold"><i class="fa-solid fa-paper-plane mr-1.5"></i> Kirim Jawaban Kuis</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        `;
-        document.getElementById('modal-container').innerHTML = html;
-      } else {
-        const html = `
-          <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-            <div class="glass-card-pro w-full max-w-3xl p-6 md:p-8 rounded-3xl bg-white shadow-2xl border-2 border-slate-300 space-y-6 my-8">
-              <div class="pb-3 border-b-2 border-slate-200 flex justify-between items-center">
-                <div>
-                  <h2 class="text-lg font-extrabold text-slate-900"><i class="fa-solid fa-list-check text-amber-500 mr-2"></i> Kelola Soal Kuis: ${target.materiPokok}</h2>
-                  <p class="text-xs font-bold text-slate-500">Total Soal Terdaftar: ${moduleQuiz.questions.length}</p>
-                </div>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 font-extrabold text-xl">&times;</button>
-              </div>
-
-              <form onsubmit="saveQuizQuestion(event, '${materiId}')" class="p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-3 text-xs font-bold">
-                <h3 class="text-xs font-extrabold text-slate-900 uppercase">Tambah Pertanyaan Baru</h3>
-                <div>
-                  <label class="text-slate-700">Teks Pertanyaan / Soal</label>
-                  <textarea id="q-text" required class="w-full px-3 py-2 border-2 border-slate-300 rounded-xl mt-1 text-xs" rows="2" placeholder="Tuliskan soal pilihan ganda..."></textarea>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                  <div><label class="text-slate-700">Opsi A</label><input type="text" id="q-opta" required class="w-full px-3 py-1.5 border-2 border-slate-300 rounded-xl mt-1 text-xs"></div>
-                  <div><label class="text-slate-700">Opsi B</label><input type="text" id="q-optb" required class="w-full px-3 py-1.5 border-2 border-slate-300 rounded-xl mt-1 text-xs"></div>
-                  <div><label class="text-slate-700">Opsi C</label><input type="text" id="q-optc" required class="w-full px-3 py-1.5 border-2 border-slate-300 rounded-xl mt-1 text-xs"></div>
-                  <div><label class="text-slate-700">Opsi D</label><input type="text" id="q-optd" required class="w-full px-3 py-1.5 border-2 border-slate-300 rounded-xl mt-1 text-xs"></div>
-                </div>
-                <div>
-                  <label class="text-slate-700">Kunci Jawaban Benar</label>
-                  <select id="q-key" required class="w-full px-3 py-2 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
-                    <option value="A">Opsi A</option>
-                    <option value="B">Opsi B</option>
-                    <option value="C">Opsi C</option>
-                    <option value="D">Opsi D</option>
-                  </select>
-                </div>
-                <button type="submit" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-extrabold shadow"><i class="fa-solid fa-plus mr-1"></i> Tambahkan Soal</button>
-              </form>
-
-              <div class="space-y-3 max-h-60 overflow-y-auto">
-                ${moduleQuiz.questions.length === 0 ? '<p class="text-center text-slate-400 font-bold text-xs">Belum ada soal terdaftar.</p>' : moduleQuiz.questions.map((q, idx) => `
-                  <div class="p-3 bg-white border-2 border-slate-200 rounded-xl flex justify-between items-start text-xs font-bold">
-                    <div class="space-y-1">
-                      <p class="text-slate-900">${idx + 1}. ${q.questionText}</p>
-                      <p class="text-[11px] text-slate-500">A: ${q.optA} | B: ${q.optB} | C: ${q.optC} | D: ${q.optD}</p>
-                      <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-extrabold text-[10px]">Kunci: ${q.correctKey}</span>
-                    </div>
-                    <button onclick="deleteQuizQuestion('${materiId}', ${idx})" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-trash"></i></button>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-        `;
-        document.getElementById('modal-container').innerHTML = html;
-      }
-    }
-    window.openQuizModal = openQuizModal;
-
-    window.saveQuizQuestion = function(e, materiId) {
-      e.preventDefault();
-      let quizzes = window.getStorageData('quizzes') || [];
-      let qObj = quizzes.find(q => q.materiId === materiId);
-
-      if (!qObj) {
-        qObj = { materiId, questions: [] };
-        quizzes.push(qObj);
-      }
-
-      qObj.questions.push({
-        questionText: document.getElementById('q-text').value.trim(),
-        optA: document.getElementById('q-opta').value.trim(),
-        optB: document.getElementById('q-optb').value.trim(),
-        optC: document.getElementById('q-optc').value.trim(),
-        optD: document.getElementById('q-optd').value.trim(),
-        correctKey: document.getElementById('q-key').value
-      });
-
-      window.setStorageData('quizzes', quizzes);
-      window.showToast('Soal kuis ditambahkan!', 'success');
-      window.openQuizModal(materiId);
-    };
-
-    window.deleteQuizQuestion = function(materiId, qIdx) {
-      let quizzes = window.getStorageData('quizzes') || [];
-      let qObj = quizzes.find(q => q.materiId === materiId);
-      if (qObj) {
-        qObj.questions.splice(qIdx, 1);
-        window.setStorageData('quizzes', quizzes);
-        window.openQuizModal(materiId);
-      }
-    };
-
-    window.submitStudentQuiz = function(e, materiId) {
-      e.preventDefault();
-      const list = window.getStorageData('pembelajaran');
-      const target = list.find(x => x.id === materiId) || {};
-      const quizzes = window.getStorageData('quizzes') || [];
-      const qObj = quizzes.find(q => q.materiId === materiId);
-
-      if (!qObj || !qObj.questions) return;
-
-      let score = 0;
-      const totalQ = qObj.questions.length;
-
-      qObj.questions.forEach((q, idx) => {
-        const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
-        if (selected && selected.value === q.correctKey) {
-          score += (100 / totalQ);
-        }
-      });
-
-      score = Math.round(score);
-      const user = window.currentUser || {};
-
-      let scores = window.getStorageData('quiz_scores') || [];
-      scores.push({
-        id: 'sc-' + Date.now(),
-        materiId,
-        tp: target.tp || 'TP1',
-        mapel: target.mapel || 'Umum',
-        studentUsername: user.username,
-        studentNama: user.nama,
-        score,
-        timestamp: new Date().toLocaleString('id-ID')
-      });
-
-      window.setStorageData('quiz_scores', scores);
-      closeModal();
-      window.showToast(`Kuis Selesai! Nilai Anda: ${score}`, 'success');
-      window.loadPembelajaranData();
-    };
-
-    window.openAIMateriGenerator = function() {
-      const topic = prompt("Masukkan topik materi yang ingin dibuat AI Gemini (Contoh: Konsep Siklus Hidrologi):");
-      if (!topic) return;
-
-      window.showToast("✨ AI Gemini sedang menyusun materi...", "info");
-      
-      setTimeout(() => {
-        const generatedHtml = `
-          <h3><b>1. Pengertian ${topic}</b></h3>
-          <p>${topic} merupakan salah satu topik penting dalam pembelajaran. Konsep ini mempelajari struktur dasar dan implikasi keruangan dalam kehidupan sehari-hari.</p>
-          <br>
-          <h3><b>2. Karakteristik & Prinsip Utama</b></h3>
-          <ul>
-            <li>• Memiliki siklus alami yang berkelanjutan.</li>
-            <li>• Berkontribusi langsung terhadap keseimbangan ekosistem.</li>
-            <li>• Memerlukan analisis spasial dan pemahaman kontekstual.</li>
-          </ul>
-          <br>
-          <p><i>Catatan: Rangkuman materi di atas disusun secara otomatis oleh AI Gemini untuk pembelajaran interaktif.</i></p>
-        `;
-        
-        const editor = document.getElementById('editor-materi-content');
-        if (editor) editor.innerHTML = generatedHtml;
-        window.showToast("✨ Materi AI Gemini berhasil dibuat!", "success");
-      }, 1500);
-    };
-
-    function loadAgendaData() {
-      const list = window.getStorageData('agenda') || [];
-      const tbody = document.getElementById('tbody-agenda');
-      if (!tbody) return;
-
-      tbody.innerHTML = '';
-      if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 font-bold">Belum ada jurnal agenda mengajar.</td></tr>`;
-        return;
-      }
-
-      list.forEach((ag, idx) => {
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50 border-b border-slate-200';
-        tr.innerHTML = `
-          <td class="p-4 border-r border-slate-200">${idx + 1}</td>
-          <td class="p-4 border-r border-slate-200 font-extrabold text-slate-900">${ag.mapel}</td>
-          <td class="p-4 border-r border-slate-200">${ag.pembahasan}</td>
-          <td class="p-4 border-r border-slate-200"><span class="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-md font-extrabold">${ag.kelas}</span></td>
-          <td class="p-4 border-r border-slate-200">${ag.tanggal}</td>
-          <td class="p-4 border-r border-slate-200">${ag.jamMasuk} - ${ag.jamSelesai}</td>
-          <td class="p-4">
-            <button onclick="deleteAgenda('${ag.id}')" class="px-2.5 py-1 bg-rose-100 text-rose-700 hover:bg-rose-200 rounded-lg font-extrabold"><i class="fa-solid fa-trash"></i></button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-    window.loadAgendaData = loadAgendaData;
-
-    window.openModalAgenda = function() {
-      const user = window.currentUser || {};
-      let mapelOptions = [];
-      let kelasOptions = [];
-
-      if (user.role === 'guru') {
-        const mappings = window.getStorageData('mapping_guru').filter(m => m.guruUsername === user.username);
-        mapelOptions = Array.from(new Set(mappings.map(m => m.mapelNama)));
-        kelasOptions = Array.from(new Set(mappings.map(m => m.kelasNama)));
-      } else {
-        mapelOptions = window.getStorageData('master_mapel').map(m => m.nama);
-        kelasOptions = window.getStorageData('master_kelas').map(k => k.nama);
-      }
-
-      if (mapelOptions.length === 0) mapelOptions = ['Geografi', 'Matematika'];
-      if (kelasOptions.length === 0) kelasOptions = ['X IIS 1', 'XI MIA 1'];
-
-      const html = `
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div class="glass-card-pro w-full max-w-md p-6 rounded-3xl bg-white shadow-2xl space-y-4 border-2 border-slate-300">
-            <h2 class="text-base font-extrabold text-slate-900 pb-2 border-b-2 border-slate-200">Tambah Agenda Mengajar Hari Ini</h2>
-            <form onsubmit="saveAgenda(event)" class="space-y-3 font-bold text-xs">
-              <div>
-                <label class="text-slate-700 uppercase">Mata Pelajaran</label>
-                <select id="ag-mapel" class="w-full px-3 py-2 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
-                  ${mapelOptions.map(m => `<option value="${m}">${m}</option>`).join('')}
-                </select>
-              </div>
-              <div>
-                <label class="text-slate-700 uppercase">Kelas Target</label>
-                <select id="ag-kelas" class="w-full px-3 py-2 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
-                  ${kelasOptions.map(k => `<option value="${k}">${k}</option>`).join('')}
-                </select>
-              </div>
-              <div>
-                <label class="text-slate-700 uppercase">Uraian Pembahasan / Kegiatan</label>
-                <textarea id="ag-pembahasan" required class="w-full px-3 py-2 border-2 border-slate-300 rounded-xl mt-1 text-xs" rows="3"></textarea>
-              </div>
-              <div class="grid grid-cols-2 gap-2">
-                <div><label class="text-slate-700 uppercase">Jam Masuk</label><input type="time" id="ag-masuk" required class="w-full px-3 py-2 border-2 border-slate-300 rounded-xl mt-1 text-xs"></div>
-                <div><label class="text-slate-700 uppercase">Jam Selesai</label><input type="time" id="ag-selesai" required class="w-full px-3 py-2 border-2 border-slate-300 rounded-xl mt-1 text-xs"></div>
-              </div>
-              <div class="flex justify-end space-x-2 pt-2 border-t-2 border-slate-200">
-                <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow border-2 border-blue-800">Simpan Agenda</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      `;
-      document.getElementById('modal-container').innerHTML = html;
-    };
-
-    window.saveAgenda = function(e) {
-      e.preventDefault();
-      let agenda = window.getStorageData('agenda') || [];
-      const user = window.currentUser || {};
-
-      const newAg = {
-        id: 'ag-' + Date.now(),
-        mapel: document.getElementById('ag-mapel').value,
-        kelas: document.getElementById('ag-kelas').value,
-        pembahasan: document.getElementById('ag-pembahasan').value.trim(),
-        jamMasuk: document.getElementById('ag-masuk').value,
-        jamSelesai: document.getElementById('ag-selesai').value,
-        tanggal: new Date().toLocaleDateString('id-ID'),
-        guruNama: user.nama || 'Guru Pengampu'
-      };
-
-      agenda.push(newAg);
-      window.setStorageData('agenda', agenda);
-      window.syncToFirestore('agenda', newAg.id, newAg);
-      closeModal();
-      window.showToast('Agenda mengajar tersimpan!', 'success');
-      window.loadAgendaData();
-    };
-
-    window.deleteAgenda = function(id) {
-      window.showConfirm('Hapus catatan agenda ini?', () => {
-        let agenda = window.getStorageData('agenda').filter(x => x.id !== id);
-        window.setStorageData('agenda', agenda);
-        window.removeFromFirestore('agenda', id);
-        window.showToast('Agenda dihapus.');
-        window.loadAgendaData();
-      });
-    };
 
     function getCombinedTeachersList() {
       const guruMaster = window.getStorageData('master_guru') || [];
@@ -2000,8 +1177,9 @@
                       <td class="p-3 border-r border-slate-200 font-extrabold text-slate-900">${t.nama}</td>
                       <td class="p-3 border-r border-slate-200"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-extrabold">${mapels}</span></td>
                       <td class="p-3 border-r border-slate-200"><span class="px-2 py-0.5 bg-purple-100 text-purple-800 rounded font-extrabold">${kelases}</span></td>
-                      <td class="p-3">
+                      <td class="p-3 flex space-x-1.5">
                         <button onclick="openModalMaster('mapping', '${t.username}')" class="px-2.5 py-1 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button onclick="deleteTeacherMapping('${t.username}')" class="px-2.5 py-1 bg-rose-100 text-rose-800 hover:bg-rose-200 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-trash"></i> Reset Mapping</button>
                       </td>
                     </tr>
                   `;
@@ -2053,6 +1231,22 @@
       }
     }
     window.renderMasterMappingView = renderMasterMappingView;
+
+    window.deleteTeacherMapping = function(guruUsername) {
+      window.showConfirm('Apakah Anda yakin ingin menghapus / mereset seluruh mapping mengajar guru ini?', () => {
+        let mappings = window.getStorageData('mapping_guru') || [];
+        const toDelete = mappings.filter(m => m.guruUsername === guruUsername);
+        
+        toDelete.forEach(m => {
+          window.removeFromFirestore('mapping_guru', m.id);
+        });
+
+        mappings = mappings.filter(m => m.guruUsername !== guruUsername);
+        window.setStorageData('mapping_guru', mappings);
+        window.showToast('Mapping mengajar guru berhasil direset.', 'success');
+        window.renderMasterMappingView();
+      });
+    };
 
     window.switchMasterTab = function(tabName) {
       window.currentMasterTab = tabName;
@@ -2265,6 +1459,10 @@
       const selectedKelases = Array.from(document.querySelectorAll('input[name="mm_kelas"]:checked')).map(cb => cb.value);
 
       let mappings = window.getStorageData('mapping_guru') || [];
+      
+      const oldMaps = mappings.filter(m => m.guruUsername === guruUsername);
+      oldMaps.forEach(m => window.removeFromFirestore('mapping_guru', m.id));
+
       mappings = mappings.filter(m => m.guruUsername !== guruUsername);
 
       selectedMapels.forEach(mName => {
@@ -2350,6 +1548,8 @@
 
     window.deleteAllWalas = function() {
       window.showConfirm('Hapus SEMUA Penugasan Wali Kelas? Tindakan ini tidak dapat dibatalkan.', () => {
+        const walas = window.getStorageData('mapping_walas') || [];
+        walas.forEach(w => window.removeFromFirestore('mapping_walas', w.id));
         window.setStorageData('mapping_walas', []);
         window.showToast('Seluruh penugasan wali kelas telah dibersihkan.', 'error');
         window.renderMasterMappingView();
@@ -2359,6 +1559,8 @@
     window.deleteAllMaster = function(tab) {
       window.showConfirm(`Hapus SEMUA data ${tab}? Tindakan ini tidak dapat dibatalkan.`, () => {
         const key = 'master_' + tab;
+        const list = window.getStorageData(key) || [];
+        list.forEach(item => window.removeFromFirestore(key, item.id));
         window.setStorageData(key, []);
         window.showToast(`Seluruh data ${tab} telah dibersihkan.`, 'error');
         window.renderMasterMappingView();
@@ -2532,7 +1734,11 @@
 
     window.deleteAllSiswa = function() {
       window.showConfirm('Hapus SEMUA data siswa? Tindakan ini tidak dapat dibatalkan.', () => {
-        let users = window.getStorageData('users').filter(x => x.role !== 'siswa');
+        let users = window.getStorageData('users');
+        const toDelete = users.filter(x => x.role === 'siswa');
+        toDelete.forEach(s => window.removeFromFirestore('users', s.username));
+
+        users = users.filter(x => x.role !== 'siswa');
         window.setStorageData('users', users);
         window.showToast('Seluruh data siswa telah dibersihkan.', 'error');
         window.renderSiswaTable();
@@ -2812,8 +2018,10 @@
       if (existing) {
         window.showToast('Anda sudah mengonfirmasi kehadiran hari ini!', 'info');
       } else {
-        attendanceLog.push({ studentUsername: user.username, studentNama: user.nama, date: todayStr, timestamp: new Date().toLocaleTimeString('id-ID') });
+        const attObj = { studentUsername: user.username, studentNama: user.nama, date: todayStr, timestamp: new Date().toLocaleTimeString('id-ID') };
+        attendanceLog.push(attObj);
         window.setStorageData('student_attendance_log', attendanceLog);
+        window.syncToFirestore('student_attendance_log', 'att-' + user.username + '-' + todayStr, attObj);
         window.showToast('Presensi Berhasil Disimpan!', 'success');
       }
     };
@@ -3081,9 +2289,8 @@
       window.print();
     };
 
-    /* INITIALIZATION BOOTSTRAP & SERVICE WORKER INJECTION */
-    window.addEventListener('DOMContentLoaded', () => {
-      autoSetupDatabase();
+    window.addEventListener('DOMContentLoaded', async () => {
+      await autoSetupDatabase();
       
       const printWalas = document.getElementById('print-walas-tanggal');
       if (printWalas && !printWalas.value) printWalas.value = new Date().toISOString().slice(0, 10);
@@ -3091,10 +2298,9 @@
       const printGuru = document.getElementById('print-guru-mapel-tanggal');
       if (printGuru && !printGuru.value) printGuru.value = new Date().toISOString().slice(0, 10);
 
-      // REGISTRASI SERVICE WORKER DINAMIS (BLOB PWA)
       if ('serviceWorker' in navigator) {
         const swCode = `
-          const CACHE_NAME = 'elearning-candy-v1';
+          const CACHE_NAME = 'elearning-candy-v2';
           self.addEventListener('install', (e) => {
             e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./'])));
           });
