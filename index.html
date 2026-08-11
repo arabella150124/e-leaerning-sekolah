@@ -9,7 +9,7 @@
   <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkUtTGVhcm5pbmcgQ2FuZHkgU3lzdGVtIiwKICAic2hvcnRfbmFtZSI6ICJFLUxlYXJuaW5nIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGZhZmMiLAogICJ0aGVtZV9jb2xvciI6ICIjMGI1N2QwIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMzQyOS8zNDI5MDcwLnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
   <meta name="theme-color" content="#2563eb">
 
-  <!-- Tailwind CSS, FontAwesome & Typography -->
+  <!-- Tailwind CSS, FontAwesome & Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
       overflow-x: hidden;
     }
 
-    .login-bg-light-vibrant {
+    .login-bg-vibrant {
       background: linear-gradient(135deg, #e0f2fe 0%, #e0e7ff 25%, #fce7f3 50%, #fef3c7 75%, #dcfce7 100%);
       position: relative;
       overflow: hidden;
@@ -73,66 +73,73 @@
 
   <div id="app" class="min-h-screen flex flex-col md:flex-row">
     
-    <!-- LOGIN VIEW -->
-    <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center login-bg-light-vibrant p-4 md:p-8">
+    <!-- LOGIN VIEW (RINGKAS, MUNGIL & SPLIT SCREEN RESPONSIVE) -->
+    <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center login-bg-vibrant p-4 md:p-8">
       <div class="absolute inset-0 hex-grid-overlay pointer-events-none z-0"></div>
 
-      <div class="w-full max-w-md relative z-10 mx-auto">
-        <div class="glass-card-pro w-full p-7 md:p-8 rounded-3xl bg-white/95 shadow-2xl relative z-10 border-2 border-white/80">
-          
-          <div class="text-center mb-6">
-            <div id="login-school-logo-box" class="w-20 h-20 mx-auto mb-3 flex items-center justify-center">
-              <img id="login-school-logo-img" src="https://cdn-icons-png.flaticon.com/512/3429/3429070.png" class="w-full h-full object-contain rounded-2xl shadow-md" alt="Logo Sekolah">
-            </div>
-            <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight">E-Learning Candy</h1>
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Portal Akademik Terpadu</p>
+      <div class="w-full max-w-4xl relative z-10 mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+        
+        <!-- Sisi Kiri: Branding & Penjelasan Singkat (Ringkas) -->
+        <div class="md:col-span-5 text-center md:text-left space-y-3 p-2">
+          <div class="w-16 h-16 mx-auto md:mx-0 flex items-center justify-center bg-white p-2 rounded-2xl shadow-md border-2 border-slate-200">
+            <img id="login-school-logo-img" src="https://cdn-icons-png.flaticon.com/512/3429/3429070.png" class="w-full h-full object-contain" alt="Logo Sekolah">
           </div>
-
-          <div class="w-full h-0.5 bg-slate-200 mb-6"></div>
-
-          <!-- Login Tabs -->
-          <div class="flex border-2 border-slate-200 rounded-xl overflow-hidden p-1 bg-slate-100/80 mb-6 text-xs font-bold">
-            <button id="tab-user-btn" onclick="switchLoginTab('user')" class="flex-1 py-2.5 rounded-lg text-center text-blue-700 bg-white shadow-md font-extrabold transition-all">Siswa / Guru / Walas / Kepsek</button>
-            <button id="tab-admin-btn" onclick="switchLoginTab('admin')" class="flex-1 py-2.5 rounded-lg text-center text-slate-500 hover:text-slate-800 transition-all">Admin Firebase</button>
-          </div>
-
-          <!-- User Login Form -->
-          <form id="form-login-user" onsubmit="handleUserLogin(event)" class="space-y-4">
-            <div>
-              <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-1.5">Username / NIS / NIP</label>
-              <div class="relative">
-                <i class="fa-solid fa-id-card absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-                <input type="text" id="login-username" required class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-blue-600 text-sm font-bold text-slate-800 transition" placeholder="Masukkan ID Pengguna">
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-1.5">Password</label>
-              <div class="relative">
-                <i class="fa-solid fa-lock absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-                <input type="password" id="login-password" required class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-blue-600 text-sm font-bold text-slate-800 transition" placeholder="••••••••">
-              </div>
-            </div>
-            <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-blue-600/30 transition transform active:scale-[0.99]">
-              <i class="fa-solid fa-right-to-bracket mr-2"></i> Masuk ke Sistem
-            </button>
-          </form>
-
-          <!-- Admin Login Form -->
-          <form id="form-login-admin" onsubmit="handleAdminLogin(event)" class="space-y-4 hidden">
-            <div>
-              <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-1.5">Email Admin Firebase</label>
-              <input type="email" id="admin-email" class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-slate-800 text-sm font-bold" placeholder="admin@sekolah.sch.id">
-            </div>
-            <div>
-              <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-1.5">Password Admin</label>
-              <input type="password" id="admin-password" class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-slate-800 text-sm font-bold" placeholder="••••••••">
-            </div>
-            <button type="submit" class="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-extrabold text-sm rounded-xl shadow-lg transition">
-              <i class="fa-solid fa-shield-halved mr-2"></i> Login Admin Firebase
-            </button>
-          </form>
-
+          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning Candy</h1>
+          <p class="text-xs font-bold text-blue-700 uppercase tracking-widest">Portal Akademik Terpadu</p>
+          <p class="text-xs font-bold text-slate-600 leading-relaxed bg-white/60 backdrop-blur p-3 rounded-xl border border-slate-200 shadow-sm">
+            Platform pembelajaran digital terintegrasi untuk penyampaian modul interaktif, kuis online, rekapitulasi presensi harian, dan pemantauan KBM secara real-time.
+          </p>
         </div>
+
+        <!-- Sisi Kanan: Form Login Mungil -->
+        <div class="md:col-span-7">
+          <div class="glass-card-pro p-6 md:p-7 rounded-3xl bg-white/95 shadow-2xl relative z-10 border-2 border-white/80 max-w-md mx-auto">
+            
+            <!-- Login Tabs -->
+            <div class="flex border-2 border-slate-200 rounded-xl overflow-hidden p-1 bg-slate-100/80 mb-5 text-xs font-bold">
+              <button id="tab-user-btn" onclick="switchLoginTab('user')" class="flex-1 py-2 rounded-lg text-center text-blue-700 bg-white shadow-md font-extrabold transition-all">Siswa / Guru / Kepsek</button>
+              <button id="tab-admin-btn" onclick="switchLoginTab('admin')" class="flex-1 py-2 rounded-lg text-center text-slate-500 hover:text-slate-800 transition-all">Admin Firebase</button>
+            </div>
+
+            <!-- User Login Form -->
+            <form id="form-login-user" onsubmit="handleUserLogin(event)" class="space-y-3.5">
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 mb-1">Username / NIS / NIP</label>
+                <div class="relative">
+                  <i class="fa-solid fa-id-card absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+                  <input type="text" id="login-username" required class="w-full pl-9 pr-4 py-2.5 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-blue-600 text-xs font-bold text-slate-800 transition" placeholder="Masukkan ID Pengguna">
+                </div>
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 mb-1">Password</label>
+                <div class="relative">
+                  <i class="fa-solid fa-lock absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+                  <input type="password" id="login-password" required class="w-full pl-9 pr-4 py-2.5 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-blue-600 text-xs font-bold text-slate-800 transition" placeholder="••••••••">
+                </div>
+              </div>
+              <button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-blue-600/30 transition transform active:scale-[0.99]">
+                <i class="fa-solid fa-right-to-bracket mr-2"></i> Masuk ke Sistem
+              </button>
+            </form>
+
+            <!-- Admin Login Form -->
+            <form id="form-login-admin" onsubmit="handleAdminLogin(event)" class="space-y-3.5 hidden">
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 mb-1">Email Admin Firebase</label>
+                <input type="email" id="admin-email" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-slate-800 text-xs font-bold" placeholder="admin@sekolah.sch.id">
+              </div>
+              <div>
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 mb-1">Password Admin</label>
+                <input type="password" id="admin-password" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-slate-800 text-xs font-bold" placeholder="••••••••">
+              </div>
+              <button type="submit" class="w-full py-3 bg-slate-900 hover:bg-black text-white font-extrabold text-xs rounded-xl shadow-lg transition">
+                <i class="fa-solid fa-shield-halved mr-2"></i> Login Admin Firebase
+              </button>
+            </form>
+
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -248,6 +255,36 @@
             <button onclick="openModalPengumuman()" class="admin-guru-only px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow-lg border-2 border-blue-800 flex items-center space-x-2">
               <i class="fa-solid fa-plus"></i> <span>Buat Pengumuman</span>
             </button>
+          </div>
+
+          <!-- WIDGET PROGRES SISWA (KHUSUS ROLE SISWA) -->
+          <div id="student-progress-widget" class="student-only glass-card-pro p-6 rounded-2xl border-2 border-blue-200 space-y-4 bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
+            <h2 class="text-base font-extrabold text-slate-900 flex items-center space-x-2">
+              <i class="fa-solid fa-chart-pie text-blue-600"></i>
+              <span>Progres Belajar & Kuis Anda</span>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Modul Status -->
+              <div class="p-4 bg-white rounded-xl border-2 border-slate-200 space-y-2">
+                <p class="text-xs font-extrabold text-slate-700 uppercase">Status Modul Pembelajaran</p>
+                <div class="flex justify-between items-center text-xs font-bold pt-1">
+                  <span class="text-emerald-700"><i class="fa-solid fa-check-circle mr-1"></i> Sudah Dipelajari: <strong id="prog-modul-sudah">0</strong></span>
+                  <span class="text-amber-700"><i class="fa-solid fa-clock mr-1"></i> Belum Dipelajari: <strong id="prog-modul-belum">0</strong></span>
+                </div>
+              </div>
+              <!-- Kuis Status -->
+              <div class="p-4 bg-white rounded-xl border-2 border-slate-200 space-y-2">
+                <p class="text-xs font-extrabold text-slate-700 uppercase">Status Kuis & Evaluasi</p>
+                <div class="flex justify-between items-center text-xs font-bold pt-1">
+                  <span class="text-blue-700"><i class="fa-solid fa-square-check mr-1"></i> Sudah Dikerjakan: <strong id="prog-kuis-sudah">0</strong></span>
+                  <span class="text-rose-700"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Belum Dikerjakan: <strong id="prog-kuis-belum">0</strong></span>
+                </div>
+              </div>
+            </div>
+            <div class="border-t border-slate-200 pt-3">
+              <p class="text-xs font-extrabold text-slate-800 mb-2">Daftar Nilai Kuis Anda:</p>
+              <div id="prog-nilai-list" class="flex flex-wrap gap-2 text-xs"></div>
+            </div>
           </div>
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -429,9 +466,12 @@
           <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b-2 border-slate-200 gap-4">
             <div>
               <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Menu Wali Kelas</h1>
-              <p class="text-xs font-bold text-slate-500 mt-0.5">Presensi harian siswa binaan & laporan rekapitulasi.</p>
+              <p class="text-xs font-bold text-slate-500 mt-0.5">Presensi harian siswa binaan, Zoom Class & laporan rekapitulasi.</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
+              <button onclick="openModalZoomMeeting('Walas')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-extrabold shadow flex items-center space-x-1.5 border-2 border-blue-700">
+                <i class="fa-solid fa-video"></i> <span>Atur Zoom Walas</span>
+              </button>
               <input type="date" id="print-walas-tanggal" class="px-3 py-1.5 bg-white border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-800">
               <button onclick="triggerPrintDaftarHadir()" class="px-3.5 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-extrabold border-2 border-slate-800 shadow flex items-center space-x-1.5">
                 <i class="fa-solid fa-print"></i> <span>Cetak Presensi Walas</span>
@@ -440,6 +480,17 @@
                 <i class="fa-solid fa-file-invoice"></i> <span>Cetak Rekap Nilai</span>
               </button>
             </div>
+          </div>
+
+          <div id="walas-zoom-banner" class="hidden p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shadow-lg flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-video text-2xl"></i>
+              <div>
+                <p class="text-xs font-extrabold uppercase">Virtual Zoom Class (Wali Kelas)</p>
+                <p id="walas-zoom-topic" class="text-xs font-bold text-blue-100">Topik Meeting</p>
+              </div>
+            </div>
+            <a id="walas-zoom-link" href="#" target="_blank" class="px-4 py-2 bg-white text-blue-700 rounded-xl text-xs font-extrabold shadow hover:bg-blue-50">Masuk Zoom</a>
           </div>
 
           <div class="glass-card-pro p-6 rounded-2xl">
@@ -475,13 +526,27 @@
           <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b-2 border-slate-200 gap-4">
             <div>
               <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Presensi Kehadiran Siswa Per Mapel</h1>
-              <p class="text-xs font-bold text-slate-500 mt-0.5">Pemantauan presensi siswa khusus mata pelajaran yang Anda ampu.</p>
+              <p class="text-xs font-bold text-slate-500 mt-0.5">Pemantauan presensi siswa & integrasi Zoom Tatap Muka Mapel.</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
+              <button onclick="openModalZoomMeeting('Guru Mapel')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-extrabold shadow flex items-center space-x-1.5 border-2 border-blue-700">
+                <i class="fa-solid fa-video"></i> <span>Atur Zoom Mapel</span>
+              </button>
               <input type="date" id="print-guru-mapel-tanggal" class="px-3 py-1.5 bg-white border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-800">
               <button onclick="triggerPrintAbsensiMapel()" class="px-3.5 py-2 bg-slate-900 text-white rounded-xl text-xs font-extrabold shadow flex items-center space-x-1.5"><i class="fa-solid fa-print"></i> <span>Cetak Presensi Mapel</span></button>
               <button onclick="triggerPrintNilaiQuiz()" class="px-3.5 py-2 bg-emerald-600 text-white rounded-xl text-xs font-extrabold shadow flex items-center space-x-1.5"><i class="fa-solid fa-file-invoice"></i> <span>Cetak Rekap Nilai Quiz</span></button>
             </div>
+          </div>
+
+          <div id="guru-zoom-banner" class="hidden p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shadow-lg flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-video text-2xl"></i>
+              <div>
+                <p class="text-xs font-extrabold uppercase">Virtual Zoom Class (Guru Mapel)</p>
+                <p id="guru-zoom-topic" class="text-xs font-bold text-blue-100">Topik Meeting</p>
+              </div>
+            </div>
+            <a id="guru-zoom-link" href="#" target="_blank" class="px-4 py-2 bg-white text-blue-700 rounded-xl text-xs font-extrabold shadow hover:bg-blue-50">Masuk Zoom</a>
           </div>
 
           <div class="glass-card-pro p-6 rounded-2xl">
@@ -530,6 +595,18 @@
           <div class="pb-4 border-b-2 border-slate-200">
             <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Isi Presensi Harian Mandiri</h1>
             <p class="text-xs font-bold text-slate-500 mt-0.5">Konfirmasi kehadiran Anda sesuai jadwal hari ini.</p>
+          </div>
+
+          <!-- BANNER ZOOM MEETING JIKA ADA SISI SISWA -->
+          <div id="student-zoom-banner" class="hidden p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shadow-lg flex items-center justify-between max-w-lg mx-auto">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-video text-2xl"></i>
+              <div>
+                <p class="text-xs font-extrabold uppercase">Sesi Zoom Tatap Muka Aktif</p>
+                <p id="student-zoom-topic" class="text-xs font-bold text-blue-100">Topik Kelas</p>
+              </div>
+            </div>
+            <a id="student-zoom-link" href="#" target="_blank" class="px-4 py-2 bg-white text-blue-700 rounded-xl text-xs font-extrabold shadow hover:bg-blue-50">Gabung Zoom</a>
           </div>
 
           <div class="glass-card-pro p-8 rounded-2xl max-w-lg mx-auto text-center space-y-4 border-2 border-blue-200">
@@ -599,22 +676,17 @@
   <div id="toast-box" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
   <script>
-    /* TOP-LEVEL CONFIGURATION & FIREBASE SDK INIT */
+    /* SAKLAR DEPLOYMENT & FIREBASE CONFIG */
+    const IS_PREVIEW = true; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE
+
     const firebaseConfig = {
-      apiKey: "AIzaSyAQG9hn4I_RPvsWVJBY_5zlGA3-h1Z8LjY",
-  authDomain: "e-learning-6e5d5.firebaseapp.com",
-  projectId: "e-learning-6e5d5",
-  storageBucket: "e-learning-6e5d5.firebasestorage.app",
-  messagingSenderId: "367870327146",
-  appId: "1:367870327146:web:bddb8cc0deb2f11f400d13"
+      apiKey: "API_KEY_ANDA",
+      authDomain: "PROJECT_ID.firebaseapp.com",
+      projectId: "PROJECT_ID",
+      storageBucket: "PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
     };
-
-    const isPlaceholderConfig = !firebaseConfig.apiKey || 
-      firebaseConfig.apiKey.includes("API_KEY") || 
-      firebaseConfig.projectId.includes("PROJECT_ID") ||
-      firebaseConfig.projectId.includes("ANDA");
-
-    const IS_PREVIEW = isPlaceholderConfig;
 
     let db = null;
     let auth = null;
@@ -781,6 +853,7 @@
       document.querySelectorAll('.student-only').forEach(el => el.style.display = isStudent ? '' : 'none');
 
       updateSchoolBrandingUI();
+      window.checkActiveZoomMeetings();
       window.switchView('beranda');
     }
 
@@ -858,6 +931,40 @@
       document.getElementById('stat-rombel').textContent = kelas.length;
       document.getElementById('stat-mapel').textContent = mapel.length;
 
+      // UPDATE WIDGET PROGRES BELAJAR SISWA
+      if (window.currentUser && window.currentUser.role === 'siswa') {
+        const modulList = window.getStorageData('pembelajaran') || [];
+        const readLogs = window.getStorageData('student_read_logs') || [];
+        const scores = window.getStorageData('quiz_scores') || [];
+
+        const myReadLogs = readLogs.filter(r => r.studentUsername === window.currentUser.username && r.status === 'Selesai Dibaca');
+        const myScores = scores.filter(s => s.studentUsername === window.currentUser.username);
+
+        const totalModul = modulList.length;
+        const sudahBacaCount = myReadLogs.length;
+        const belumBacaCount = Math.max(0, totalModul - sudahBacaCount);
+
+        const totalKuisModul = modulList.filter(m => m.kuisAktif === 'Aktif').length;
+        const sudahKuisCount = myScores.length;
+        const belumKuisCount = Math.max(0, totalKuisModul - sudahKuisCount);
+
+        document.getElementById('prog-modul-sudah').textContent = sudahBacaCount;
+        document.getElementById('prog-modul-belum').textContent = belumBacaCount;
+        document.getElementById('prog-kuis-sudah').textContent = sudahKuisCount;
+        document.getElementById('prog-kuis-belum').textContent = belumKuisCount;
+
+        const nilaiBox = document.getElementById('prog-nilai-list');
+        if (myScores.length === 0) {
+          nilaiBox.innerHTML = '<span class="text-slate-400 font-bold">Belum ada kuis yang selesai dikerjakan.</span>';
+        } else {
+          nilaiBox.innerHTML = myScores.map(sc => `
+            <span class="px-2.5 py-1 bg-white border border-blue-200 rounded-lg font-extrabold text-blue-900 shadow-sm">
+              ${sc.mapel || 'Kuis'}: <strong>${sc.score}</strong>
+            </span>
+          `).join('');
+        }
+      }
+
       const list = window.getStorageData('pengumuman');
       const feed = document.getElementById('pengumuman-feed-list');
       
@@ -897,6 +1004,82 @@
       }
     }
     window.loadBerandaData = loadBerandaData;
+
+    /* FITUR ZOOM CLASS / VIRTUAL MEETING */
+    window.openModalZoomMeeting = function(roleType) {
+      const html = `
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div class="glass-card-pro w-full max-w-md p-6 rounded-3xl bg-white shadow-2xl space-y-4 border-2 border-slate-300">
+            <h2 class="text-base font-extrabold text-slate-900 pb-2 border-b-2 border-slate-200">
+              <i class="fa-solid fa-video text-blue-600 mr-2"></i> Atur Sesi Zoom Class (${roleType})
+            </h2>
+            <form onsubmit="saveZoomMeeting(event, '${roleType}')" class="space-y-3 text-xs font-bold">
+              <div>
+                <label class="text-slate-700 uppercase">Topik Pembahasan Meeting</label>
+                <input type="text" id="zoom-topic" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" placeholder="Contoh: Tatap Muka Geografi - Siklus Air">
+              </div>
+              <div>
+                <label class="text-slate-700 uppercase">Link Tautan Zoom / Google Meet</label>
+                <input type="url" id="zoom-link" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" placeholder="https://zoom.us/j/123456789">
+              </div>
+              <div class="flex justify-end space-x-2 pt-2 border-t-2 border-slate-200">
+                <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">Batal</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow border-2 border-blue-700">Aktifkan Zoom</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+      document.getElementById('modal-container').innerHTML = html;
+    };
+
+    window.saveZoomMeeting = function(e, roleType) {
+      e.preventDefault();
+      const topic = document.getElementById('zoom-topic').value.trim();
+      const link = document.getElementById('zoom-link').value.trim();
+
+      const zoomObj = {
+        id: 'zoom-' + Date.now(),
+        roleType,
+        topic,
+        link,
+        author: window.currentUser ? window.currentUser.nama : 'Guru',
+        active: true
+      };
+
+      window.setStorageData('active_zoom_session', [zoomObj]);
+      window.syncToFirestore('active_zoom_session', 'current', zoomObj);
+      closeModal();
+      window.showToast(`Sesi Zoom Class ${roleType} Diaktifkan!`, 'success');
+      window.checkActiveZoomMeetings();
+    };
+
+    window.checkActiveZoomMeetings = function() {
+      const zoomList = window.getStorageData('active_zoom_session') || [];
+      const currentZoom = zoomList[0];
+
+      const walasBanner = document.getElementById('walas-zoom-banner');
+      const guruBanner = document.getElementById('guru-zoom-banner');
+      const studentBanner = document.getElementById('student-zoom-banner');
+
+      if (currentZoom && currentZoom.active) {
+        if (walasBanner && currentZoom.roleType === 'Walas') {
+          walasBanner.classList.remove('hidden');
+          document.getElementById('walas-zoom-topic').textContent = currentZoom.topic;
+          document.getElementById('walas-zoom-link').href = currentZoom.link;
+        }
+        if (guruBanner && currentZoom.roleType === 'Guru Mapel') {
+          guruBanner.classList.remove('hidden');
+          document.getElementById('guru-zoom-topic').textContent = currentZoom.topic;
+          document.getElementById('guru-zoom-link').href = currentZoom.link;
+        }
+        if (studentBanner) {
+          studentBanner.classList.remove('hidden');
+          document.getElementById('student-zoom-topic').textContent = currentZoom.topic;
+          document.getElementById('student-zoom-link').href = currentZoom.link;
+        }
+      }
+    };
 
     function loadPembelajaranData() {
       const list = window.getStorageData('pembelajaran') || [];
@@ -2731,14 +2914,31 @@
       window.print();
     };
 
-    /* INITIALIZATION BOOTSTRAP */
+    /* INITIALIZATION BOOTSTRAP & SERVICE WORKER INJECTION */
     window.addEventListener('DOMContentLoaded', () => {
       autoSetupDatabase();
+      
       const printWalas = document.getElementById('print-walas-tanggal');
       if (printWalas && !printWalas.value) printWalas.value = new Date().toISOString().slice(0, 10);
 
       const printGuru = document.getElementById('print-guru-mapel-tanggal');
       if (printGuru && !printGuru.value) printGuru.value = new Date().toISOString().slice(0, 10);
+
+      // REGISTRASI SERVICE WORKER DINAMIS (BLOB PWA)
+      if ('serviceWorker' in navigator) {
+        const swCode = `
+          const CACHE_NAME = 'elearning-candy-v1';
+          self.addEventListener('install', (e) => {
+            e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./'])));
+          });
+          self.addEventListener('fetch', (e) => {
+            e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
+          });
+        `;
+        const blob = new Blob([swCode], { type: 'text/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Reg Error:', err));
+      }
     });
   </script>
 </body>
