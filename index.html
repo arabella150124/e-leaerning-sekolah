@@ -84,10 +84,10 @@
           <div class="w-16 h-16 mx-auto md:mx-0 flex items-center justify-center bg-white p-2 rounded-2xl shadow-md border-2 border-slate-200">
             <img id="login-school-logo-img" src="https://cdn-icons-png.flaticon.com/512/3429/3429070.png" class="w-full h-full object-contain" alt="Logo Sekolah">
           </div>
-          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning</h1>
-          <p class="text-xs font-bold text-blue-700 uppercase tracking-widest">E-LEARNING SEKOLAH</p>
+          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning Candy</h1>
+          <p class="text-xs font-bold text-blue-700 uppercase tracking-widest">Portal Akademik Terpadu</p>
           <p class="text-xs font-bold text-slate-600 leading-relaxed bg-white/60 backdrop-blur p-3 rounded-xl border border-slate-200 shadow-sm">
-          Pusat belajar Online terintegrasi untuk penyampaian modul interaktif, kuis online, rekapitulasi presensi harian, Jurnal mengajar Guru dan pemantauan KBM secara real-time.
+            Platform pembelajaran digital terintegrasi untuk penyampaian modul interaktif, kuis online, rekapitulasi presensi harian, dan pemantauan KBM secara real-time.
           </p>
         </div>
 
@@ -97,7 +97,7 @@
             
             <div class="flex border-2 border-slate-200 rounded-xl overflow-hidden p-1 bg-slate-100/80 mb-5 text-xs font-bold">
               <button id="tab-user-btn" onclick="switchLoginTab('user')" class="flex-1 py-2 rounded-lg text-center text-blue-700 bg-white shadow-md font-extrabold transition-all">Siswa / Guru / Kepsek</button>
-              <button id="tab-admin-btn" onclick="switchLoginTab('admin')" class="flex-1 py-2 rounded-lg text-center text-slate-500 hover:text-slate-800 transition-all">Admin</button>
+              <button id="tab-admin-btn" onclick="switchLoginTab('admin')" class="flex-1 py-2 rounded-lg text-center text-slate-500 hover:text-slate-800 transition-all">Admin Firebase</button>
             </div>
 
             <!-- User Login Form -->
@@ -124,7 +124,7 @@
             <!-- Admin Login Form -->
             <form id="form-login-admin" onsubmit="handleAdminLogin(event)" class="space-y-3.5 hidden">
               <div>
-                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 mb-1">Email Admin</label>
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 mb-1">Email Admin Firebase</label>
                 <div class="relative">
                   <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-400 text-xs"></i>
                   <input type="email" id="admin-email" required class="w-full pl-9 pr-4 py-2.5 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-slate-800 text-xs font-bold" placeholder="admin@sekolah.sch.id">
@@ -138,7 +138,7 @@
                 </div>
               </div>
               <button type="submit" id="btn-submit-admin" class="w-full py-3 bg-slate-900 hover:bg-black text-white font-extrabold text-xs rounded-xl shadow-lg transition">
-                <i class="fa-solid fa-shield-halved mr-2"></i> Login Admin
+                <i class="fa-solid fa-shield-halved mr-2"></i> Login Admin Firebase
               </button>
             </form>
 
@@ -678,10 +678,13 @@
   <div id="toast-box" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
   <script>
-    const IS_PREVIEW = false; // SET FALSE UNTUK TERHUBUNG KE FIREBASE PRODUCTION
+    /* =========================================================
+       1. KONFIGURASI DEPLOYMENT & FIREBASE
+       ========================================================= */
+    const IS_PREVIEW = false; // SET FALSE UNTUK TERHUBUNG KE FIREBASE
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
+       apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
       authDomain: "elearning44-67ef3.firebaseapp.com",
       projectId: "elearning44-67ef3",
       storageBucket: "elearning44-67ef3.firebasestorage.app",
@@ -691,34 +694,181 @@
 
     let db = null;
     let auth = null;
+    let isFirebaseConfigValid = false;
+
+    // Load custom configuration if saved via UI
+    const savedFirebaseConfig = JSON.parse(localStorage.getItem('custom_firebase_config') || 'null');
+    const activeConfig = savedFirebaseConfig || firebaseConfig;
 
     if (!IS_PREVIEW && typeof firebase !== 'undefined') {
-      try {
-        if (!firebase.apps.length) {
-          firebase.initializeApp(firebaseConfig);
+      // Validate that API key is not a placeholder
+      if (activeConfig.apiKey && !activeConfig.apiKey.includes('PASTE_') && !activeConfig.apiKey.includes('YOUR_') && activeConfig.apiKey.length > 10) {
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp(activeConfig);
+          }
+          db = firebase.firestore();
+          auth = firebase.auth();
+          isFirebaseConfigValid = true;
+          console.log("✅ Firebase SDK berhasil terhubung.");
+        } catch (err) {
+          console.error("❌ Gagal Inisialisasi Firebase:", err.message);
         }
-        db = firebase.firestore();
-        auth = firebase.auth();
-        console.log("✅ Firebase SDK berhasil terhubung.");
-      } catch (err) {
-        console.error("❌ Gagal Inisialisasi Firebase:", err.message);
+      } else {
+        console.warn("⚠️ Firebase Config masih berupa placeholder. Menggunakan mode simulasi data.");
       }
     }
 
     window.currentUser = null;
-    window.siswaCurrentPage = 1;
-    window.siswaItemsPerPage = 20;
-    window.currentMasterTab = 'pengaturan';
 
+    /* =========================================================
+       2. UTILITY & TOAST NOTIFICATION
+       ========================================================= */
     window.showToast = function(msg, type = 'info') {
       const box = document.getElementById('toast-box');
-      if (!box) return;
+      if (!box) {
+        console.log(`[Toast ${type}]: ${msg}`);
+        return;
+      }
       const toast = document.createElement('div');
-      const bg = type === 'error' ? 'bg-rose-700 border-2 border-rose-800' : type === 'success' ? 'bg-emerald-700 border-2 border-emerald-800' : 'bg-slate-900 border-2 border-slate-700';
+      const bg = type === 'error' 
+        ? 'bg-rose-700 border-2 border-rose-800' 
+        : type === 'success' 
+        ? 'bg-emerald-700 border-2 border-emerald-800' 
+        : 'bg-slate-900 border-2 border-slate-700';
       toast.className = `${bg} text-white px-4 py-3 rounded-xl shadow-2xl text-xs font-extrabold flex items-center space-x-2.5 transition-all duration-300`;
       toast.innerHTML = `<i class="fa-solid fa-circle-info"></i><span>${msg}</span>`;
       box.appendChild(toast);
-      setTimeout(() => toast.remove(), 3500);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    };
+
+    /* =========================================================
+       3. LOGIKA LOGIN ADMIN (FIREBASE AUTH RELEVAN)
+       ========================================================= */
+    window.handleAdminLogin = async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('admin-email').value.trim();
+      const password = document.getElementById('admin-password').value.trim();
+      const btn = document.getElementById('btn-submit-admin');
+
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memverifikasi Auth...`;
+
+      if (IS_PREVIEW || !isFirebaseConfigValid || !auth) {
+        // Mode Demo / Fallback saat API Key belum diisi
+        if (!isFirebaseConfigValid && !IS_PREVIEW) {
+          window.showToast('API Key Firebase belum valid/diisi. Menggunakan mode Demo Admin.', 'info');
+        }
+        if (password === 'admin123' || password === 'admin' || IS_PREVIEW) {
+          window.currentUser = { username: email || 'admin@sekolah.sch.id', nama: 'Administrator (Demo)', role: 'admin' };
+          window.showToast('Login Admin Berhasil (Mode Demo)!', 'success');
+          setupUserInterface();
+        } else {
+          window.showToast('Password Admin Demo: admin123 (Atau ganti API Key Firebase valid)', 'error');
+        }
+      } else {
+        // Mode Live: Validasi Resmi ke Firebase Auth
+        try {
+          const userCredential = await auth.signInWithEmailAndPassword(email, password);
+          window.currentUser = {
+            uid: userCredential.user.uid,
+            username: userCredential.user.email,
+            nama: 'Administrator Firebase',
+            role: 'admin'
+          };
+          window.showToast('Autentikasi Admin Firebase Berhasil!', 'success');
+          setupUserInterface();
+        } catch (error) {
+          console.error("Firebase Auth Error:", error);
+          let errMessage = 'Gagal Login Admin: Password/Email salah.';
+          if (error.code === 'auth/api-key-not-valid' || (error.message && error.message.includes('api-key-not-valid'))) {
+            errMessage = 'API Key Firebase tidak valid! Masukkan API Key resmi dari Firebase Console.';
+            // Instant option to test with Demo login
+            if (confirm("API Key Firebase belum valid. Apakah Anda ingin masuk dengan Mode Demo Admin (Password: admin123)?")) {
+              window.currentUser = { username: email || 'admin@sekolah.sch.id', nama: 'Administrator (Demo)', role: 'admin' };
+              window.showToast('Masuk sebagai Admin Demo.', 'info');
+              setupUserInterface();
+              btn.disabled = false;
+              btn.innerHTML = `<i class="fa-solid fa-shield-halved mr-2"></i> Login Admin Firebase`;
+              return;
+            }
+          } else if (error.code === 'auth/user-not-found') {
+            errMessage = 'Email Admin tidak terdaftar di Firebase Auth.';
+          } else if (error.code === 'auth/wrong-password') {
+            errMessage = 'Password Admin yang Anda masukkan salah.';
+          } else if (error.code === 'auth/invalid-credential') {
+            errMessage = 'Kredensial Admin tidak valid.';
+          }
+          
+          window.showToast(errMessage, 'error');
+        }
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fa-solid fa-shield-halved mr-2"></i> Login Admin Firebase`;
+    };
+
+    /* =========================================================
+       4. LOGIKA LOGIN USER / PESERTA (FIRESTORE VALIDATION)
+       ========================================================= */
+    window.handleUserLogin = async function(e) {
+      e.preventDefault();
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+      const btn = document.getElementById('btn-submit-user');
+
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memeriksa Database...`;
+
+      if (IS_PREVIEW || !isFirebaseConfigValid || !db) {
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const matched = users.find(x => x.username === username && x.password === password);
+        if (matched) {
+          window.currentUser = matched;
+          window.showToast('Login Berhasil! Selamat datang ' + matched.nama, 'success');
+          setupUserInterface();
+        } else {
+          window.showToast('ID atau Password User salah!', 'error');
+        }
+      } else {
+        try {
+          const userDoc = await db.collection('users').doc(username).get();
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            if (userData.password === password) {
+              window.currentUser = userData;
+              window.showToast('Login Berhasil! Selamat datang ' + userData.nama, 'success');
+              setupUserInterface();
+            } else {
+              window.showToast('Password yang Anda masukkan salah!', 'error');
+            }
+          } else {
+            window.showToast('Username/ID tidak terdaftar di database.', 'error');
+          }
+        } catch (err) {
+          console.error("Firestore Query Error:", err);
+          if (err.message && err.message.includes('api-key-not-valid')) {
+            window.showToast('API Key Firebase belum valid! Menggunakan data lokal...', 'error');
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const matched = users.find(x => x.username === username && x.password === password);
+            if (matched) {
+              window.currentUser = matched;
+              window.showToast('Login Berhasil (Lokal)! Selamat datang ' + matched.nama, 'success');
+              setupUserInterface();
+            } else {
+              window.showToast('ID atau Password User salah!', 'error');
+            }
+          } else {
+            window.showToast('Gagal memverifikasi user dari Firestore: ' + err.message, 'error');
+          }
+        }
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fa-solid fa-right-to-bracket mr-2"></i> Masuk se Sistem`;
     };
 
     window.showConfirm = function(msg, onConfirm) {
@@ -760,8 +910,10 @@
       if (!IS_PREVIEW && db) {
         try {
           await db.collection(col).doc(id).set(data, { merge: true });
+          console.log(`[Firestore Sync Success] Collection: ${col}, Doc ID: ${id}`);
         } catch (e) {
           console.error("[Firestore Sync Error] Collection " + col + ":", e);
+          window.showToast("Gagal simpan ke Firestore: " + e.message, "error");
         }
       }
     };
@@ -770,8 +922,101 @@
       if (!IS_PREVIEW && db) {
         try {
           await db.collection(col).doc(id).delete();
+          console.log(`[Firestore Delete Success] Collection: ${col}, Doc ID: ${id}`);
         } catch (e) {
           console.error("[Firestore Delete Error] Collection " + col + ":", e);
+          window.showToast("Gagal hapus dari Firestore: " + e.message, "error");
+        }
+      }
+    };
+    async function autoSetupDatabase() {
+      const initialSettings = {
+        id: 'config',
+        namaSekolah: 'SMK Sanjaya Digital',
+        namaKepsek: 'Drs. H. M. Ridwan, M.Pd',
+        logoSekolah: 'https://cdn-icons-png.flaticon.com/512/3429/3429070.png'
+      };
+
+      const initialUsers = [
+        { username: '3101', password: 'ryan', nama: 'Ryan Mahfud', role: 'siswa', level: 'X', jurusan: 'IIS', kelas: 'X IIS 1', noHp: '0812345678' },
+        { username: 'siswa', password: 'siswa', nama: 'Siswa Contoh', role: 'siswa', level: 'X', jurusan: 'IIS', kelas: 'X IIS 1', noHp: '0812345679' },
+        { username: 'sulis', password: 'sulis', nama: 'Sulis, S.Pd', role: 'guru', level: '-', jurusan: '-', kelas: '-', noHp: '0852001122' },
+        { username: 'walas1', password: 'walas', nama: 'Guru Walas, M.Pd', role: 'guru', isWalas: true, kelasBinaan: 'X IIS 1', level: '-', jurusan: '-', kelas: '-', noHp: '0852001133' },
+        { username: 'kepsek', password: 'kepsek', nama: 'Drs. H. M. Ridwan, M.Pd', role: 'kepsek', level: '-', jurusan: '-', kelas: '-', noHp: '0852001144' }
+      ];
+
+      const initialKelas = [{ id: 'kls-1', nama: 'X IIS 1' }, { id: 'kls-2', nama: 'X IIS 2' }, { id: 'kls-3', nama: 'XI MIA 1' }];
+      const initialMapel = [{ id: 'mpl-1', nama: 'Geografi' }, { id: 'mpl-2', nama: 'Matematika' }];
+
+      const initialMapping = [
+        { id: 'mg-1', guruUsername: 'sulis', guruNama: 'Sulis, S.Pd', mapelNama: 'Geografi', kelasNama: 'X IIS 1' },
+        { id: 'mg-2', guruUsername: 'sulis', guruNama: 'Sulis, S.Pd', mapelNama: 'Geografi', kelasNama: 'X IIS 2' }
+      ];
+
+      const initialWalas = [{ id: 'mw-1', guruUsername: 'walas1', guruNama: 'Guru Walas, M.Pd', kelasNama: 'X IIS 1' }];
+
+      const initialPengumuman = [
+        {
+          id: 'peng-1',
+          judul: 'INFO PEMBELAJARAN DARING',
+          isi: 'Siswa diwajibkan melakukan konfirmasi presensi harian pada portal sesuai jam pelajaran.',
+          target: 'semua',
+          tanggal: new Date().toLocaleString('id-ID'),
+          author: 'Admin'
+        }
+      ];
+
+      if (!localStorage.getItem('school_settings')) window.setStorageData('school_settings', [initialSettings]);
+      if (!localStorage.getItem('users')) window.setStorageData('users', initialUsers);
+      if (!localStorage.getItem('master_kelas')) window.setStorageData('master_kelas', initialKelas);
+      if (!localStorage.getItem('master_mapel')) window.setStorageData('master_mapel', initialMapel);
+      if (!localStorage.getItem('mapping_guru')) window.setStorageData('mapping_guru', initialMapping);
+      if (!localStorage.getItem('mapping_walas')) window.setStorageData('mapping_walas', initialWalas);
+      if (!localStorage.getItem('pengumuman')) window.setStorageData('pengumuman', initialPengumuman);
+
+      updateSchoolBrandingUI();
+
+      // Unggah otomatis data awal ke Cloud Firestore jika Firestore masih kosong
+      if (!IS_PREVIEW && db) {
+        try {
+          const userCheck = await db.collection('users').doc('3101').get();
+          if (!userCheck.exists) {
+            console.log("☁️ Mengunggah data awal ke Firestore...");
+            await window.syncToFirestore('school_settings', 'config', initialSettings);
+            for (const u of initialUsers) await window.syncToFirestore('users', u.username, u);
+            for (const k of initialKelas) await window.syncToFirestore('master_kelas', k.id, k);
+            for (const m of initialMapel) await window.syncToFirestore('master_mapel', m.id, m);
+            for (const mg of initialMapping) await window.syncToFirestore('mapping_guru', mg.id, mg);
+            for (const mw of initialWalas) await window.syncToFirestore('mapping_walas', mw.id, mw);
+            for (const p of initialPengumuman) await window.syncToFirestore('pengumuman', p.id, p);
+            window.showToast("Cloud Firestore berhasil diinisialisasi dengan data awal!", "success");
+          } else {
+            await window.fetchAllFromFirestore();
+          }
+        } catch (err) {
+          console.error("Gagal inisialisasi Firestore cloud:", err);
+        }
+      }
+    }
+
+    window.fetchAllFromFirestore = async function() {
+      if (IS_PREVIEW || !db) return;
+      const collections = [
+        'school_settings', 'users', 'master_kelas', 'master_mapel', 
+        'mapping_guru', 'mapping_walas', 'pengumuman', 'pembelajaran', 
+        'agenda', 'quizzes', 'quiz_scores', 'student_attendance_log', 
+        'student_read_logs', 'pembelajaran_comments', 'active_zoom_session'
+      ];
+
+      for (const col of collections) {
+        try {
+          const snapshot = await db.collection(col).get();
+          if (!snapshot.empty) {
+            const list = snapshot.docs.map(doc => doc.data());
+            window.setStorageData(col, list);
+          }
+        } catch (err) {
+          console.warn(`[Fetch Firestore Warn] Collection ${col}:`, err.message);
         }
       }
     };
@@ -2062,8 +2307,9 @@
         logoSekolah: document.getElementById('st-logo').value.trim()
       };
       window.setStorageData('school_settings', [newSt]);
+      window.syncToFirestore('school_settings', 'config', newSt);
       updateSchoolBrandingUI();
-      window.showToast('Profil sekolah berhasil diperbarui!', 'success');
+      window.showToast('Profil sekolah berhasil diperbarui ke Firestore!', 'success');
     };
 
     window.openModalMaster = function(tab, editId = null) {
@@ -2190,18 +2436,21 @@
         teachers[teacherIdx].isWalas = true;
         teachers[teacherIdx].kelasBinaan = kelasNama;
         window.setStorageData('users', teachers);
+        window.syncToFirestore('users', guruUsername, teachers[teacherIdx]);
       }
 
       let walas = window.getStorageData('mapping_walas') || [];
       walas = walas.filter(w => w.guruUsername !== guruUsername);
-      walas.push({
+      const newWalas = {
         id: 'mw-' + Date.now(),
         guruUsername,
         guruNama: teachers[teacherIdx]?.nama || 'Guru',
         kelasNama
-      });
+      };
+      walas.push(newWalas);
 
       window.setStorageData('mapping_walas', walas);
+      window.syncToFirestore('mapping_walas', newWalas.id, newWalas);
       closeModal();
       window.showToast('Penugasan Wali Kelas berhasil disimpan!', 'success');
       window.renderMasterMappingView();
@@ -2217,23 +2466,28 @@
       const selectedKelases = Array.from(document.querySelectorAll('input[name="mm_kelas"]:checked')).map(cb => cb.value);
 
       let mappings = window.getStorageData('mapping_guru') || [];
+      const existingMyMaps = mappings.filter(m => m.guruUsername === guruUsername);
+      existingMyMaps.forEach(m => window.removeFromFirestore('mapping_guru', m.id));
+
       mappings = mappings.filter(m => m.guruUsername !== guruUsername);
 
       selectedMapels.forEach(mName => {
         selectedKelases.forEach(kName => {
-          mappings.push({
+          const mapObj = {
             id: 'mg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
             guruUsername,
             guruNama: guruObj.nama,
             mapelNama: mName,
             kelasNama: kName
-          });
+          };
+          mappings.push(mapObj);
+          window.syncToFirestore('mapping_guru', mapObj.id, mapObj);
         });
       });
 
       window.setStorageData('mapping_guru', mappings);
       closeModal();
-      window.showToast('Mapping mengajar guru diperbarui!', 'success');
+      window.showToast('Mapping mengajar guru diperbarui ke Firestore!', 'success');
       window.renderMasterMappingView();
     };
 
@@ -2243,16 +2497,22 @@
       let list = window.getStorageData(key) || [];
       const nama = document.getElementById('mst-nama').value.trim();
 
+      let itemObj = null;
       if (editId) {
         const idx = list.findIndex(x => x.id === editId);
-        if (idx !== -1) list[idx].nama = nama;
+        if (idx !== -1) {
+          list[idx].nama = nama;
+          itemObj = list[idx];
+        }
       } else {
-        list.push({ id: 'mst-' + Date.now(), nama });
+        itemObj = { id: 'mst-' + Date.now(), nama };
+        list.push(itemObj);
       }
 
       window.setStorageData(key, list);
+      if (itemObj) window.syncToFirestore(key, itemObj.id, itemObj);
       closeModal();
-      window.showToast(`Data ${tab} disimpan!`, 'success');
+      window.showToast(`Data ${tab} disimpan ke Firestore!`, 'success');
       window.renderMasterMappingView();
     };
 
@@ -2261,6 +2521,7 @@
         const key = 'master_' + tab;
         let list = window.getStorageData(key).filter(x => x.id !== id);
         window.setStorageData(key, list);
+        window.removeFromFirestore(key, id);
         window.showToast(`Data ${tab} dihapus.`);
         window.renderMasterMappingView();
       });
@@ -2269,6 +2530,8 @@
     window.deleteAllMaster = function(tab) {
       window.showConfirm(`Hapus SEMUA data ${tab}? Tindakan ini tidak dapat dibatalkan.`, () => {
         const key = 'master_' + tab;
+        const list = window.getStorageData(key) || [];
+        list.forEach(item => window.removeFromFirestore(key, item.id));
         window.setStorageData(key, []);
         window.showToast(`Seluruh data ${tab} telah dibersihkan.`, 'error');
         window.renderMasterMappingView();
