@@ -1658,6 +1658,40 @@
             </button>
           </form>
         `;
+      } else if (tab === 'walas') {
+        const walas = window.getStorageData('mapping_walas') || [];
+        container.innerHTML = `
+          <div class="flex justify-between items-center pb-3 border-b-2 border-slate-200 mb-4">
+            <h2 class="text-base font-extrabold text-slate-900 uppercase">Data Penugasan Wali Kelas</h2>
+            <button onclick="openModalMaster('walas')" class="px-3.5 py-1.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800">
+              <i class="fa-solid fa-plus mr-1"></i> Tambah Wali Kelas
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-bold text-slate-700 border-collapse">
+              <thead class="bg-slate-100 border-b-2 border-slate-300 font-extrabold text-slate-800 uppercase">
+                <tr>
+                  <th class="p-3 border-r border-slate-200">No</th>
+                  <th class="p-3 border-r border-slate-200">Nama Guru Wali Kelas</th>
+                  <th class="p-3 border-r border-slate-200">Kelas Binaan</th>
+                  <th class="p-3">Aksi</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y-2 divide-slate-100 bg-white">
+                ${walas.length === 0 ? `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada penugasan Wali Kelas.</td></tr>` : walas.map((w, idx) => `
+                  <tr class="hover:bg-slate-50 border-b border-slate-200">
+                    <td class="p-3 border-r border-slate-200">${idx + 1}</td>
+                    <td class="p-3 border-r border-slate-200 font-extrabold text-slate-900">${w.guruNama}</td>
+                    <td class="p-3 border-r border-slate-200"><span class="px-2.5 py-1 bg-teal-100 text-teal-800 rounded font-extrabold border border-teal-300">${w.kelasNama}</span></td>
+                    <td class="p-3">
+                      <button onclick="deleteMaster('walas', '${w.id}')" class="px-2.5 py-1 bg-rose-100 text-rose-800 hover:bg-rose-200 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-trash"></i> Hapus</button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
       } else if (tab === 'mapping') {
         const teachers = window.getStorageData('users').filter(x => x.role === 'guru');
         const mappings = window.getStorageData('mapping_guru') || [];
@@ -1771,7 +1805,37 @@
     };
 
     window.openModalMaster = function(tab, editId = null) {
-      if (tab === 'mapping') {
+      if (tab === 'walas') {
+        const teachers = window.getStorageData('users').filter(x => x.role === 'guru');
+        const kelases = window.getStorageData('master_kelas');
+
+        const html = `
+          <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <div class="glass-card-pro w-full max-w-sm p-6 rounded-3xl bg-white shadow-2xl border-2 border-slate-300 space-y-4">
+              <h2 class="text-base font-extrabold text-slate-900 pb-2 border-b-2 border-slate-200">Penugasan Wali Kelas</h2>
+              <form onsubmit="saveWalasMapping(event)" class="space-y-3 text-xs font-bold">
+                <div>
+                  <label class="text-slate-700 uppercase">Pilih Guru</label>
+                  <select id="w-guru" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
+                    ${teachers.map(t => `<option value="${t.username}">${t.nama}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label class="text-slate-700 uppercase">Pilih Kelas Binaan</label>
+                  <select id="w-kelas" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
+                    ${kelases.map(k => `<option value="${k.nama}">${k.nama}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2 border-t-2 border-slate-200">
+                  <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">Batal</button>
+                  <button type="submit" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow border-2 border-blue-800">Simpan Walas</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+        document.getElementById('modal-container').innerHTML = html;
+      } else if (tab === 'mapping') {
         const teachers = window.getStorageData('users').filter(x => x.role === 'guru');
         const mapels = window.getStorageData('master_mapel');
         const kelases = window.getStorageData('master_kelas');
@@ -1851,6 +1915,34 @@
         `;
         document.getElementById('modal-container').innerHTML = html;
       }
+    };
+
+    window.saveWalasMapping = function(e) {
+      e.preventDefault();
+      const guruUsername = document.getElementById('w-guru').value;
+      const kelasNama = document.getElementById('w-kelas').value;
+
+      const teachers = window.getStorageData('users');
+      const teacherIdx = teachers.findIndex(t => t.username === guruUsername);
+      if (teacherIdx !== -1) {
+        teachers[teacherIdx].isWalas = true;
+        teachers[teacherIdx].kelasBinaan = kelasNama;
+        window.setStorageData('users', teachers);
+      }
+
+      let walas = window.getStorageData('mapping_walas') || [];
+      walas = walas.filter(w => w.guruUsername !== guruUsername);
+      walas.push({
+        id: 'mw-' + Date.now(),
+        guruUsername,
+        guruNama: teachers[teacherIdx]?.nama || 'Guru',
+        kelasNama
+      });
+
+      window.setStorageData('mapping_walas', walas);
+      closeModal();
+      window.showToast('Penugasan Wali Kelas berhasil disimpan!', 'success');
+      window.renderMasterMappingView();
     };
 
     window.saveMultiMapping = function(e) {
