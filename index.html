@@ -97,7 +97,7 @@
             
             <div class="flex border-2 border-slate-200 rounded-xl overflow-hidden p-1 bg-slate-100/80 mb-5 text-xs font-bold">
               <button id="tab-user-btn" onclick="switchLoginTab('user')" class="flex-1 py-2 rounded-lg text-center text-blue-700 bg-white shadow-md font-extrabold transition-all">Siswa / Guru / Kepsek</button>
-              <button id="tab-admin-btn" onclick="switchLoginTab('admin')" class="flex-1 py-2 rounded-lg text-center text-slate-500 hover:text-slate-800 transition-all">Admin Firebase</button>
+              <button id="tab-admin-btn" onclick="switchLoginTab('admin')" class="flex-1 py-2 rounded-lg text-center text-slate-500 hover:text-slate-800 transition-all">Admin</button>
             </div>
 
             <!-- User Login Form -->
@@ -124,7 +124,7 @@
             <!-- Admin Login Form -->
             <form id="form-login-admin" onsubmit="handleAdminLogin(event)" class="space-y-3.5 hidden">
               <div>
-                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 mb-1">Email Admin Firebase</label>
+                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 mb-1">Email Admin</label>
                 <div class="relative">
                   <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-400 text-xs"></i>
                   <input type="email" id="admin-email" required class="w-full pl-9 pr-4 py-2.5 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-slate-800 text-xs font-bold" placeholder="admin@sekolah.sch.id">
@@ -138,7 +138,7 @@
                 </div>
               </div>
               <button type="submit" id="btn-submit-admin" class="w-full py-3 bg-slate-900 hover:bg-black text-white font-extrabold text-xs rounded-xl shadow-lg transition">
-                <i class="fa-solid fa-shield-halved mr-2"></i> Login Admin Firebase
+                <i class="fa-solid fa-shield-halved mr-2"></i> Login Admin
               </button>
             </form>
 
