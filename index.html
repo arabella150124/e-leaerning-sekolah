@@ -686,7 +686,7 @@
   <div id="toast-box" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
   <script>
-    const IS_PREVIEW = true; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE CONFIG ASLI
+    const IS_PREVIEW = false; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE CONFIG ASLI
 
     const firebaseConfig = {
         apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
@@ -1048,10 +1048,122 @@
       document.getElementById('stat-rombel').textContent = kelas.length;
       document.getElementById('stat-mapel').textContent = mapel.length;
 
-      const todayStr = new Date().toISOString().slice(0, 10);
-      document.getElementById('dash-date-today').textContent = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const todayObj = new Date();
+      const todayStr = todayObj.toISOString().slice(0, 10);
+      const todayLocaleStr = todayObj.toLocaleDateString('id-ID');
+      
+      document.getElementById('dash-date-today').textContent = todayObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+      // Calculate Today's Activity Counts
+      const attendanceLog = window.getStorageData('student_attendance_log') || [];
+      const readLogs = window.getStorageData('student_read_logs') || [];
+      const quizScores = window.getStorageData('quiz_scores') || [];
+
+      // Unique students who completed attendance today
+      const todayAbsenUsernames = new Set(
+        attendanceLog
+          .filter(a => a.date === todayStr || (a.id && a.id.includes(todayStr)))
+          .map(a => a.studentUsername)
+      );
+
+      // Unique students who accessed modules today
+      const todayReadUsernames = new Set(
+        readLogs
+          .filter(r => (r.timestamp && r.timestamp.includes(todayStr)) || (r.id && r.id.includes(todayStr)))
+          .map(r => r.studentUsername)
+      );
+
+      // Unique students who submitted quizzes today
+      const todayQuizUsernames = new Set(
+        quizScores
+          .filter(q => (q.timestamp && (q.timestamp.includes(todayStr) || q.timestamp.includes(todayLocaleStr))) || (q.id && q.id.includes(todayStr)))
+          .map(q => q.studentUsername)
+      );
+
+      // Combined unique active students today
+      const allActiveUsernames = new Set([...todayAbsenUsernames, ...todayReadUsernames, ...todayQuizUsernames]);
+
+      document.getElementById('dash-absen-count').textContent = todayAbsenUsernames.size;
+      document.getElementById('dash-modul-count').textContent = todayReadUsernames.size;
+      document.getElementById('dash-kuis-count').textContent = todayQuizUsernames.size;
+
+      const totalStudents = allStudents.length;
+      const activeCount = allActiveUsernames.size;
+      const percentage = totalStudents > 0 ? Math.round((activeCount / totalStudents) * 100) : 0;
+
+      const ratioEl = document.getElementById('dash-active-ratio');
+      if (ratioEl) {
+        ratioEl.textContent = `${activeCount} / ${totalStudents} Siswa (${percentage}%)`;
+      }
+
+      // Render Active Student Chips/List
+      const listContainer = document.getElementById('dash-siswa-active-list');
+      if (listContainer) {
+        if (allActiveUsernames.size === 0) {
+          listContainer.innerHTML = '<p class="text-[11px] text-slate-400 font-bold italic py-1"><i class="fa-solid fa-circle-info mr-1"></i>Belum ada aktivitas siswa yang terekam hari ini.</p>';
+        } else {
+          listContainer.innerHTML = Array.from(allActiveUsernames).map(uName => {
+            const student = allStudents.find(s => s.username === uName) || { nama: uName, kelas: '' };
+            const isAbsen = todayAbsenUsernames.has(uName);
+            const isModul = todayReadUsernames.has(uName);
+            const isKuis = todayQuizUsernames.has(uName);
+
+            let badges = [];
+            if (isAbsen) badges.push('<span class="text-[9px] px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-extrabold">Absen</span>');
+            if (isModul) badges.push('<span class="text-[9px] px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-extrabold">Modul</span>');
+            if (isKuis) badges.push('<span class="text-[9px] px-1.5 py-0.5 bg-purple-100 text-purple-800 rounded font-extrabold">Kuis</span>');
+
+            return `
+              <div class="px-2.5 py-1.5 bg-white border-2 border-slate-200 rounded-xl flex items-center space-x-2 shadow-sm">
+                <i class="fa-solid fa-circle-user text-blue-600 text-xs"></i>
+                <span class="font-extrabold text-slate-800 text-[11px]">${student.nama} <span class="text-slate-400 font-bold text-[10px]">(${student.kelas || '-'})</span></span>
+                <div class="flex space-x-1">${badges.join('')}</div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      renderPengumumanFeed();
     }
     window.loadBerandaData = loadBerandaData;
+
+    function renderPengumumanFeed() {
+      const feed = document.getElementById('pengumuman-feed-list');
+      if (!feed) return;
+
+      const list = window.getStorageData('pengumuman') || [];
+      const user = window.currentUser || {};
+
+      const filtered = list.filter(p => {
+        if (!p.target || p.target === 'semua') return true;
+        if (user.role === 'siswa' && p.target === 'siswa') return true;
+        if ((user.role === 'guru' || user.role === 'admin') && p.target === 'guru') return true;
+        return false;
+      });
+
+      if (filtered.length === 0) {
+        feed.innerHTML = '<p class="text-xs text-slate-400 font-bold italic py-2">Belum ada pengumuman terbaru.</p>';
+        return;
+      }
+
+      feed.innerHTML = filtered.map(p => `
+        <div class="p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-1.5">
+          <div class="flex justify-between items-center">
+            <h3 class="font-extrabold text-slate-900 text-xs flex items-center space-x-1.5">
+              <i class="fa-solid fa-bullhorn text-blue-600"></i>
+              <span>${p.judul}</span>
+            </h3>
+            <span class="text-[10px] text-slate-400 font-bold">${p.tanggal || ''}</span>
+          </div>
+          <p class="text-xs text-slate-700 font-normal leading-relaxed">${p.isi}</p>
+          <div class="flex justify-between items-center pt-1 border-t border-slate-200 text-[10px] text-slate-500 font-bold">
+            <span>Penerbit: ${p.author || 'Sekolah'}</span>
+            <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-extrabold uppercase">${p.target || 'Semua'}</span>
+          </div>
+        </div>
+      `).join('');
+    }
 
     // HELPER RICH TEXT FORMATTING & EDITOR TOOLBAR
     window.formatDoc = function(cmd, value = null) {
