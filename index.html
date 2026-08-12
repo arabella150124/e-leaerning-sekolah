@@ -2415,31 +2415,70 @@
       const isTeacher = user.role === 'guru';
       const isStudent = user.role === 'siswa';
 
+      // Store current selected value before updating innerHTML
+      const currentSelectedVal = filterKelasSelect ? filterKelasSelect.value : '';
+
       // Determine allowed classes based on user role
       let allowedClasses = [];
       if (isStudent) {
-        allowedClasses = [user.kelas];
+        allowedClasses = [user.kelas].filter(Boolean);
       } else if (isTeacher) {
         const mappings = window.getStorageData('mapping_guru') || [];
-        const teacherMaps = mappings.filter(m => m.guruUsername === user.username);
+        const teacherMaps = mappings.filter(m => 
+          (m.guruUsername && m.guruUsername === user.username) || 
+          (m.guruNama && m.guruNama === user.nama)
+        );
         allowedClasses = Array.from(new Set(teacherMaps.map(m => m.kelasNama))).filter(Boolean);
+
+        // Also check if teacher is a Walas
+        const walasMaps = window.getStorageData('mapping_walas') || [];
+        const myWalas = walasMaps.find(w => 
+          (w.guruUsername && w.guruUsername === user.username) || 
+          (w.guruNama && w.guruNama === user.nama)
+        );
+        if (myWalas && myWalas.kelasNama && !allowedClasses.includes(myWalas.kelasNama)) {
+          allowedClasses.push(myWalas.kelasNama);
+        }
+        if (user.kelasBinaan && !allowedClasses.includes(user.kelasBinaan)) {
+          allowedClasses.push(user.kelasBinaan);
+        }
+
+        // Fallback: If teacher has no mapping configured yet, show all master classes
+        if (allowedClasses.length === 0) {
+          const masterKelas = window.getStorageData('master_kelas') || [];
+          allowedClasses = masterKelas.map(k => k.nama);
+        }
       } else {
-        const kelases = window.getStorageData('master_kelas');
+        const kelases = window.getStorageData('master_kelas') || [];
         allowedClasses = kelases.map(k => k.nama);
       }
 
       // Populate filter dropdown based on role
       if (filterKelasSelect) {
         if (isStudent) {
-          filterKelasSelect.innerHTML = `<option value="${user.kelas}">${user.kelas}</option>`;
+          filterKelasSelect.innerHTML = `<option value="${user.kelas || ''}">${user.kelas || 'Kelas Saya'}</option>`;
           filterKelasSelect.disabled = true;
         } else if (isTeacher) {
           filterKelasSelect.disabled = false;
-          filterKelasSelect.innerHTML = '<option value="">Semua Rombel Saya</option>' + allowedClasses.map(k => `<option value="${k}">${k}</option>`).join('');
+          let optionsHtml = '<option value="">Semua Rombel Saya</option>';
+          allowedClasses.forEach(k => {
+            optionsHtml += `<option value="${k}">${k}</option>`;
+          });
+          filterKelasSelect.innerHTML = optionsHtml;
+          if (currentSelectedVal && allowedClasses.includes(currentSelectedVal)) {
+            filterKelasSelect.value = currentSelectedVal;
+          }
         } else {
           filterKelasSelect.disabled = false;
-          const kelases = window.getStorageData('master_kelas');
-          filterKelasSelect.innerHTML = '<option value="">Semua Kelas</option>' + kelases.map(k => `<option value="${k.nama}">${k.nama}</option>`).join('');
+          const kelases = window.getStorageData('master_kelas') || [];
+          let optionsHtml = '<option value="">Semua Kelas</option>';
+          kelases.forEach(k => {
+            optionsHtml += `<option value="${k.nama}">${k.nama}</option>`;
+          });
+          filterKelasSelect.innerHTML = optionsHtml;
+          if (currentSelectedVal) {
+            filterKelasSelect.value = currentSelectedVal;
+          }
         }
       }
 
@@ -2961,6 +3000,8 @@
       const users = window.getStorageData('users').filter(x => x.role === 'siswa');
       const mapelSelect = document.getElementById('filter-absensi-guru-mapel');
       const kelasSelect = document.getElementById('filter-absensi-guru-kelas');
+      const user = window.currentUser || {};
+      const isTeacher = user.role === 'guru';
 
       if (mapelSelect && mapelSelect.options.length <= 1) {
         const masterMapel = window.getStorageData('master_mapel');
@@ -2968,8 +3009,17 @@
       }
 
       if (kelasSelect && kelasSelect.options.length <= 1) {
-        const masterKelas = window.getStorageData('master_kelas');
-        kelasSelect.innerHTML = '<option value="">Semua Kelas</option>' + masterKelas.map(k => `<option value="${k.nama}">${k.nama}</option>`).join('');
+        let availableClasses = [];
+        if (isTeacher) {
+          const mappings = window.getStorageData('mapping_guru') || [];
+          const teacherMaps = mappings.filter(m => (m.guruUsername && m.guruUsername === user.username) || (m.guruNama && m.guruNama === user.nama));
+          availableClasses = Array.from(new Set(teacherMaps.map(m => m.kelasNama))).filter(Boolean);
+        }
+        if (availableClasses.length === 0) {
+          const masterKelas = window.getStorageData('master_kelas');
+          availableClasses = masterKelas.map(k => k.nama);
+        }
+        kelasSelect.innerHTML = '<option value="">Semua Kelas</option>' + availableClasses.map(k => `<option value="${k}">${k}</option>`).join('');
       }
 
       const selectedMapel = mapelSelect ? mapelSelect.value : '';
