@@ -27,12 +27,14 @@
       margin: 0;
       padding: 0;
       overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .login-bg-vibrant {
       background: linear-gradient(135deg, #e0f2fe 0%, #e0e7ff 25%, #fce7f3 50%, #fef3c7 75%, #dcfce7 100%);
       position: relative;
-      overflow: hidden;
+      overflow-y: auto;
     }
 
     .hex-grid-overlay {
@@ -45,6 +47,16 @@
       backdrop-filter: blur(16px);
       border: 2px solid #cbd5e1;
       box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.12);
+    }
+
+    /* Modal Overlay Flex Alignment - Prevents top & bottom cutoffs on small screens */
+    .modal-overlay-scroll {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      padding: 1.5rem 1rem;
+      -webkit-overflow-scrolling: touch;
     }
 
     .active-nav-pro {
@@ -64,6 +76,31 @@
       color: #475569 !important;
     }
 
+    /* Formatted Rich Text Content Container */
+    .rich-module-body iframe {
+      width: 100% !important;
+      min-height: 360px !important;
+      border-radius: 12px;
+      margin: 12px 0;
+      border: 2px solid #e2e8f0;
+    }
+
+    .rich-module-body ul {
+      list-style-type: disc;
+      padding-left: 1.5rem;
+      margin: 0.5rem 0;
+    }
+
+    .rich-module-body ol {
+      list-style-type: decimal;
+      padding-left: 1.5rem;
+      margin: 0.5rem 0;
+    }
+
+    .rich-module-body p {
+      margin-bottom: 0.5rem;
+    }
+
     @media print {
       body * { visibility: hidden; }
       #print-area, #print-area * { visibility: visible; }
@@ -77,10 +114,10 @@
   <div id="app" class="min-h-screen flex flex-col md:flex-row">
     
     <!-- LOGIN VIEW -->
-    <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center login-bg-vibrant p-4 md:p-8">
+    <div id="login-view" class="fixed inset-0 z-50 overflow-y-auto login-bg-vibrant p-4 md:p-8 flex items-center justify-center">
       <div class="absolute inset-0 hex-grid-overlay pointer-events-none z-0"></div>
 
-      <div class="w-full max-w-4xl relative z-10 mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+      <div class="w-full max-w-4xl relative z-10 mx-auto my-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
         <div class="md:col-span-5 text-center md:text-left space-y-3 p-2">
           <div class="w-16 h-16 mx-auto md:mx-0 flex items-center justify-center bg-white p-2 rounded-2xl shadow-md border-2 border-slate-200">
             <img id="login-school-logo-img" src="https://cdn-icons-png.flaticon.com/512/3429/3429070.png" class="w-full h-full object-contain" alt="Logo Sekolah">
@@ -380,15 +417,15 @@
           </div>
         </section>
 
-        <!-- SECTION: PEMBELAJARAN -->
+        <!-- SECTION: PEMBELAJARAN (MODUL, TUGAS & QUIZ) -->
         <section id="view-pembelajaran" class="view-content space-y-6 hidden">
           <div class="flex items-center justify-between pb-4 border-b-2 border-slate-200">
             <div>
-              <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Modul Pembelajaran</h1>
-              <p class="text-xs font-bold text-slate-500 mt-0.5">Materi pelajaran terstruktur, kuis interaktif, dan penugasan.</p>
+              <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Modul Pembelajaran & KBM</h1>
+              <p class="text-xs font-bold text-slate-500 mt-0.5">Akses ringkasan Modul, Penyerahan Tugas, Kuis Interaktif, dan Diskusi Chat.</p>
             </div>
             <button onclick="openModalPembelajaran()" class="admin-guru-only px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800 flex items-center space-x-2">
-              <i class="fa-solid fa-plus"></i> <span>Tambah Materi / Pembelajaran</span>
+              <i class="fa-solid fa-plus"></i> <span>Tambah Modul Pembelajaran</span>
             </button>
           </div>
 
@@ -636,21 +673,22 @@
     </div>
   </div>
 
+  <!-- CONTAINER UNTUK MODAL, CONFIRM, PRINT DAN TOAST -->
   <div id="modal-container"></div>
   <div id="confirm-modal-container"></div>
   <div id="print-area" class="p-8 hidden"></div>
   <div id="toast-box" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
   <script>
-    const IS_PREVIEW = false; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE CONFIG ASLI
+    const IS_PREVIEW = true; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE CONFIG ASLI
 
     const firebaseConfig = {
-  apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
-  authDomain: "elearning44-67ef3.firebaseapp.com",
-  projectId: "elearning44-67ef3",
-  storageBucket: "elearning44-67ef3.firebasestorage.app",
-  messagingSenderId: "364078910579",
-  appId: "1:364078910579:web:04ff94b2cb8ef856c76e06"
+      apiKey: "API_KEY_ANDA",
+      authDomain: "PROJECT_ID.firebaseapp.com",
+      projectId: "PROJECT_ID",
+      storageBucket: "PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
     };
 
     let db = null;
@@ -743,7 +781,8 @@
         'school_settings', 'users', 'master_jurusan', 'master_kelas', 
         'master_mapel', 'master_guru', 'mapping_guru', 'mapping_walas', 
         'pembelajaran', 'agenda', 'pengumuman', 'quizzes', 'quiz_scores',
-        'student_attendance_log', 'student_read_logs', 'active_zoom_session'
+        'student_attendance_log', 'student_read_logs', 'active_zoom_session', 
+        'task_submissions', 'module_comments'
       ];
 
       for (const col of collections) {
@@ -795,6 +834,40 @@
 
       const initialWalas = [{ id: 'mw-1', guruUsername: 'walas1', guruNama: 'Guru Walas, M.Pd', kelasNama: 'X IIS 1' }];
 
+      const initialPembelajaran = [
+        {
+          id: 'pm-demo-1',
+          materiPokok: 'Pengantar Geografi & Atmosfer Bumi',
+          mapel: 'Geografi',
+          kelas: ['X IIS 1', 'X IIS 2'],
+          tp: 'TP1 - Pemahaman Struktur Atmosfer',
+          pertemuan: 'Pertemuan 1',
+          statusModul: 'Aktif',
+          modulAktif: 'Aktif',
+          tugasAktif: 'Aktif',
+          kuisAktif: 'Aktif',
+          tglMulai: '2026-08-01T07:00',
+          tglSelesai: '2026-12-31T23:59',
+          pembahasan: '<p><b>Atmosfer</b> adalah lapisan gas yang melingkupi bumi. Lapisan ini terdiri dari lima tingkatan utama:</p><ul><li><b>Troposfer:</b> Tempat terjadinya cuaca dan hujan.</li><li><b>Stratosfer:</b> Tempat ditemukannya lapisan ozon (O3).</li><li><b>Mesosfer:</b> Lapisan pelindung dari benda angkasa/meteor.</li><li><b>Termosfer:</b> Tempat pembiasan gelombang radio.</li><li><b>Eksosfer:</b> Batas terluar dengan ruang hampa udara.</li></ul><p>Simak penjelasan video YouTube di bawah ini:</p><div class="my-3 aspect-video w-full"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" class="w-full h-full rounded-xl border-0" allowfullscreen></iframe></div>',
+          tugasDeskripsi: 'Buatlah rangkuman mengenai perbedaan fungsi troposfer dan stratosfer dalam bentuk poin ringkas atau paste link Google Drive file PDF Anda di bawah ini.',
+          guruNama: 'Sulis, S.Pd',
+          quizQuestions: [
+            {
+              id: 'q1',
+              question: 'Lapisan atmosfer tempat terjadinya fenomena cuaca seperti hujan adalah...',
+              options: ['Troposfer', 'Stratosfer', 'Mesosfer', 'Eksosfer'],
+              answer: 0
+            },
+            {
+              id: 'q2',
+              question: 'Lapisan yang melindungi bumi dari radiasi ultraviolet sinar matahari adalah...',
+              options: ['Troposfer', 'Lapisan Ozon di Stratosfer', 'Termosfer', 'Eksosfer'],
+              answer: 1
+            }
+          ]
+        }
+      ];
+
       if (!localStorage.getItem('school_settings')) window.setStorageData('school_settings', [initialSettings]);
       if (!localStorage.getItem('users')) window.setStorageData('users', initialUsers);
       if (!localStorage.getItem('master_jurusan')) window.setStorageData('master_jurusan', initialJurusan);
@@ -803,6 +876,7 @@
       if (!localStorage.getItem('master_guru')) window.setStorageData('master_guru', initialGuru);
       if (!localStorage.getItem('mapping_guru')) window.setStorageData('mapping_guru', initialMapping);
       if (!localStorage.getItem('mapping_walas')) window.setStorageData('mapping_walas', initialWalas);
+      if (!localStorage.getItem('pembelajaran')) window.setStorageData('pembelajaran', initialPembelajaran);
 
       updateSchoolBrandingUI();
     }
@@ -968,56 +1042,803 @@
       document.getElementById('stat-rombel').textContent = kelas.length;
       document.getElementById('stat-mapel').textContent = mapel.length;
 
-      // HITUNG DASHBOARD KEAKTIFAN SISWA PER HARI
       const todayStr = new Date().toISOString().slice(0, 10);
       document.getElementById('dash-date-today').textContent = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
-      const attendanceLog = window.getStorageData('student_attendance_log') || [];
-      const readLogs = window.getStorageData('student_read_logs') || [];
-      const quizScores = window.getStorageData('quiz_scores') || [];
-
-      const todayAttendedUsernames = new Set(attendanceLog.filter(a => a.date === todayStr).map(a => a.studentUsername));
-      const todayReadUsernames = new Set(readLogs.filter(r => r.timestamp && r.timestamp.includes(todayStr)).map(r => r.studentUsername));
-      const todayQuizUsernames = new Set(quizScores.filter(q => q.timestamp && q.timestamp.includes(todayStr)).map(q => q.studentUsername));
-
-      const activeUsernames = new Set([...todayAttendedUsernames, ...todayReadUsernames, ...todayQuizUsernames]);
-
-      document.getElementById('dash-absen-count').textContent = todayAttendedUsernames.size;
-      document.getElementById('dash-modul-count').textContent = todayReadUsernames.size;
-      document.getElementById('dash-kuis-count').textContent = todayQuizUsernames.size;
-
-      const activeRatio = allStudents.length > 0 ? Math.round((activeUsernames.size / allStudents.length) * 100) : 0;
-      document.getElementById('dash-active-ratio').textContent = `${activeUsernames.size} / ${allStudents.length} Siswa Aktif (${activeRatio}%)`;
-
-      const listContainer = document.getElementById('dash-siswa-active-list');
-      if (activeUsernames.size === 0) {
-        listContainer.innerHTML = '<span class="text-slate-400 font-bold">Belum ada aktivitas siswa yang tercatat hari ini.</span>';
-      } else {
-        const activeStudentObjs = allStudents.filter(s => activeUsernames.has(s.username));
-        listContainer.innerHTML = activeStudentObjs.map(s => `
-          <span class="px-2.5 py-1 bg-blue-50 border border-blue-200 text-blue-900 rounded-lg font-extrabold flex items-center space-x-1">
-            <i class="fa-solid fa-circle text-[8px] text-emerald-500"></i>
-            <span>${s.nama} (${s.kelas || 'X'})</span>
-          </span>
-        `).join('');
-      }
-
-      const list = window.getStorageData('pengumuman');
-      const feed = document.getElementById('pengumuman-feed-list');
-      const userRole = window.currentUser ? window.currentUser.role : 'siswa';
-      const filtered = list.filter(p => !p.target || p.target === 'semua' || p.target === userRole);
-
-      feed.innerHTML = filtered.map(p => `
-        <div class="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl relative">
-          <div class="flex items-center justify-between">
-            <p class="font-extrabold text-blue-900 text-xs uppercase">${p.judul}</p>
-            <span class="text-[10px] text-slate-500 font-bold">${p.tanggal || ''}</span>
-          </div>
-          <p class="text-xs font-bold text-slate-700 mt-1">${p.isi}</p>
-        </div>
-      `).join('');
     }
     window.loadBerandaData = loadBerandaData;
+
+    // HELPER RICH TEXT FORMATTING & EDITOR TOOLBAR
+    window.formatDoc = function(cmd, value = null) {
+      document.execCommand(cmd, false, value);
+    };
+
+    window.toggleSourceCode = function() {
+      const editor = document.getElementById('pm-pembahasan-editor');
+      if (!editor) return;
+      if (editor.dataset.mode === 'source') {
+        editor.innerHTML = editor.innerText;
+        editor.dataset.mode = 'wysiwyg';
+        window.showToast('Kembali ke Mode Tampilan Editor (WYSIWYG)', 'info');
+      } else {
+        editor.innerText = editor.innerHTML;
+        editor.dataset.mode = 'source';
+        window.showToast('Mode Kode Sumber (HTML Source) Aktif', 'info');
+      }
+    };
+
+    window.insertTableToEditor = function() {
+      const editor = document.getElementById('pm-pembahasan-editor');
+      if (!editor) return;
+      const rows = prompt("Jumlah Baris Tabel:", "3");
+      const cols = prompt("Jumlah Kolom Tabel:", "3");
+      if (rows && cols) {
+        let tblHtml = `<table class="w-full my-3 border-collapse border-2 border-slate-400 text-xs">`;
+        for (let r = 0; r < parseInt(rows); r++) {
+          tblHtml += `<tr>`;
+          for (let c = 0; c < parseInt(cols); c++) {
+            tblHtml += `<td class="border border-slate-300 p-2 font-normal">${r === 0 ? '<b>Header ' + (c + 1) + '</b>' : 'Data ' + (r) + ',' + (c + 1)}</td>`;
+          }
+          tblHtml += `</tr>`;
+        }
+        tblHtml += `</table><p><br></p>`;
+        editor.focus();
+        document.execCommand('insertHTML', false, tblHtml);
+      }
+    };
+
+    window.insertEmbedToEditor = function(type) {
+      const editor = document.getElementById('pm-pembahasan-editor');
+      if (!editor) return;
+
+      if (type === 'youtube') {
+        const url = prompt("Masukkan Link URL YouTube (Contoh: https://www.youtube.com/watch?v=XXXXX atau https://youtu.be/XXXXX):");
+        if (url) {
+          let videoId = "";
+          if (url.includes("v=")) videoId = url.split("v=")[1].split("&")[0];
+          else if (url.includes("youtu.be/")) videoId = url.split("youtu.be/")[1].split("?")[0];
+          
+          if (videoId) {
+            const embedHtml = `<div class="my-3 aspect-video w-full"><iframe src="https://www.youtube.com/embed/${videoId}" class="w-full h-full rounded-xl border-0" allowfullscreen></iframe></div><p><br></p>`;
+            editor.focus();
+            document.execCommand('insertHTML', false, embedHtml);
+          } else {
+            window.showToast("URL YouTube tidak valid!", "error");
+          }
+        }
+      } else if (type === 'drive') {
+        const url = prompt("Masukkan Link Embed Google Drive / PDF (Gunakan Link Embed / Preview):");
+        if (url) {
+          let embedUrl = url.replace("/view", "/preview");
+          const embedHtml = `<div class="my-3 w-full h-[450px]"><iframe src="${embedUrl}" class="w-full h-full rounded-xl border-2 border-slate-300"></iframe></div><p><br></p>`;
+          editor.focus();
+          document.execCommand('insertHTML', false, embedHtml);
+        }
+      } else if (type === 'web') {
+        const url = prompt("Masukkan Link Web / Website URL yang ingin di-embed:");
+        if (url) {
+          const embedHtml = `<div class="my-3 w-full h-[400px]"><iframe src="${url}" class="w-full h-full rounded-xl border-2 border-slate-300"></iframe></div><p><br></p>`;
+          editor.focus();
+          document.execCommand('insertHTML', false, embedHtml);
+        }
+      } else if (type === 'symbol') {
+        const symbols = ['π', '∑', '√', '∞', '±', '≈', '≠', '≤', '≥', 'α', 'β', 'γ', 'θ', 'Ω', '˚', '∆', '⅓', '½', '¾', '★', '✔', '✘'];
+        const sym = prompt("Pilih atau ketik simbol matematika/khusus:\n" + symbols.join("  "), "π");
+        if (sym) {
+          editor.focus();
+          document.execCommand('insertText', false, sym + " ");
+        }
+      }
+    };
+
+    function loadPembelajaranData() {
+      const grid = document.getElementById('materi-card-grid');
+      if (!grid) return;
+
+      const list = window.getStorageData('pembelajaran') || [];
+      const user = window.currentUser || {};
+      const isTeacher = user.role === 'guru' || user.role === 'admin';
+      const now = new Date();
+
+      if (list.length === 0) {
+        grid.innerHTML = '<div class="col-span-full p-8 text-center text-slate-400 font-bold bg-white rounded-2xl border-2 border-slate-200">Belum ada modul pembelajaran yang diterbitkan.</div>';
+        return;
+      }
+
+      let filtered = list.filter(m => {
+        if (isTeacher) return true;
+        if (m.statusModul === 'Tidak Aktif') return false;
+
+        if (m.tglMulai) {
+          const startDate = new Date(m.tglMulai);
+          if (now < startDate) return false;
+        }
+        if (m.tglSelesai) {
+          const endDate = new Date(m.tglSelesai);
+          if (now > endDate) return false;
+        }
+
+        if (user.role === 'siswa') {
+          if (!m.kelas || m.kelas === 'Semua' || (Array.isArray(m.kelas) && m.kelas.includes('Semua'))) return true;
+          if (Array.isArray(m.kelas)) return m.kelas.includes(user.kelas);
+          if (typeof m.kelas === 'string') return m.kelas.includes(user.kelas);
+        }
+
+        return true;
+      });
+
+      grid.innerHTML = filtered.map(m => {
+        const displayKelas = Array.isArray(m.kelas) ? m.kelas.join(', ') : (m.kelas || 'Semua');
+        const quizCount = m.quizQuestions ? m.quizQuestions.length : 0;
+
+        const isModulVisible = isTeacher || (m.modulAktif !== 'Tidak Aktif');
+        const isTugasVisible = isTeacher || (m.tugasAktif !== 'Tidak Aktif');
+        const isKuisVisible = isTeacher || (m.kuisAktif !== 'Tidak Aktif');
+
+        const isOverallActive = m.statusModul !== 'Tidak Aktif';
+
+        return `
+        <div class="glass-card-pro p-5 rounded-2xl space-y-3 bg-white flex flex-col justify-between shadow-lg border-2 border-slate-200 hover:border-blue-300 transition ${!isOverallActive ? 'opacity-75 bg-slate-50' : ''}">
+          <div>
+            <div class="flex justify-between items-start gap-2">
+              <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-[10px] font-extrabold uppercase tracking-wide">
+                ${m.mapel} &bull; ${displayKelas}
+              </span>
+              ${isTeacher ? `
+                <div class="flex space-x-1 items-center">
+                  <span class="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase ${isOverallActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${m.statusModul || 'Aktif'}</span>
+                  <button onclick="openModalPembelajaran('${m.id}')" class="text-amber-600 hover:text-amber-800 text-xs font-bold p-1" title="Edit Modul"><i class="fa-solid fa-pen"></i></button>
+                  <button onclick="deletePembelajaran('${m.id}')" class="text-rose-600 hover:text-rose-800 text-xs font-bold p-1" title="Hapus Modul"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              ` : ''}
+            </div>
+
+            <h3 class="font-extrabold text-slate-900 text-sm mt-3 leading-snug">${m.materiPokok}</h3>
+            <p class="text-xs font-bold text-slate-500 mt-1"><i class="fa-solid fa-chalkboard-user mr-1 text-blue-600"></i> Pengajar: ${m.guruNama}</p>
+            <div class="flex flex-wrap gap-1 mt-1.5">
+              <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-md text-[10px] font-extrabold"><i class="fa-solid fa-layer-group mr-1"></i>${m.pertemuan || 'Pertemuan 1'}</span>
+              <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded-md text-[10px] font-extrabold"><i class="fa-solid fa-bullseye mr-1"></i>${m.tp || 'TP1 - Pemahaman Dasar'}</span>
+            </div>
+            
+            ${m.tglMulai || m.tglSelesai ? `
+              <p class="text-[10px] font-bold text-slate-400 mt-1.5 flex items-center space-x-1">
+                <i class="fa-solid fa-clock text-amber-500"></i>
+                <span>Akses: ${m.tglMulai ? new Date(m.tglMulai).toLocaleDateString('id-ID') : 'Awal'} s.d. ${m.tglSelesai ? new Date(m.tglSelesai).toLocaleDateString('id-ID') : 'Selesai'}</span>
+              </p>
+            ` : ''}
+          </div>
+
+          <div class="pt-3 border-t-2 border-slate-100 space-y-2">
+            <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Aktivitas Pembelajaran:</p>
+            <div class="grid grid-cols-3 gap-1.5">
+              ${isModulVisible ? `
+                <button onclick="viewPembelajaranDetail('${m.id}')" class="px-2 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-extrabold shadow flex items-center justify-center space-x-1 transition">
+                  <i class="fa-solid fa-book-open text-[11px]"></i>
+                  <span>Modul ${isTeacher && m.modulAktif === 'Tidak Aktif' ? '(Off)' : ''}</span>
+                </button>
+              ` : ''}
+              
+              ${isTugasVisible ? `
+                <button onclick="openTugasModal('${m.id}')" class="px-2 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-extrabold shadow flex items-center justify-center space-x-1 transition">
+                  <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                  <span>Tugas ${isTeacher && m.tugasAktif === 'Tidak Aktif' ? '(Off)' : ''}</span>
+                </button>
+              ` : ''}
+              
+              ${isKuisVisible ? `
+                <button onclick="openQuizModal('${m.id}')" class="px-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold shadow flex items-center justify-center space-x-1 transition">
+                  <i class="fa-solid fa-circle-question text-[11px]"></i>
+                  <span>Quiz ${isTeacher && m.kuisAktif === 'Tidak Aktif' ? '(Off)' : `(${quizCount})`}</span>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+      }).join('');
+    }
+    window.loadPembelajaranData = loadPembelajaranData;
+
+    window.openModalPembelajaran = function(editId = null) {
+      const mapels = window.getStorageData('master_mapel');
+      const kelases = window.getStorageData('master_kelas');
+      const list = window.getStorageData('pembelajaran') || [];
+      const target = editId ? list.find(x => x.id === editId) : null;
+
+      let targetKelases = [];
+      if (target && target.kelas) {
+        if (Array.isArray(target.kelas)) targetKelases = target.kelas;
+        else if (typeof target.kelas === 'string') targetKelases = target.kelas.split(',').map(s => s.trim());
+      }
+
+      const html = `
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 modal-overlay-scroll">
+          <div class="glass-card-pro w-full max-w-4xl p-6 rounded-3xl bg-white shadow-2xl border-2 border-slate-300 space-y-4 my-auto">
+            <h2 class="text-base font-extrabold text-slate-900 pb-2 border-b-2 border-slate-200">${target ? 'Edit Modul Pembelajaran' : 'Tambah Modul Pembelajaran Baru'}</h2>
+            
+            <form onsubmit="savePembelajaran(event, '${editId || ''}')" class="space-y-4 text-xs font-bold">
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label class="text-slate-700 uppercase">Materi Pokok / Judul Modul</label>
+                  <input type="text" id="pm-judul" required value="${target ? target.materiPokok || '' : ''}" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs">
+                </div>
+                <div>
+                  <label class="text-slate-700 uppercase">Mata Pelajaran</label>
+                  <select id="pm-mapel" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
+                    ${mapels.map(m => `<option value="${m.nama}" ${target && target.mapel === m.nama ? 'selected' : ''}>${m.nama}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="text-slate-700 uppercase mb-1 block">Kelas Target (Multi-Checklist Beberapa Kelas)</label>
+                <div class="p-3 bg-slate-50 border-2 border-slate-200 rounded-xl max-h-32 overflow-y-auto space-y-1.5">
+                  <label class="flex items-center space-x-2 pb-1 border-b border-slate-200">
+                    <input type="checkbox" id="pm-kelas-semua" onchange="toggleAllKelasPembelajaran(this)" ${targetKelases.includes('Semua') ? 'checked' : ''} class="rounded text-blue-600 focus:ring-blue-500">
+                    <span class="text-slate-900 font-extrabold">Semua Kelas</span>
+                  </label>
+                  ${kelases.map(k => `
+                    <label class="flex items-center space-x-2">
+                      <input type="checkbox" name="pm_kelas" value="${k.nama}" ${targetKelases.includes(k.nama) || targetKelases.includes('Semua') ? 'checked' : ''} class="rounded text-blue-600 focus:ring-blue-500">
+                      <span class="text-slate-800">${k.nama}</span>
+                    </label>
+                  `).join('')}
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label class="text-slate-700 uppercase">Tujuan Pembelajaran (TP)</label>
+                  <input type="text" id="pm-tp" required value="${target ? target.tp || '' : 'TP1 - Pemahaman Dasar'}" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" placeholder="misal: TP1 - Pemahaman Ozon">
+                </div>
+                <div>
+                  <label class="text-slate-700 uppercase">Pertemuan Ke-</label>
+                  <input type="text" id="pm-pertemuan" required value="${target ? target.pertemuan || 'Pertemuan 1' : 'Pertemuan 1'}" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" placeholder="misal: Pertemuan 1">
+                </div>
+                <div>
+                  <label class="text-slate-700 uppercase">Status Publikasi Utama</label>
+                  <select id="pm-status-modul" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white font-extrabold">
+                    <option value="Aktif" ${!target || target.statusModul === 'Aktif' ? 'selected' : ''}>Aktif (Bisa Diakses)</option>
+                    <option value="Tidak Aktif" ${target && target.statusModul === 'Tidak Aktif' ? 'selected' : ''}>Tidak Aktif (Disembunyikan)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- JADWAL WAKTU AKSES MODUL -->
+              <div class="p-3 bg-blue-50/60 border-2 border-blue-200 rounded-2xl space-y-2">
+                <p class="text-[11px] uppercase font-extrabold text-blue-900"><i class="fa-solid fa-clock mr-1.5"></i> Jarak Waktu Akses Modul (Tanggal & Jam)</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div>
+                    <label class="text-[10px] text-slate-600 uppercase">Tanggal & Jam Mulai</label>
+                    <input type="datetime-local" id="pm-tgl-mulai" value="${target && target.tglMulai ? target.tglMulai : ''}" class="w-full px-3 py-2 border-2 border-slate-300 rounded-xl text-xs bg-white">
+                  </div>
+                  <div>
+                    <label class="text-[10px] text-slate-600 uppercase">Tanggal & Jam Selesai / Tutup</label>
+                    <input type="datetime-local" id="pm-tgl-selesai" value="${target && target.tglSelesai ? target.tglSelesai : ''}" class="w-full px-3 py-2 border-2 border-slate-300 rounded-xl text-xs bg-white">
+                  </div>
+                </div>
+              </div>
+
+              <!-- STATUS SUB FITUR MODUL, TUGAS & QUIZ -->
+              <div class="p-3 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-2">
+                <p class="text-[11px] uppercase font-extrabold text-slate-800"><i class="fa-solid fa-toggle-on mr-1.5 text-emerald-600"></i> Kontrol Aktif Sub-Fitur (Muncul/Sembunyi di Depan)</p>
+                <div class="grid grid-cols-3 gap-2">
+                  <div>
+                    <label class="text-[10px] text-slate-600 uppercase">Akses Modul Materi</label>
+                    <select id="pm-modul-aktif" class="w-full px-2.5 py-2 border-2 border-slate-300 rounded-xl text-xs bg-white">
+                      <option value="Aktif" ${!target || target.modulAktif !== 'Tidak Aktif' ? 'selected' : ''}>Aktif</option>
+                      <option value="Tidak Aktif" ${target && target.modulAktif === 'Tidak Aktif' ? 'selected' : ''}>Sembunyikan</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="text-[10px] text-slate-600 uppercase">Akses Tugas Siswa</label>
+                    <select id="pm-tugas-aktif" class="w-full px-2.5 py-2 border-2 border-slate-300 rounded-xl text-xs bg-white">
+                      <option value="Aktif" ${!target || target.tugasAktif !== 'Tidak Aktif' ? 'selected' : ''}>Aktif</option>
+                      <option value="Tidak Aktif" ${target && target.tugasAktif === 'Tidak Aktif' ? 'selected' : ''}>Sembunyikan</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="text-[10px] text-slate-600 uppercase">Akses Kuis Interaktif</label>
+                    <select id="pm-kuis-aktif" class="w-full px-2.5 py-2 border-2 border-slate-300 rounded-xl text-xs bg-white">
+                      <option value="Aktif" ${!target || target.kuisAktif !== 'Tidak Aktif' ? 'selected' : ''}>Aktif</option>
+                      <option value="Tidak Aktif" ${target && target.kuisAktif === 'Tidak Aktif' ? 'selected' : ''}>Sembunyikan</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CKEDITOR-STYLE PROFESSIONAL RICH TEXT TOOLBAR -->
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <label class="text-slate-700 uppercase">Pembahasan Materi (Toolbar Lengkap Style Editor & Embed)</label>
+                  <span class="text-[10px] text-blue-700 font-bold">Lengkap Embed YouTube, Drive PDF, Tabel & Simbol</span>
+                </div>
+                
+                <!-- CKEDITOR COMPREHENSIVE TOOLBAR PANEL -->
+                <div class="p-2 bg-slate-100 border-2 border-b-0 border-slate-300 rounded-t-xl flex flex-wrap items-center gap-1.5 text-slate-700 shadow-inner">
+                  <!-- GROUP 1: HISTORY & SOURCE -->
+                  <button type="button" onclick="formatDoc('undo')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
+                  <button type="button" onclick="formatDoc('redo')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Redo"><i class="fa-solid fa-rotate-right"></i></button>
+                  <button type="button" onclick="toggleSourceCode()" class="px-2 py-1 bg-slate-200 hover:bg-slate-300 border border-slate-300 rounded text-xs font-bold" title="Kode Sumber / HTML"><i class="fa-solid fa-code mr-1"></i>Sumber</button>
+                  <span class="w-0.5 h-5 bg-slate-300"></span>
+
+                  <!-- GROUP 2: FORMATTING -->
+                  <button type="button" onclick="formatDoc('bold')" class="px-2.5 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded font-extrabold text-xs" title="Bold"><b>B</b></button>
+                  <button type="button" onclick="formatDoc('italic')" class="px-2.5 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded font-bold italic text-xs" title="Italic"><i>I</i></button>
+                  <button type="button" onclick="formatDoc('strikeThrough')" class="px-2.5 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs line-through" title="Strikethrough"><s>S</s></button>
+                  <button type="button" onclick="formatDoc('subscript')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Subscript">X<sub>2</sub></button>
+                  <button type="button" onclick="formatDoc('superscript')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Superscript">X<sup>2</sup></button>
+                  <button type="button" onclick="formatDoc('removeFormat')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs text-rose-600" title="Hapus Format"><i class="fa-solid fa-eraser"></i></button>
+                  <span class="w-0.5 h-5 bg-slate-300"></span>
+
+                  <!-- GROUP 3: ALIGNMENT & LISTS -->
+                  <button type="button" onclick="formatDoc('justifyLeft')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Rata Kiri"><i class="fa-solid fa-align-left"></i></button>
+                  <button type="button" onclick="formatDoc('justifyCenter')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Rata Tengah"><i class="fa-solid fa-align-center"></i></button>
+                  <button type="button" onclick="formatDoc('justifyRight')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Rata Kanan"><i class="fa-solid fa-align-right"></i></button>
+                  <button type="button" onclick="formatDoc('justifyFull')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Rata Kiri Kanan"><i class="fa-solid fa-align-justify"></i></button>
+                  <button type="button" onclick="formatDoc('insertUnorderedList')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
+                  <button type="button" onclick="formatDoc('insertOrderedList')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+                  <button type="button" onclick="formatDoc('outdent')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Outdent"><i class="fa-solid fa-outdent"></i></button>
+                  <button type="button" onclick="formatDoc('indent')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Indent"><i class="fa-solid fa-indent"></i></button>
+                  <span class="w-0.5 h-5 bg-slate-300"></span>
+
+                  <!-- GROUP 4: INSERTIONS & MEDIA EMBEDS -->
+                  <button type="button" onclick="insertTableToEditor()" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Tabel"><i class="fa-solid fa-table"></i></button>
+                  <button type="button" onclick="formatDoc('insertHorizontalRule')" class="px-2 py-1 bg-white hover:bg-slate-200 border border-slate-300 rounded text-xs" title="Garis Horizontal"><i class="fa-solid fa-minus"></i></button>
+                  <button type="button" onclick="insertEmbedToEditor('symbol')" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 rounded text-xs font-extrabold" title="Simbol Ω / Matematika"><i class="fa-solid fa-omega"></i></button>
+                  <button type="button" onclick="insertEmbedToEditor('youtube')" class="px-2 py-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 rounded text-xs font-bold flex items-center space-x-1" title="Embed YouTube"><i class="fa-brands fa-youtube"></i><span>YouTube</span></button>
+                  <button type="button" onclick="insertEmbedToEditor('drive')" class="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded text-xs font-bold flex items-center space-x-1" title="Embed Drive / PDF"><i class="fa-solid fa-file-pdf"></i><span>Drive PDF</span></button>
+                  <button type="button" onclick="insertEmbedToEditor('web')" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-300 rounded text-xs font-bold flex items-center space-x-1" title="Embed Web"><i class="fa-solid fa-globe"></i><span>Web</span></button>
+                </div>
+
+                <!-- CONTENTEDITABLE CONTAINER -->
+                <div id="pm-pembahasan-editor" contenteditable="true" class="w-full min-h-[240px] max-h-[400px] overflow-y-auto p-4 border-2 border-slate-300 rounded-b-xl bg-white focus:outline-none focus:border-blue-600 font-normal text-xs leading-relaxed rich-module-body">
+                  ${target ? target.pembahasan || '' : '<p>Tuliskan penjelasan pembahasan materi modul pembelajaran secara lengkap di sini...</p>'}
+                </div>
+              </div>
+
+              <div>
+                <label class="text-slate-700 uppercase">Instruksi Tugas Siswa (Opsional)</label>
+                <textarea id="pm-tugas-desk" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" rows="2" placeholder="Petunjuk pengumpulan tugas untuk siswa...">${target ? target.tugasDeskripsi || '' : ''}</textarea>
+              </div>
+
+              <div class="flex justify-end space-x-2 pt-2 border-t-2 border-slate-200">
+                <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">Batal</button>
+                <button type="submit" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow border-2 border-blue-800">Simpan Modul</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+      document.getElementById('modal-container').innerHTML = html;
+    };
+
+    window.savePembelajaran = function(e, editId = null) {
+      e.preventDefault();
+      let list = window.getStorageData('pembelajaran') || [];
+      const user = window.currentUser || {};
+
+      const isSemuaChecked = document.getElementById('pm-kelas-semua')?.checked;
+      const selectedClasses = Array.from(document.querySelectorAll('input[name="pm_kelas"]:checked')).map(cb => cb.value);
+
+      let finalKelas = [];
+      if (isSemuaChecked || selectedClasses.length === 0) {
+        finalKelas = ['Semua'];
+      } else {
+        finalKelas = selectedClasses;
+      }
+
+      const editorContent = document.getElementById('pm-pembahasan-editor').innerHTML;
+      const target = editId ? list.find(x => x.id === editId) : null;
+
+      const dataObj = {
+        id: editId || 'pm-' + Date.now(),
+        materiPokok: document.getElementById('pm-judul').value.trim(),
+        mapel: document.getElementById('pm-mapel').value,
+        kelas: finalKelas,
+        tp: document.getElementById('pm-tp').value.trim(),
+        pertemuan: document.getElementById('pm-pertemuan').value.trim() || 'Pertemuan 1',
+        statusModul: document.getElementById('pm-status-modul').value,
+        tglMulai: document.getElementById('pm-tgl-mulai').value,
+        tglSelesai: document.getElementById('pm-tgl-selesai').value,
+        modulAktif: document.getElementById('pm-modul-aktif').value,
+        tugasAktif: document.getElementById('pm-tugas-aktif').value,
+        kuisAktif: document.getElementById('pm-kuis-aktif').value,
+        pembahasan: editorContent,
+        tugasDeskripsi: document.getElementById('pm-tugas-desk').value.trim(),
+        guruNama: user.nama || 'Guru Pengampu',
+        quizQuestions: target && target.quizQuestions ? target.quizQuestions : [
+          {
+            id: 'q1',
+            question: 'Sebutkan pemahaman utama dari materi ' + document.getElementById('pm-judul').value.trim() + '?',
+            options: ['Opsi A dasar', 'Opsi B lanjutan', 'Opsi C penerapan', 'Opsi D evaluasi'],
+            answer: 0
+          }
+        ]
+      };
+
+      if (editId) {
+        const idx = list.findIndex(x => x.id === editId);
+        if (idx !== -1) list[idx] = { ...list[idx], ...dataObj };
+      } else {
+        list.unshift(dataObj);
+      }
+
+      window.setStorageData('pembelajaran', list);
+      window.syncToFirestore('pembelajaran', dataObj.id, dataObj);
+      closeModal();
+      window.showToast('Modul Pembelajaran berhasil disimpan!', 'success');
+      window.loadPembelajaranData();
+    };
+
+    window.deletePembelajaran = function(id) {
+      window.showConfirm('Hapus modul pembelajaran ini?', () => {
+        let list = window.getStorageData('pembelajaran').filter(x => x.id !== id);
+        window.setStorageData('pembelajaran', list);
+        window.removeFromFirestore('pembelajaran', id);
+        window.showToast('Modul dihapus.');
+        window.loadPembelajaranData();
+      });
+    };
+
+    window.viewPembelajaranDetail = function(id) {
+      const list = window.getStorageData('pembelajaran');
+      const target = list.find(x => x.id === id);
+      if (!target) return;
+
+      const displayKelas = Array.isArray(target.kelas) ? target.kelas.join(', ') : (target.kelas || 'Semua');
+      const user = window.currentUser || {};
+      const todayStr = new Date().toISOString().slice(0, 10);
+
+      if (user.role === 'siswa') {
+        let readLogs = window.getStorageData('student_read_logs') || [];
+        if (!readLogs.some(r => r.materiId === id && r.studentUsername === user.username && r.timestamp.includes(todayStr))) {
+          const logObj = { id: 'read-' + user.username + '-' + Date.now(), materiId: id, studentUsername: user.username, timestamp: new Date().toISOString() };
+          readLogs.push(logObj);
+          window.setStorageData('student_read_logs', readLogs);
+          window.syncToFirestore('student_read_logs', logObj.id, logObj);
+        }
+      }
+
+      const html = `
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 modal-overlay-scroll">
+          <div class="glass-card-pro w-full max-w-3xl p-6 rounded-3xl bg-white shadow-2xl border-2 border-slate-300 space-y-5 my-auto">
+            <div class="flex justify-between items-start border-b-2 border-slate-200 pb-3">
+              <div>
+                <span class="px-2.5 py-1 bg-blue-100 text-blue-800 rounded font-extrabold text-xs uppercase">${target.mapel} &bull; ${displayKelas}</span>
+                <h2 class="text-lg font-extrabold text-slate-900 mt-2"><i class="fa-solid fa-book-open mr-2 text-blue-600"></i>${target.materiPokok}</h2>
+              </div>
+              <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-lg font-extrabold">&times;</button>
+            </div>
+            
+            <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs font-bold text-blue-900 flex justify-between items-center">
+              <span><i class="fa-solid fa-bullseye mr-1.5"></i> Target Pembelajaran: ${target.tp || 'TP1 - Pemahaman Dasar'}</span>
+              <span class="text-[10px] text-slate-500 font-bold">Pengajar: ${target.guruNama}</span>
+            </div>
+
+            <!-- ISI MODUL RICH TEXT & EMBED -->
+            <div class="text-xs font-semibold text-slate-800 leading-relaxed bg-slate-50 p-5 rounded-2xl border border-slate-200 rich-module-body max-h-[400px] overflow-y-auto">
+              ${target.pembahasan}
+            </div>
+
+            <!-- RUANG DISKUSI & CHAT SISWA INTERAKTIF -->
+            <div class="pt-4 border-t-2 border-slate-200 space-y-3">
+              <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                <i class="fa-solid fa-comments text-blue-600"></i>
+                <span>Ruang Diskusi & Tanya Jawab Siswa</span>
+              </h3>
+
+              <div id="module-comments-list-${id}" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+
+              <div class="flex space-x-2">
+                <input type="text" id="comment-input-${id}" placeholder="Tanyakan sesuatu tentang modul ini..." class="flex-1 px-3.5 py-2 border-2 border-slate-300 rounded-xl text-xs font-bold focus:border-blue-600 focus:outline-none">
+                <button onclick="sendModuleComment('${id}')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-extrabold shadow flex items-center space-x-1">
+                  <i class="fa-solid fa-paper-plane"></i>
+                  <span>Kirim</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex justify-end pt-2 border-t-2 border-slate-200">
+              <button onclick="closeModal()" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-extrabold shadow">Tutup Modul</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('modal-container').innerHTML = html;
+      loadModuleComments(id);
+    };
+
+    window.loadModuleComments = function(materiId) {
+      const comments = window.getStorageData('module_comments') || [];
+      const listContainer = document.getElementById(`module-comments-list-${materiId}`);
+      if (!listContainer) return;
+
+      const filtered = comments.filter(c => c.materiId === materiId);
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `<p class="text-[11px] text-slate-400 font-bold italic py-2">Belum ada diskusi. Jadilah yang pertama bertanya!</p>`;
+        return;
+      }
+
+      listContainer.innerHTML = filtered.map(c => `
+        <div class="p-2.5 bg-white border border-slate-200 rounded-xl space-y-1 text-xs">
+          <div class="flex justify-between items-center">
+            <span class="font-extrabold text-slate-900">${c.nama} <span class="text-[9px] px-1.5 py-0.5 ${c.role === 'guru' || c.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'} rounded font-extrabold uppercase ml-1">${c.role}</span></span>
+            <span class="text-[10px] text-slate-400 font-bold">${c.timestamp || ''}</span>
+          </div>
+          <p class="text-slate-700 font-normal leading-relaxed">${c.text}</p>
+        </div>
+      `).join('');
+    };
+
+    window.sendModuleComment = function(materiId) {
+      const input = document.getElementById(`comment-input-${materiId}`);
+      if (!input) return;
+
+      const text = input.value.trim();
+      const user = window.currentUser || { username: 'anon', nama: 'Siswa', role: 'siswa' };
+      if (!text) return;
+
+      let comments = window.getStorageData('module_comments') || [];
+      const newComment = {
+        id: 'cmt-' + Date.now(),
+        materiId,
+        username: user.username,
+        nama: user.nama,
+        role: user.role,
+        text,
+        timestamp: new Date().toLocaleString('id-ID')
+      };
+
+      comments.push(newComment);
+      window.setStorageData('module_comments', comments);
+      window.syncToFirestore('module_comments', newComment.id, newComment);
+
+      input.value = '';
+      loadModuleComments(materiId);
+    };
+
+    window.openTugasModal = function(id) {
+      const list = window.getStorageData('pembelajaran');
+      const target = list.find(x => x.id === id);
+      if (!target) return;
+
+      const user = window.currentUser || {};
+      const isTeacher = user.role === 'guru' || user.role === 'admin';
+      const submissions = window.getStorageData('task_submissions') || [];
+      const mySub = submissions.find(s => s.materiId === id && s.studentUsername === user.username);
+
+      let contentHtml = '';
+
+      if (isTeacher) {
+        const moduleSubs = submissions.filter(s => s.materiId === id);
+        contentHtml = `
+          <div class="space-y-3 text-xs font-bold">
+            <h3 class="font-extrabold text-slate-900 border-b pb-2">Daftar Pengumpulan Tugas Siswa (${moduleSubs.length} Siswa Submit)</h3>
+            ${moduleSubs.length === 0 ? '<p class="text-slate-400">Belum ada siswa yang mengumpulkan tugas untuk modul ini.</p>' : `
+              <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                ${moduleSubs.map((s, idx) => `
+                  <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                    <div class="flex justify-between">
+                      <span class="font-extrabold text-slate-900">${idx + 1}. ${s.studentNama} (${s.studentKelas})</span>
+                      <span class="text-[10px] text-slate-500">${s.timestamp || ''}</span>
+                    </div>
+                    <p class="text-blue-700 bg-white p-2 rounded border border-slate-200 font-mono text-[11px] break-all">${s.jawaban}</p>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+        `;
+      } else {
+        contentHtml = `
+          <div class="space-y-4 text-xs font-bold">
+            <div class="p-3.5 bg-indigo-50 border border-indigo-200 rounded-xl">
+              <p class="text-[10px] uppercase font-extrabold text-indigo-700">Instruksi Tugas</p>
+              <p class="text-slate-800 mt-1 leading-relaxed">${target.tugasDeskripsi || 'Silakan pelajari modul di atas dan kirimkan ringkasan jawaban atau link tugas Anda.'}</p>
+            </div>
+
+            ${mySub ? `
+              <div class="p-3 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl font-extrabold space-y-1">
+                <p class="flex items-center text-xs"><i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> Status: Tugas Sudah Terkumpul</p>
+                <p class="text-[11px] font-normal text-slate-600">Dikirim pada: ${mySub.timestamp}</p>
+                <p class="text-[11px] bg-white p-2 rounded border border-emerald-200 text-slate-800 font-mono break-all">${mySub.jawaban}</p>
+              </div>
+            ` : `
+              <form onsubmit="submitStudentTask(event, '${id}')" class="space-y-3">
+                <div>
+                  <label class="text-slate-700 uppercase block mb-1">Jawaban Teks / Link Tugas (Google Drive / Doc)</label>
+                  <textarea id="task-answer-input" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl text-xs" rows="3" placeholder="Tuliskan jawaban atau paste link publik tugas Anda di sini..."></textarea>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-extrabold shadow border-2 border-indigo-700">
+                  <i class="fa-solid fa-paper-plane mr-1.5"></i> Kirimkan Tugas
+                </button>
+              </form>
+            `}
+          </div>
+        `;
+      }
+
+      const html = `
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div class="glass-card-pro w-full max-w-lg p-6 rounded-3xl bg-white shadow-2xl border-2 border-slate-300 space-y-4 my-8">
+            <div class="flex justify-between items-start border-b-2 border-slate-200 pb-3">
+              <div>
+                <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-extrabold text-[10px] uppercase">${target.mapel}</span>
+                <h2 class="text-base font-extrabold text-slate-900 mt-1"><i class="fa-solid fa-pen-to-square text-indigo-600 mr-1.5"></i>Tugas Modul: ${target.materiPokok}</h2>
+              </div>
+              <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-lg font-extrabold">&times;</button>
+            </div>
+            ${contentHtml}
+            <div class="flex justify-end pt-2 border-t-2 border-slate-200">
+              <button onclick="closeModal()" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-extrabold shadow">Tutup Window</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('modal-container').innerHTML = html;
+    };
+
+    window.submitStudentTask = function(e, materiId) {
+      e.preventDefault();
+      const answer = document.getElementById('task-answer-input').value.trim();
+      const user = window.currentUser || {};
+      if (!answer || user.role !== 'siswa') return;
+
+      let submissions = window.getStorageData('task_submissions') || [];
+      const subObj = {
+        id: 'sub-' + user.username + '-' + materiId,
+        materiId: materiId,
+        studentUsername: user.username,
+        studentNama: user.nama,
+        studentKelas: user.kelas || 'X',
+        jawaban: answer,
+        timestamp: new Date().toLocaleString('id-ID')
+      };
+
+      submissions.push(subObj);
+      window.setStorageData('task_submissions', submissions);
+      window.syncToFirestore('task_submissions', subObj.id, subObj);
+
+      window.showToast('Tugas Berhasil Dikirimkan!', 'success');
+      window.openTugasModal(materiId);
+    };
+
+    window.openQuizModal = function(id) {
+      const list = window.getStorageData('pembelajaran');
+      const target = list.find(x => x.id === id);
+      if (!target) return;
+
+      const user = window.currentUser || {};
+      const isTeacher = user.role === 'guru' || user.role === 'admin';
+      const scores = window.getStorageData('quiz_scores') || [];
+      const myScore = scores.find(s => s.materiId === id && s.studentUsername === user.username);
+      const questions = target.quizQuestions || [];
+
+      let contentHtml = '';
+
+      if (isTeacher) {
+        const moduleScores = scores.filter(s => s.materiId === id);
+        contentHtml = `
+          <div class="space-y-4 text-xs font-bold">
+            <div class="flex justify-between items-center border-b pb-2">
+              <h3 class="font-extrabold text-slate-900">Rekap Hasil Kuis Siswa (${moduleScores.length} Siswa Mengerjakan)</h3>
+            </div>
+            ${moduleScores.length === 0 ? '<p class="text-slate-400">Belum ada nilai kuis siswa yang terekam.</p>' : `
+              <div class="space-y-1.5 max-h-52 overflow-y-auto pr-1">
+                ${moduleScores.map((s, idx) => `
+                  <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center">
+                    <div>
+                      <p class="font-extrabold text-slate-900">${idx + 1}. ${s.studentNama} (${s.kelas || 'X'})</p>
+                      <p class="text-[10px] text-slate-500">${s.timestamp || ''}</p>
+                    </div>
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-extrabold rounded-lg text-sm">${s.score}</span>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+        `;
+      } else {
+        if (myScore) {
+          contentHtml = `
+            <div class="p-6 bg-emerald-50 border-2 border-emerald-300 text-center rounded-2xl space-y-3">
+              <div class="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto shadow-md">
+                <i class="fa-solid fa-trophy"></i>
+              </div>
+              <h3 class="text-base font-extrabold text-emerald-900">Kuis Telah Diselesaikan!</h3>
+              <p class="text-xs font-bold text-slate-600">Nilai Akhir Kuis Anda:</p>
+              <div class="text-4xl font-extrabold text-emerald-700 tracking-tight">${myScore.score} / 100</div>
+              <p class="text-[10px] text-slate-500 font-bold">Disubmit pada: ${myScore.timestamp}</p>
+            </div>
+          `;
+        } else if (questions.length === 0) {
+          contentHtml = `<p class="text-center text-slate-400 font-bold py-6">Kuis belum dikonfigurasi untuk modul ini.</p>`;
+        } else {
+          contentHtml = `
+            <form onsubmit="submitQuizAnswers(event, '${id}')" class="space-y-4 text-xs font-bold max-h-96 overflow-y-auto pr-2">
+              ${questions.map((q, idx) => `
+                <div class="p-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-2">
+                  <p class="font-extrabold text-slate-900">${idx + 1}. ${q.question}</p>
+                  <div class="space-y-1.5 pl-2">
+                    ${q.options.map((opt, optIdx) => `
+                      <label class="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-white border border-transparent hover:border-slate-200">
+                        <input type="radio" name="q_${q.id}" value="${optIdx}" required class="text-emerald-600 focus:ring-emerald-500">
+                        <span class="text-slate-800 font-semibold">${opt}</span>
+                      </label>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+              <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-lg border-2 border-emerald-700">
+                <i class="fa-solid fa-check-double mr-2"></i> Submit & Hitung Nilai Kuis
+              </button>
+            </form>
+          `;
+        }
+      }
+
+      const html = `
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div class="glass-card-pro w-full max-w-lg p-6 rounded-3xl bg-white shadow-2xl border-2 border-slate-300 space-y-4 my-8">
+            <div class="flex justify-between items-start border-b-2 border-slate-200 pb-3">
+              <div>
+                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-extrabold text-[10px] uppercase">${target.mapel}</span>
+                <h2 class="text-base font-extrabold text-slate-900 mt-1"><i class="fa-solid fa-circle-question text-emerald-600 mr-1.5"></i>Kuis Modul: ${target.materiPokok}</h2>
+              </div>
+              <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-lg font-extrabold">&times;</button>
+            </div>
+            ${contentHtml}
+            <div class="flex justify-end pt-2 border-t-2 border-slate-200">
+              <button onclick="closeModal()" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-extrabold shadow">Tutup Window</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('modal-container').innerHTML = html;
+    };
+
+    window.submitQuizAnswers = function(e, materiId) {
+      e.preventDefault();
+      const list = window.getStorageData('pembelajaran');
+      const target = list.find(x => x.id === materiId);
+      const user = window.currentUser || {};
+
+      if (!target || user.role !== 'siswa') return;
+
+      const questions = target.quizQuestions || [];
+      let correctCount = 0;
+
+      questions.forEach(q => {
+        const selected = document.querySelector(`input[name="q_${q.id}"]:checked`);
+        if (selected && parseInt(selected.value) === q.answer) {
+          correctCount++;
+        }
+      });
+
+      const finalScore = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
+
+      let scores = window.getStorageData('quiz_scores') || [];
+      const scoreObj = {
+        id: 'qs-' + user.username + '-' + materiId,
+        materiId: materiId,
+        tp: target.tp || 'TP1',
+        mapel: target.mapel,
+        kelas: user.kelas || 'X',
+        studentUsername: user.username,
+        studentNama: user.nama,
+        score: finalScore,
+        timestamp: new Date().toLocaleString('id-ID')
+      };
+
+      scores.push(scoreObj);
+      window.setStorageData('quiz_scores', scores);
+      window.syncToFirestore('quiz_scores', scoreObj.id, scoreObj);
+
+      window.showToast('Kuis Berhasil Disubmit! Nilai Anda: ' + finalScore, 'success');
+      window.openQuizModal(materiId);
+      window.loadBerandaData();
+    };
 
     function getCombinedTeachersList() {
       const guruMaster = window.getStorageData('master_guru') || [];
@@ -1065,6 +1886,96 @@
               <i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Pengaturan
             </button>
           </form>
+        `;
+      } else if (tab === 'jurusan') {
+        const list = window.getStorageData('master_jurusan') || [];
+        container.innerHTML = `
+          <div class="flex justify-between items-center pb-3 border-b-2 border-slate-200 mb-4">
+            <h2 class="text-base font-extrabold text-slate-900">Data Jurusan</h2>
+            <button onclick="openModalMaster('jurusan')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Jurusan</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-bold text-slate-700 border-collapse">
+              <thead class="bg-slate-100 border-b-2 border-slate-300 font-extrabold text-slate-800"><tr><th class="p-3 border-r border-slate-200">No</th><th class="p-3 border-r border-slate-200">Nama Jurusan</th><th class="p-3">Aksi</th></tr></thead>
+              <tbody class="divide-y-2 divide-slate-100 bg-white">
+                ${list.length === 0 ? '<tr><td colspan="3" class="p-4 text-center text-slate-400">Belum ada data jurusan.</td></tr>' : list.map((item, idx) => `
+                  <tr class="hover:bg-slate-50 border-b border-slate-200"><td class="p-3 border-r border-slate-200">${idx + 1}</td><td class="p-3 border-r border-slate-200 font-extrabold text-slate-900">${item.nama}</td><td class="p-3 flex space-x-1.5"><button onclick="openModalMaster('jurusan', '${item.id}')" class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-pen"></i></button><button onclick="deleteMasterItem('jurusan', '${item.id}')" class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-trash"></i></button></td></tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (tab === 'kelas') {
+        const list = window.getStorageData('master_kelas') || [];
+        container.innerHTML = `
+          <div class="flex justify-between items-center pb-3 border-b-2 border-slate-200 mb-4">
+            <h2 class="text-base font-extrabold text-slate-900">Data Kelas</h2>
+            <button onclick="openModalMaster('kelas')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Kelas</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-bold text-slate-700 border-collapse">
+              <thead class="bg-slate-100 border-b-2 border-slate-300 font-extrabold text-slate-800"><tr><th class="p-3 border-r border-slate-200">No</th><th class="p-3 border-r border-slate-200">Nama Kelas</th><th class="p-3">Aksi</th></tr></thead>
+              <tbody class="divide-y-2 divide-slate-100 bg-white">
+                ${list.length === 0 ? '<tr><td colspan="3" class="p-4 text-center text-slate-400">Belum ada data kelas.</td></tr>' : list.map((item, idx) => `
+                  <tr class="hover:bg-slate-50 border-b border-slate-200"><td class="p-3 border-r border-slate-200">${idx + 1}</td><td class="p-3 border-r border-slate-200 font-extrabold text-slate-900">${item.nama}</td><td class="p-3 flex space-x-1.5"><button onclick="openModalMaster('kelas', '${item.id}')" class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-pen"></i></button><button onclick="deleteMasterItem('kelas', '${item.id}')" class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-trash"></i></button></td></tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (tab === 'mapel') {
+        const list = window.getStorageData('master_mapel') || [];
+        container.innerHTML = `
+          <div class="flex justify-between items-center pb-3 border-b-2 border-slate-200 mb-4">
+            <h2 class="text-base font-extrabold text-slate-900">Data Mata Pelajaran</h2>
+            <button onclick="openModalMaster('mapel')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Mapel</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-bold text-slate-700 border-collapse">
+              <thead class="bg-slate-100 border-b-2 border-slate-300 font-extrabold text-slate-800"><tr><th class="p-3 border-r border-slate-200">No</th><th class="p-3 border-r border-slate-200">Nama Mapel</th><th class="p-3">Aksi</th></tr></thead>
+              <tbody class="divide-y-2 divide-slate-100 bg-white">
+                ${list.length === 0 ? '<tr><td colspan="3" class="p-4 text-center text-slate-400">Belum ada data mapel.</td></tr>' : list.map((item, idx) => `
+                  <tr class="hover:bg-slate-50 border-b border-slate-200"><td class="p-3 border-r border-slate-200">${idx + 1}</td><td class="p-3 border-r border-slate-200 font-extrabold text-slate-900">${item.nama}</td><td class="p-3 flex space-x-1.5"><button onclick="openModalMaster('mapel', '${item.id}')" class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-pen"></i></button><button onclick="deleteMasterItem('mapel', '${item.id}')" class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-trash"></i></button></td></tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (tab === 'guru') {
+        const teachers = getCombinedTeachersList();
+        container.innerHTML = `
+          <div class="flex justify-between items-center pb-3 border-b-2 border-slate-200 mb-4">
+            <h2 class="text-base font-extrabold text-slate-900">Data Guru</h2>
+            <button onclick="openModalMaster('guru')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Guru</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-bold text-slate-700 border-collapse">
+              <thead class="bg-slate-100 border-b-2 border-slate-300 font-extrabold text-slate-800"><tr><th class="p-3 border-r border-slate-200">No</th><th class="p-3 border-r border-slate-200">Nama Guru</th><th class="p-3 border-r border-slate-200">Username</th><th class="p-3">Aksi</th></tr></thead>
+              <tbody class="divide-y-2 divide-slate-100 bg-white">
+                ${teachers.map((t, idx) => `
+                  <tr class="hover:bg-slate-50 border-b border-slate-200"><td class="p-3 border-r border-slate-200">${idx + 1}</td><td class="p-3 border-r border-slate-200 font-extrabold text-slate-900">${t.nama}</td><td class="p-3 border-r border-slate-200 font-mono text-blue-800">${t.username}</td><td class="p-3 flex space-x-1.5"><button onclick="openModalMaster('guru', '${t.id}')" class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-pen"></i></button><button onclick="deleteMasterItem('guru', '${t.id}')" class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-trash"></i></button></td></tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (tab === 'walas') {
+        const list = window.getStorageData('mapping_walas') || [];
+        container.innerHTML = `
+          <div class="flex justify-between items-center pb-3 border-b-2 border-slate-200 mb-4">
+            <h2 class="text-base font-extrabold text-slate-900">Data Wali Kelas</h2>
+            <button onclick="openModalMaster('walas')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Walas</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-bold text-slate-700 border-collapse">
+              <thead class="bg-slate-100 border-b-2 border-slate-300 font-extrabold text-slate-800"><tr><th class="p-3 border-r border-slate-200">No</th><th class="p-3 border-r border-slate-200">Nama Guru</th><th class="p-3 border-r border-slate-200">Kelas Binaan</th><th class="p-3">Aksi</th></tr></thead>
+              <tbody class="divide-y-2 divide-slate-100 bg-white">
+                ${list.length === 0 ? '<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada penugasan wali kelas.</td></tr>' : list.map((w, idx) => `
+                  <tr class="hover:bg-slate-50 border-b border-slate-200"><td class="p-3 border-r border-slate-200">${idx + 1}</td><td class="p-3 border-r border-slate-200 font-extrabold text-slate-900">${w.guruNama}</td><td class="p-3 border-r border-slate-200"><span class="px-2 py-0.5 bg-teal-100 text-teal-800 font-extrabold rounded">${w.kelasNama}</span></td><td class="p-3"><button onclick="deleteMasterItem('walas', '${w.id}')" class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-trash"></i> Hapus</button></td></tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
         `;
       } else if (tab === 'mapping') {
         const teachers = getCombinedTeachersList();
@@ -1114,6 +2025,228 @@
     }
     window.renderMasterMappingView = renderMasterMappingView;
 
+    window.openModalMaster = function(type, id = null) {
+      const teachers = getCombinedTeachersList();
+      const mapels = window.getStorageData('master_mapel');
+      const kelases = window.getStorageData('master_kelas');
+      const me = document.getElementById('modal-container');
+
+      if (type === 'mapping') {
+        const mappings = window.getStorageData('mapping_guru') || [];
+        const selectedTeacher = id ? teachers.find(t => t.username === id) : null;
+        const teacherUsername = selectedTeacher ? selectedTeacher.username : (teachers[0] ? teachers[0].username : '');
+
+        const myMaps = mappings.filter(m => m.guruUsername === teacherUsername);
+        const myMapelSet = new Set(myMaps.map(m => m.mapelNama));
+        const myKelasSet = new Set(myMaps.map(m => m.kelasNama));
+
+        me.innerHTML = `
+          <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <div class="glass-card-pro w-full max-w-lg p-6 rounded-3xl bg-white shadow-2xl space-y-4 border-2 border-slate-300">
+              <h2 class="text-base font-extrabold text-slate-900 pb-2 border-b-2 border-slate-200">Mapping Mengajar Guru</h2>
+              <form onsubmit="saveMasterItem(event, 'mapping', '${id || ''}')" class="space-y-3 text-xs font-bold">
+                <div>
+                  <label class="text-slate-700 uppercase">Pilih Guru</label>
+                  <select id="mp-guru" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white" ${id ? 'disabled' : ''}>
+                    ${teachers.map(t => `<option value="${t.username}" ${t.username === teacherUsername ? 'selected' : ''}>${t.nama}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label class="text-slate-700 uppercase mb-1 block">Mata Pelajaran (Checklist)</label>
+                  <div class="p-3 bg-slate-50 border-2 border-slate-200 rounded-xl max-h-32 overflow-y-auto space-y-1">
+                    ${mapels.map(m => `
+                      <label class="flex items-center space-x-2">
+                        <input type="checkbox" name="mp_mapel" value="${m.nama}" ${myMapelSet.has(m.nama) ? 'checked' : ''} class="rounded text-blue-600 focus:ring-blue-500">
+                        <span class="text-slate-800">${m.nama}</span>
+                      </label>
+                    `).join('')}
+                  </div>
+                </div>
+                <div>
+                  <label class="text-slate-700 uppercase mb-1 block">Kelas Ditampu (Checklist)</label>
+                  <div class="p-3 bg-slate-50 border-2 border-slate-200 rounded-xl max-h-32 overflow-y-auto space-y-1">
+                    ${kelases.map(k => `
+                      <label class="flex items-center space-x-2">
+                        <input type="checkbox" name="mp_kelas" value="${k.nama}" ${myKelasSet.has(k.nama) ? 'checked' : ''} class="rounded text-blue-600 focus:ring-blue-500">
+                        <span class="text-slate-800">${k.nama}</span>
+                      </label>
+                    `).join('')}
+                  </div>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2 border-t-2 border-slate-200">
+                  <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">Batal</button>
+                  <button type="submit" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow border-2 border-blue-800">Simpan Mapping</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+      } else if (type === 'walas') {
+        me.innerHTML = `
+          <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <div class="glass-card-pro w-full max-w-md p-6 rounded-3xl bg-white shadow-2xl space-y-4 border-2 border-slate-300">
+              <h2 class="text-base font-extrabold text-slate-900 pb-2 border-b-2 border-slate-200">Penetapan Wali Kelas</h2>
+              <form onsubmit="saveMasterItem(event, 'walas')" class="space-y-3 text-xs font-bold">
+                <div>
+                  <label class="text-slate-700 uppercase">Pilih Guru</label>
+                  <select id="wl-guru" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
+                    ${teachers.map(t => `<option value="${t.username}">${t.nama}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label class="text-slate-700 uppercase">Pilih Kelas Binaan</label>
+                  <select id="wl-kelas" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
+                    ${kelases.map(k => `<option value="${k.nama}">${k.nama}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2 border-t-2 border-slate-200">
+                  <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">Batal</button>
+                  <button type="submit" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow border-2 border-blue-800">Simpan Walas</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+      } else {
+        const titleMap = { jurusan: 'Jurusan', kelas: 'Kelas', mapel: 'Mata Pelajaran', guru: 'Guru' };
+        me.innerHTML = `
+          <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <div class="glass-card-pro w-full max-w-md p-6 rounded-3xl bg-white shadow-2xl space-y-4 border-2 border-slate-300">
+              <h2 class="text-base font-extrabold text-slate-900 pb-2 border-b-2 border-slate-200">Tambah / Edit Data ${titleMap[type] || type}</h2>
+              <form onsubmit="saveMasterItem(event, '${type}', '${id || ''}')" class="space-y-3 text-xs font-bold">
+                <div>
+                  <label class="text-slate-700 uppercase">Nama ${titleMap[type] || type}</label>
+                  <input type="text" id="master-item-nama" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" placeholder="Masukkan nama...">
+                </div>
+                ${type === 'guru' ? `
+                  <div>
+                    <label class="text-slate-700 uppercase">Username / ID Guru</label>
+                    <input type="text" id="master-guru-username" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" placeholder="misal: sulis">
+                  </div>
+                  <div>
+                    <label class="text-slate-700 uppercase">Password</label>
+                    <input type="password" id="master-guru-password" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" value="guru123">
+                  </div>
+                ` : ''}
+                <div class="flex justify-end space-x-2 pt-2 border-t-2 border-slate-200">
+                  <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">Batal</button>
+                  <button type="submit" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow border-2 border-blue-800">Simpan</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+      }
+    };
+
+    window.saveMasterItem = function(e, type, id = null) {
+      e.preventDefault();
+
+      if (type === 'mapping') {
+        const teachers = getCombinedTeachersList();
+        const guruUsername = document.getElementById('mp-guru').value;
+        const selectedTeacher = teachers.find(t => t.username === guruUsername);
+        const guruNama = selectedTeacher ? selectedTeacher.nama : 'Guru Pengampu';
+
+        const mapels = Array.from(document.querySelectorAll('input[name="mp_mapel"]:checked')).map(c => c.value);
+        const kelases = Array.from(document.querySelectorAll('input[name="mp_kelas"]:checked')).map(c => c.value);
+
+        let mappings = window.getStorageData('mapping_guru') || [];
+        mappings = mappings.filter(m => m.guruUsername !== guruUsername);
+
+        mapels.forEach(mName => {
+          kelases.forEach(kName => {
+            const mapObj = {
+              id: 'mg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+              guruUsername,
+              guruNama,
+              mapelNama: mName,
+              kelasNama: kName
+            };
+            mappings.push(mapObj);
+            window.syncToFirestore('mapping_guru', mapObj.id, mapObj);
+          });
+        });
+
+        window.setStorageData('mapping_guru', mappings);
+        window.showToast('Mapping mengajar guru berhasil diperbarui!', 'success');
+      } else if (type === 'walas') {
+        const teachers = getCombinedTeachersList();
+        const guruUsername = document.getElementById('wl-guru').value;
+        const selectedTeacher = teachers.find(t => t.username === guruUsername);
+        const kelasNama = document.getElementById('wl-kelas').value;
+
+        let walas = window.getStorageData('mapping_walas') || [];
+        const newWalas = {
+          id: 'mw-' + Date.now(),
+          guruUsername,
+          guruNama: selectedTeacher ? selectedTeacher.nama : 'Guru Walas',
+          kelasNama
+        };
+        walas.push(newWalas);
+        window.setStorageData('mapping_walas', walas);
+        window.syncToFirestore('mapping_walas', newWalas.id, newWalas);
+        window.showToast('Penetapan wali kelas tersimpan!', 'success');
+      } else if (type === 'guru') {
+        const nama = document.getElementById('master-item-nama').value.trim();
+        const username = document.getElementById('master-guru-username').value.trim();
+        const password = document.getElementById('master-guru-password').value.trim();
+
+        let gurus = window.getStorageData('master_guru') || [];
+        let users = window.getStorageData('users') || [];
+
+        const gObj = { id: id || 'guru-' + Date.now(), nama, username, password };
+        const uObj = { username, password, nama, role: 'guru', level: '-', jurusan: '-', kelas: '-' };
+
+        if (id) {
+          const idx = gurus.findIndex(g => g.id === id);
+          if (idx !== -1) gurus[idx] = gObj;
+        } else {
+          gurus.push(gObj);
+        }
+
+        const uIdx = users.findIndex(u => u.username === username);
+        if (uIdx !== -1) users[uIdx] = uObj;
+        else users.push(uObj);
+
+        window.setStorageData('master_guru', gurus);
+        window.setStorageData('users', users);
+        window.syncToFirestore('master_guru', gObj.id, gObj);
+        window.syncToFirestore('users', username, uObj);
+        window.showToast('Data Guru berhasil disimpan!', 'success');
+      } else {
+        const storeKey = 'master_' + type;
+        const nama = document.getElementById('master-item-nama').value.trim();
+        let list = window.getStorageData(storeKey) || [];
+
+        const itemObj = { id: id || type.substring(0, 3) + '-' + Date.now(), nama };
+        if (id) {
+          const idx = list.findIndex(i => i.id === id);
+          if (idx !== -1) list[idx] = itemObj;
+        } else {
+          list.push(itemObj);
+        }
+
+        window.setStorageData(storeKey, list);
+        window.syncToFirestore(storeKey, itemObj.id, itemObj);
+        window.showToast(`Data ${type} berhasil disimpan!`, 'success');
+      }
+
+      closeModal();
+      window.renderMasterMappingView();
+    };
+
+    window.deleteMasterItem = function(type, id) {
+      window.showConfirm(`Hapus data ${type} ini?`, () => {
+        const storeKey = type === 'walas' ? 'mapping_walas' : 'master_' + type;
+        let list = window.getStorageData(storeKey).filter(x => x.id !== id);
+        window.setStorageData(storeKey, list);
+        window.removeFromFirestore(storeKey, id);
+        window.showToast('Data terhapus.');
+        window.renderMasterMappingView();
+      });
+    };
+
     window.deleteTeacherMapping = function(guruUsername) {
       window.showConfirm('Apakah Anda yakin ingin menghapus / mereset seluruh mapping mengajar guru ini?', () => {
         let mappings = window.getStorageData('mapping_guru') || [];
@@ -1153,78 +2286,108 @@
       window.showToast('Profil sekolah berhasil diperbarui!', 'success');
     };
 
-    // FITUR PEMBELAJARAN & MATERI
-    function loadPembelajaranData() {
-      const grid = document.getElementById('materi-card-grid');
-      if (!grid) return;
+    function renderSiswaTable() {
+      const tbody = document.getElementById('tbody-siswa');
+      if (!tbody) return;
 
-      const list = window.getStorageData('pembelajaran') || [];
-      const user = window.currentUser || {};
-      const isTeacher = user.role === 'guru' || user.role === 'admin';
+      const users = window.getStorageData('users').filter(u => u.role === 'siswa');
+      const filterKelasSelect = document.getElementById('filter-siswa-kelas');
 
-      if (list.length === 0) {
-        grid.innerHTML = '<div class="col-span-full p-8 text-center text-slate-400 font-bold bg-white rounded-2xl border-2 border-slate-200">Belum ada modul pembelajaran yang diterbitkan.</div>';
+      if (filterKelasSelect && filterKelasSelect.options.length <= 1) {
+        const kelases = window.getStorageData('master_kelas');
+        filterKelasSelect.innerHTML = '<option value="">Semua Kelas</option>' + kelases.map(k => `<option value="${k.nama}">${k.nama}</option>`).join('');
+      }
+
+      const selectedKelas = filterKelasSelect ? filterKelasSelect.value : '';
+      const searchQuery = (document.getElementById('search-siswa')?.value || '').toLowerCase().trim();
+
+      let filtered = users.filter(s => {
+        if (selectedKelas && s.kelas !== selectedKelas) return false;
+        if (searchQuery) {
+          return (s.username || '').toLowerCase().includes(searchQuery) || (s.nama || '').toLowerCase().includes(searchQuery);
+        }
+        return true;
+      });
+
+      tbody.innerHTML = '';
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400 font-bold">Data siswa tidak ditemukan.</td></tr>`;
+        document.getElementById('siswa-page-info').textContent = 'Menampilkan 0 data';
         return;
       }
 
-      grid.innerHTML = list.map(m => `
-        <div class="glass-card-pro p-5 rounded-2xl space-y-3 bg-white flex flex-col justify-between">
-          <div>
-            <div class="flex justify-between items-start">
-              <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-[10px] font-extrabold uppercase">${m.mapel} - ${m.kelas}</span>
-              ${isTeacher ? `<button onclick="deletePembelajaran('${m.id}')" class="text-rose-600 hover:text-rose-800 text-xs font-bold"><i class="fa-solid fa-trash"></i></button>` : ''}
-            </div>
-            <h3 class="font-extrabold text-slate-900 text-sm mt-2">${m.materiPokok}</h3>
-            <p class="text-xs font-bold text-slate-500 mt-1">Pengajar: ${m.guruNama}</p>
-          </div>
-          <div class="pt-3 border-t border-slate-200 flex justify-between items-center text-xs font-bold">
-            <span class="text-blue-700"><i class="fa-solid fa-book-open mr-1"></i> ${m.tp || 'TP1'}</span>
-            <button onclick="viewPembelajaranDetail('${m.id}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-extrabold shadow">Buka Modul</button>
-          </div>
-        </div>
-      `).join('');
-    }
-    window.loadPembelajaranData = loadPembelajaranData;
+      const startIndex = (window.siswaCurrentPage - 1) * window.siswaItemsPerPage;
+      const paginated = filtered.slice(startIndex, startIndex + window.siswaItemsPerPage);
 
-    window.openModalPembelajaran = function() {
-      const mapels = window.getStorageData('master_mapel');
+      paginated.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 border-b border-slate-200';
+        tr.innerHTML = `
+          <td class="p-4 border-r border-slate-200">${startIndex + idx + 1}</td>
+          <td class="p-4 border-r border-slate-200 font-extrabold text-slate-900">${s.username}</td>
+          <td class="p-4 border-r border-slate-200">${s.nama}</td>
+          <td class="p-4 border-r border-slate-200">${s.level || 'X'}</td>
+          <td class="p-4 border-r border-slate-200">${s.jurusan || 'IIS'}</td>
+          <td class="p-4 border-r border-slate-200"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-extrabold">${s.kelas || '-'}</span></td>
+          <td class="p-4 border-r border-slate-200">${s.noHp || '-'}</td>
+          <td class="p-4 admin-guru-only">
+            <div class="flex space-x-1.5">
+              <button onclick="openModalSiswa('${s.username}')" class="px-2.5 py-1 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="deleteSiswa('${s.username}')" class="px-2.5 py-1 bg-rose-100 text-rose-800 hover:bg-rose-200 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('siswa-page-info').textContent = `Menampilkan ${paginated.length} dari ${filtered.length} data`;
+    }
+    window.renderSiswaTable = renderSiswaTable;
+
+    window.openModalSiswa = function(editUsername = null) {
+      const users = window.getStorageData('users');
+      const target = editUsername ? users.find(u => u.username === editUsername) : null;
       const kelases = window.getStorageData('master_kelas');
-      const user = window.currentUser || {};
+      const jurusans = window.getStorageData('master_jurusan');
 
       const html = `
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div class="glass-card-pro w-full max-w-lg p-6 rounded-3xl bg-white shadow-2xl border-2 border-slate-300 space-y-4 my-8">
-            <h2 class="text-base font-extrabold text-slate-900 pb-2 border-b-2 border-slate-200">Tambah Modul Pembelajaran Baru</h2>
-            <form onsubmit="savePembelajaran(event)" class="space-y-3 text-xs font-bold">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div class="glass-card-pro w-full max-w-md p-6 rounded-3xl bg-white shadow-2xl space-y-4 border-2 border-slate-300">
+            <h2 class="text-base font-extrabold text-slate-900 pb-2 border-b-2 border-slate-200">${target ? 'Edit Data Siswa' : 'Tambah Siswa Baru'}</h2>
+            <form onsubmit="saveSiswa(event, '${editUsername || ''}')" class="space-y-3 text-xs font-bold">
               <div>
-                <label class="text-slate-700 uppercase">Materi Pokok / Judul Modul</label>
-                <input type="text" id="pm-judul" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs">
+                <label class="text-slate-700 uppercase">NIS / NISN (Username Login)</label>
+                <input type="text" id="sw-username" required value="${target ? target.username : ''}" ${target ? 'disabled' : ''} class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs">
+              </div>
+              <div>
+                <label class="text-slate-700 uppercase">Nama Lengkap Siswa</label>
+                <input type="text" id="sw-nama" required value="${target ? target.nama : ''}" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs">
+              </div>
+              <div>
+                <label class="text-slate-700 uppercase">Password Login</label>
+                <input type="password" id="sw-password" required value="${target ? target.password : '123456'}" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs">
               </div>
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <label class="text-slate-700 uppercase">Mata Pelajaran</label>
-                  <select id="pm-mapel" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
-                    ${mapels.map(m => `<option value="${m.nama}">${m.nama}</option>`).join('')}
+                  <label class="text-slate-700 uppercase">Kelas</label>
+                  <select id="sw-kelas" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
+                    ${kelases.map(k => `<option value="${k.nama}" ${target && target.kelas === k.nama ? 'selected' : ''}>${k.nama}</option>`).join('')}
                   </select>
                 </div>
                 <div>
-                  <label class="text-slate-700 uppercase">Target Kelas</label>
-                  <select id="pm-kelas" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
-                    ${kelases.map(k => `<option value="${k.nama}">${k.nama}</option>`).join('')}
+                  <label class="text-slate-700 uppercase">Jurusan</label>
+                  <select id="sw-jurusan" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
+                    ${jurusans.map(j => `<option value="${j.nama}" ${target && target.jurusan === j.nama ? 'selected' : ''}>${j.nama}</option>`).join('')}
                   </select>
                 </div>
               </div>
               <div>
-                <label class="text-slate-700 uppercase">Tujuan Pembelajaran (TP)</label>
-                <input type="text" id="pm-tp" required value="TP1 - Pemahaman Dasar" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs">
-              </div>
-              <div>
-                <label class="text-slate-700 uppercase">Isi Ringkasan Materi / Link Video</label>
-                <textarea id="pm-pembahasan" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" rows="4" placeholder="Tuliskan deskripsi materi atau embed link YouTube..."></textarea>
+                <label class="text-slate-700 uppercase">No HP / WhatsApp</label>
+                <input type="text" id="sw-nohp" value="${target ? target.noHp || '' : ''}" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs">
               </div>
               <div class="flex justify-end space-x-2 pt-2 border-t-2 border-slate-200">
                 <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow border-2 border-blue-800">Terbitkan Modul</button>
+                <button type="submit" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow border-2 border-blue-800">Simpan Siswa</button>
               </div>
             </form>
           </div>
@@ -1233,69 +2396,104 @@
       document.getElementById('modal-container').innerHTML = html;
     };
 
-    window.savePembelajaran = function(e) {
+    window.saveSiswa = function(e, editUsername = null) {
       e.preventDefault();
-      let list = window.getStorageData('pembelajaran') || [];
-      const user = window.currentUser || {};
+      let users = window.getStorageData('users');
 
-      const newM = {
-        id: 'pm-' + Date.now(),
-        materiPokok: document.getElementById('pm-judul').value.trim(),
-        mapel: document.getElementById('pm-mapel').value,
-        kelas: document.getElementById('pm-kelas').value,
-        tp: document.getElementById('pm-tp').value.trim(),
-        pembahasan: document.getElementById('pm-pembahasan').value.trim(),
-        guruNama: user.nama || 'Guru Pengampu',
-        kuisAktif: 'Aktif'
+      const sObj = {
+        username: editUsername || document.getElementById('sw-username').value.trim(),
+        nama: document.getElementById('sw-nama').value.trim(),
+        password: document.getElementById('sw-password').value.trim(),
+        role: 'siswa',
+        level: 'X',
+        jurusan: document.getElementById('sw-jurusan').value,
+        kelas: document.getElementById('sw-kelas').value,
+        noHp: document.getElementById('sw-nohp').value.trim()
       };
 
-      list.unshift(newM);
-      window.setStorageData('pembelajaran', list);
-      window.syncToFirestore('pembelajaran', newM.id, newM);
+      if (editUsername) {
+        const idx = users.findIndex(u => u.username === editUsername);
+        if (idx !== -1) users[idx] = sObj;
+      } else {
+        users.push(sObj);
+      }
+
+      window.setStorageData('users', users);
+      window.syncToFirestore('users', sObj.username, sObj);
       closeModal();
-      window.showToast('Modul Pembelajaran berhasil diterbitkan!', 'success');
-      window.loadPembelajaranData();
+      window.showToast('Data siswa tersimpan!', 'success');
+      window.renderSiswaTable();
     };
 
-    window.deletePembelajaran = function(id) {
-      window.showConfirm('Hapus modul pembelajaran ini?', () => {
-        let list = window.getStorageData('pembelajaran').filter(x => x.id !== id);
-        window.setStorageData('pembelajaran', list);
-        window.removeFromFirestore('pembelajaran', id);
-        window.showToast('Modul dihapus.');
-        window.loadPembelajaranData();
+    window.deleteSiswa = function(username) {
+      window.showConfirm('Hapus data siswa ini?', () => {
+        let users = window.getStorageData('users').filter(u => u.username !== username);
+        window.setStorageData('users', users);
+        window.removeFromFirestore('users', username);
+        window.showToast('Data siswa terhapus.');
+        window.renderSiswaTable();
       });
     };
 
-    window.viewPembelajaranDetail = function(id) {
-      const list = window.getStorageData('pembelajaran');
-      const target = list.find(x => x.id === id);
-      if (!target) return;
-
-      const html = `
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div class="glass-card-pro w-full max-w-2xl p-6 rounded-3xl bg-white shadow-2xl border-2 border-slate-300 space-y-4 my-8">
-            <div class="flex justify-between items-start border-b-2 border-slate-200 pb-3">
-              <div>
-                <span class="px-2.5 py-1 bg-blue-100 text-blue-800 rounded font-extrabold text-xs">${target.mapel} - ${target.kelas}</span>
-                <h2 class="text-lg font-extrabold text-slate-900 mt-2">${target.materiPokok}</h2>
-              </div>
-              <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-lg font-extrabold">&times;</button>
-            </div>
-            <div class="text-xs font-bold text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200">
-              ${target.pembahasan}
-            </div>
-            <div class="flex justify-between items-center pt-2 border-t-2 border-slate-200">
-              <span class="text-xs font-extrabold text-slate-500">Pengajar: ${target.guruNama}</span>
-              <button onclick="closeModal()" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-extrabold">Tutup</button>
-            </div>
-          </div>
-        </div>
-      `;
-      document.getElementById('modal-container').innerHTML = html;
+    window.deleteAllSiswa = function() {
+      window.showConfirm('Apakah Anda YAKIN ingin menghapus SELURUH data siswa?', () => {
+        let users = window.getStorageData('users').filter(u => u.role !== 'siswa');
+        window.setStorageData('users', users);
+        window.showToast('Seluruh data siswa telah dihapus.');
+        window.renderSiswaTable();
+      });
     };
 
-    // FITUR AGENDA
+    window.downloadCSVTemplate = function() {
+      const csvContent = "data:text/csv;charset=utf-8,NIS,Nama,Password,Kelas,Jurusan,NoHP\n3101,Siswa Contoh,siswa123,X IIS 1,IIS,0812345678";
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "template_siswa_elearning.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    window.importSiswaCSV = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const text = evt.target.result;
+        const lines = text.split('\n');
+        let users = window.getStorageData('users');
+        let count = 0;
+
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(',').map(c => c.trim());
+          if (cols.length >= 2 && cols[0]) {
+            const sObj = {
+              username: cols[0],
+              nama: cols[1],
+              password: cols[2] || '123456',
+              role: 'siswa',
+              level: 'X',
+              kelas: cols[3] || 'X IIS 1',
+              jurusan: cols[4] || 'IIS',
+              noHp: cols[5] || ''
+            };
+            const idx = users.findIndex(u => u.username === sObj.username);
+            if (idx !== -1) users[idx] = sObj;
+            else users.push(sObj);
+            window.syncToFirestore('users', sObj.username, sObj);
+            count++;
+          }
+        }
+
+        window.setStorageData('users', users);
+        window.showToast(`Berhasil mengimpor ${count} data siswa!`, 'success');
+        window.renderSiswaTable();
+      };
+      reader.readAsText(file);
+    };
+
     function loadAgendaData() {
       const tbody = document.getElementById('tbody-agenda');
       if (!tbody) return;
@@ -1407,7 +2605,6 @@
       });
     };
 
-    // FITUR ZOOM MEETING VIRTUAL
     window.openModalZoomMeeting = function(roleType) {
       const html = `
         <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
@@ -1485,7 +2682,6 @@
       }
     };
 
-    // FITUR MENU WALAS & MATRIKS REKAP BULANAN LENGKAP
     function loadWalasAbsensiData() {
       const users = window.getStorageData('users').filter(x => x.role === 'siswa');
       const monthInput = document.getElementById('filter-walas-month');
@@ -1496,12 +2692,11 @@
 
       const selectedMonthStr = monthInput ? monthInput.value : new Date().toISOString().slice(0, 7);
       const year = parseInt(selectedMonthStr.split('-')[0]);
-      const month = parseInt(selectedMonthStr.split('-')[1]) - 1; // 0-indexed
+      const month = parseInt(selectedMonthStr.split('-')[1]) - 1;
 
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       const attendanceLog = window.getStorageData('student_attendance_log') || [];
 
-      // Render Header Hari (1 s.d. 30/31)
       const thead = document.getElementById('thead-walas-days');
       if (thead) {
         let thHtml = `<th class="p-2 border border-slate-300">No</th><th class="p-2 border border-slate-300 min-w-[120px]">Nama Siswa</th>`;
@@ -1569,7 +2764,6 @@
     }
     window.loadWalasAbsensiData = loadWalasAbsensiData;
 
-    // FITUR ABSENSI GURU MAPEL DUAL FILTER
     function loadAbsensiGuruMapelData() {
       const users = window.getStorageData('users').filter(x => x.role === 'siswa');
       const mapelSelect = document.getElementById('filter-absensi-guru-mapel');
@@ -1647,11 +2841,12 @@
       container.innerHTML = list.map(m => {
         const myReadLogs = readLogs.filter(r => r.materiId === m.id);
         const myScores = scores.filter(s => s.materiId === m.id);
+        const displayKelas = Array.isArray(m.kelas) ? m.kelas.join(', ') : (m.kelas || 'Semua');
 
         return `
           <div class="p-4 bg-white border-2 border-slate-200 rounded-2xl space-y-2">
             <div class="flex justify-between items-center">
-              <h3 class="font-extrabold text-slate-900 text-sm">${m.materiPokok} (${m.mapel} - ${m.kelas})</h3>
+              <h3 class="font-extrabold text-slate-900 text-sm">${m.materiPokok} (${m.mapel} - ${displayKelas})</h3>
               <span class="text-xs font-bold text-blue-700">${m.guruNama}</span>
             </div>
             <div class="grid grid-cols-2 gap-2 text-xs font-bold pt-2 border-t border-slate-200">
@@ -1809,7 +3004,6 @@
       `;
     }
 
-    // FUNGSI CETAK REKAP BULANAN WALAS LENGKAP TANGGAL 1-31
     window.triggerPrintRekapBulananWalas = function() {
       const users = window.getStorageData('users').filter(x => x.role === 'siswa');
       const selectedMonthStr = document.getElementById('filter-walas-month')?.value || new Date().toISOString().slice(0, 7);
@@ -1881,7 +3075,6 @@
       window.print();
     };
 
-    // FUNGSI CETAK NILAI SEMUA MAPEL WALAS
     window.triggerPrintAllMapelScores = function() {
       const users = window.getStorageData('users').filter(x => x.role === 'siswa');
       const scores = window.getStorageData('quiz_scores') || [];
@@ -1928,7 +3121,6 @@
       window.print();
     };
 
-    // FUNGSI CETAK NILAI KUIS DUAL FILTER (PER MAPEL & PER KELAS)
     window.triggerPrintNilaiQuiz = function() {
       const scores = window.getStorageData('quiz_scores') || [];
       const selectedMapel = document.getElementById('filter-absensi-guru-mapel')?.value || '';
@@ -2014,46 +3206,134 @@
     window.triggerPrintAbsensiMapel = function() {
       const users = window.getStorageData('users').filter(x => x.role === 'siswa');
       const attendanceLog = window.getStorageData('student_attendance_log') || [];
-      const selectedMapel = document.getElementById('filter-absensi-guru-mapel')?.value || 'Semua Mapel';
+      const readLogs = window.getStorageData('student_read_logs') || [];
+      const pembelajaranList = window.getStorageData('pembelajaran') || [];
+      const st = window.getStorageData('school_settings')[0] || { namaSekolah: 'SMK Sanjaya Digital', logoSekolah: 'https://cdn-icons-png.flaticon.com/512/3429/3429070.png', namaKepsek: 'Drs. H. M. Ridwan, M.Pd' };
+
+      const selectedMapel = document.getElementById('filter-absensi-guru-mapel')?.value || 'Geografi';
       const selectedKelas = document.getElementById('filter-absensi-guru-kelas')?.value || '';
-      const targetDate = new Date().toISOString().slice(0, 10);
+      const user = window.currentUser || { nama: 'Sulis, S.Pd' };
       const printArea = document.getElementById('print-area');
       if (!printArea) return;
 
-      let filtered = users.filter(s => {
+      // Filter siswa kelas
+      let filteredSiswa = users.filter(s => {
         if (selectedKelas && s.kelas !== selectedKelas) return false;
         return true;
       });
 
+      // Filter modul / Pertemuan untuk Mapel & Kelas ini
+      let mapelModuls = pembelajaranList.filter(m => {
+        if (m.mapel !== selectedMapel) return false;
+        if (selectedKelas) {
+          if (!m.kelas || m.kelas === 'Semua' || (Array.isArray(m.kelas) && m.kelas.includes('Semua'))) return true;
+          if (Array.isArray(m.kelas)) return m.kelas.includes(selectedKelas);
+          if (typeof m.kelas === 'string') return m.kelas.includes(selectedKelas);
+        }
+        return true;
+      });
+
+      // Jika modul belum dibuat, buat fallback P1 - P5
+      if (mapelModuls.length === 0) {
+        mapelModuls = [
+          { id: 'demo-p1', pertemuan: 'Pertemuan 1', materiPokok: 'Pengantar' },
+          { id: 'demo-p2', pertemuan: 'Pertemuan 2', materiPokok: 'Struktur' },
+          { id: 'demo-p3', pertemuan: 'Pertemuan 3', materiPokok: 'Penerapan' }
+        ];
+      }
+
+      // Generate Header P1, P2, P3...
+      let thPertemuanHtml = mapelModuls.map((m, i) => `
+        <th class="p-1 border border-slate-800 text-center text-[10px] min-w-[32px]" title="${m.materiPokok}">P${i + 1}</th>
+      `).join('');
+
+      let trsHtml = '';
+      filteredSiswa.forEach((s, idx) => {
+        let countH = 0, countI = 0, countS = 0, countA = 0;
+        let tdPertemuan = '';
+
+        mapelModuls.forEach((m) => {
+          // Check if student accessed/attended this module / date
+          const hasAttended = attendanceLog.some(a => a.studentUsername === s.username) || readLogs.some(r => r.materiId === m.id && r.studentUsername === s.username);
+          if (hasAttended) {
+            countH++;
+            tdPertemuan += `<td class="p-1 border border-slate-800 text-center font-extrabold text-slate-900">H</td>`;
+          } else {
+            tdPertemuan += `<td class="p-1 border border-slate-800 text-center text-slate-300">-</td>`;
+          }
+        });
+
+        const totalPertemuan = mapelModuls.length || 1;
+        const percentage = Math.round((countH / totalPertemuan) * 100);
+
+        trsHtml += `
+          <tr class="border-b border-slate-800">
+            <td class="p-1.5 border border-slate-800 text-center font-bold">${idx + 1}</td>
+            <td class="p-1.5 border border-slate-800 font-extrabold text-slate-900">${s.username}</td>
+            <td class="p-1.5 border border-slate-800 font-bold">${s.nama}</td>
+            <td class="p-1.5 border border-slate-800 text-center font-bold">${s.kelas || '-'}</td>
+            ${tdPertemuan}
+            <td class="p-1.5 border border-slate-800 text-center font-extrabold text-emerald-800">${countH}</td>
+            <td class="p-1.5 border border-slate-800 text-center font-extrabold text-blue-800">${countI}</td>
+            <td class="p-1.5 border border-slate-800 text-center font-extrabold text-amber-800">${countS}</td>
+            <td class="p-1.5 border border-slate-800 text-center font-extrabold text-rose-800">${countA}</td>
+            <td class="p-1.5 border border-slate-800 text-center font-extrabold text-slate-900">${percentage}%</td>
+          </tr>
+        `;
+      });
+
+      const todayFormatted = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
       printArea.innerHTML = `
-        ${buildFormalReportHeader(`Daftar Presensi Kehadiran Siswa (${selectedMapel} - ${selectedKelas || 'Semua Kelas'})`)}
-        <p class="text-xs font-extrabold mb-3 text-slate-800">Tanggal KBM: ${targetDate}</p>
+        <!-- KOP ATAS LAPORAN -->
+        <div class="border-b-4 border-double border-slate-900 pb-4 mb-5 flex items-center space-x-4">
+          <img src="${st.logoSekolah}" class="w-16 h-16 object-contain" alt="Logo">
+          <div class="flex-1">
+            <h1 class="text-xl font-extrabold uppercase text-slate-900 leading-tight">${st.namaSekolah}</h1>
+            <p class="text-xs font-extrabold text-slate-700 uppercase mt-0.5">REKAPITULASI KEHADIRAN SISWA</p>
+            <div class="mt-2 text-xs font-bold text-slate-900 grid grid-cols-2 gap-x-4">
+              <p>Mata Pelajaran : <span class="font-extrabold">${selectedMapel}</span></p>
+              <p>Kelas : <span class="font-extrabold">${selectedKelas || 'Semua Kelas'}</span></p>
+              <p>Guru Pengampu : <span class="font-extrabold">${user.nama}</span></p>
+            </div>
+          </div>
+        </div>
+
         <table class="w-full text-left text-xs font-bold border-collapse border-2 border-slate-800">
           <thead>
-            <tr class="bg-slate-100 border-b-2 border-slate-800 uppercase">
-              <th class="p-2 border border-slate-800">No</th>
-              <th class="p-2 border border-slate-800">NIS</th>
-              <th class="p-2 border border-slate-800">Nama Siswa</th>
-              <th class="p-2 border border-slate-800">Kelas</th>
-              <th class="p-2 border border-slate-800">Status Kehadiran</th>
+            <tr class="bg-slate-100 border-b-2 border-slate-800 uppercase text-[11px]">
+              <th class="p-1.5 border border-slate-800 text-center w-8">No</th>
+              <th class="p-1.5 border border-slate-800 w-24">NIS</th>
+              <th class="p-1.5 border border-slate-800">Nama Siswa</th>
+              <th class="p-1.5 border border-slate-800 text-center w-20">Kelas</th>
+              ${thPertemuanHtml}
+              <th class="p-1.5 border border-slate-800 text-center w-8">H</th>
+              <th class="p-1.5 border border-slate-800 text-center w-8">I</th>
+              <th class="p-1.5 border border-slate-800 text-center w-8">S</th>
+              <th class="p-1.5 border border-slate-800 text-center w-8">A</th>
+              <th class="p-1.5 border border-slate-800 text-center w-12">%</th>
             </tr>
           </thead>
           <tbody>
-            ${filtered.map((s, idx) => {
-              const attended = attendanceLog.some(a => a.studentUsername === s.username && a.date === targetDate);
-              return `
-                <tr class="border-b border-slate-800">
-                  <td class="p-2 border border-slate-800">${idx + 1}</td>
-                  <td class="p-2 border border-slate-800 font-extrabold">${s.username}</td>
-                  <td class="p-2 border border-slate-800">${s.nama}</td>
-                  <td class="p-2 border border-slate-800">${s.kelas}</td>
-                  <td class="p-2 border border-slate-800 font-extrabold">${attended ? 'HADIR (MANDIRI)' : 'BELUM ABSEN'}</td>
-                </tr>
-              `;
-            }).join('')}
+            ${trsHtml}
           </tbody>
         </table>
-        ${buildFormalReportSignatures('Guru Mata Pelajaran')}
+
+        <!-- FOOTER TANDA TANGAN (TANPA NIP) -->
+        <div class="mt-12 flex justify-between items-start text-xs font-bold text-slate-900">
+          <div class="text-center w-64">
+            <p>Mengetahui,</p>
+            <p class="font-extrabold uppercase mt-0.5">Kepala Sekolah</p>
+            <div class="h-20"></div>
+            <p class="font-extrabold underline">${st.namaKepsek}</p>
+          </div>
+          <div class="text-center w-64">
+            <p>Semarang, ${todayFormatted}</p>
+            <p class="font-extrabold uppercase mt-0.5">Guru Mata Pelajaran ${selectedMapel}</p>
+            <div class="h-20"></div>
+            <p class="font-extrabold underline">${user.nama}</p>
+          </div>
+        </div>
       `;
 
       window.print();
@@ -2064,7 +3344,7 @@
 
       if ('serviceWorker' in navigator) {
         const swCode = `
-          const CACHE_NAME = 'elearning-candy-v3';
+          const CACHE_NAME = 'elearning-candy-v5';
           self.addEventListener('install', (e) => {
             e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./'])));
           });
