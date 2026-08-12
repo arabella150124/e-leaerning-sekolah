@@ -499,19 +499,25 @@
 
           <div class="glass-card-pro p-6 rounded-2xl space-y-4">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-3 border-b-2 border-slate-200">
-              <h2 class="text-base font-extrabold text-slate-900">Rekapitulasi Kehadiran Siswa Bulanan (Lengkap Tgl 1 - 31)</h2>
-              <div class="flex items-center space-x-2">
-                <label class="text-xs font-extrabold text-slate-700 uppercase">Pilih Bulan & Tahun:</label>
-                <input type="month" id="filter-walas-month" onchange="loadWalasAbsensiData()" class="px-3 py-1.5 bg-white border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-800">
+              <h2 class="text-base font-extrabold text-slate-900">Rekapitulasi Kehadiran Siswa Bulanan</h2>
+              <div class="flex flex-wrap items-center gap-3">
+                <div class="flex items-center space-x-2">
+                  <label class="text-xs font-extrabold text-slate-700 uppercase">Pilih Kelas:</label>
+                  <select id="filter-walas-kelas" onchange="loadWalasAbsensiData()" class="px-3 py-1.5 bg-white border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-800">
+                    <option value="">Semua Kelas</option>
+                  </select>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <label class="text-xs font-extrabold text-slate-700 uppercase">Pilih Bulan & Tahun:</label>
+                  <input type="month" id="filter-walas-month" onchange="loadWalasAbsensiData()" class="px-3 py-1.5 bg-white border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-800">
+                </div>
                 <button onclick="triggerPrintRekapBulananWalas()" class="px-3.5 py-1.5 bg-slate-900 text-white rounded-xl text-xs font-extrabold shadow"><i class="fa-solid fa-print mr-1"></i> Cetak Rekap Bulanan</button>
               </div>
             </div>
 
             <div class="overflow-x-auto">
               <table class="w-full text-left text-[11px] font-bold text-slate-700 border-collapse border-2 border-slate-300">
-                <thead class="bg-slate-100 border-b-2 border-slate-300 font-extrabold text-slate-800 uppercase text-[10px]">
-                  <tr id="thead-walas-days"></tr>
-                </thead>
+                <thead id="thead-walas-days" class="bg-slate-100 border-b-2 border-slate-300 font-extrabold text-slate-800 uppercase text-[10px]"></thead>
                 <tbody id="tbody-walas-absensi" class="divide-y-2 divide-slate-100 bg-white"></tbody>
               </table>
             </div>
@@ -680,15 +686,15 @@
   <div id="toast-box" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
   <script>
-    const IS_PREVIEW = false; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE CONFIG ASLI
+    const IS_PREVIEW = true; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE CONFIG ASLI
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
-      authDomain: "elearning44-67ef3.firebaseapp.com",
-      projectId: "elearning44-67ef3",
-      storageBucket: "elearning44-67ef3.firebasestorage.app",
-      messagingSenderId: "364078910579",
-      appId: "1:364078910579:web:04ff94b2cb8ef856c76e06"
+        apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
+        authDomain: "elearning44-67ef3.firebaseapp.com",
+        projectId: "elearning44-67ef3",
+        storageBucket: "elearning44-67ef3.firebasestorage.app",
+        messagingSenderId: "364078910579",
+        appId: "1:364078910579:web:04ff94b2cb8ef856c76e06"
     };
 
     let db = null;
@@ -2719,13 +2725,31 @@
     };
 
     function loadWalasAbsensiData() {
-      const users = window.getStorageData('users').filter(x => x.role === 'siswa');
+      const allStudents = window.getStorageData('users').filter(x => x.role === 'siswa');
       const monthInput = document.getElementById('filter-walas-month');
-      
+      const kelasSelect = document.getElementById('filter-walas-kelas');
+      const user = window.currentUser || {};
+
+      // Populate Kelas Filter Dropdown
+      if (kelasSelect && kelasSelect.options.length <= 1) {
+        const masterKelas = window.getStorageData('master_kelas') || [];
+        let kOptions = '<option value="">Semua Kelas</option>';
+        masterKelas.forEach(k => {
+          kOptions += `<option value="${k.nama}">${k.nama}</option>`;
+        });
+        kelasSelect.innerHTML = kOptions;
+
+        // Auto-select class if current user is a Walas with binaan class
+        if (user.isWalas && user.kelasBinaan) {
+          kelasSelect.value = user.kelasBinaan;
+        }
+      }
+
       if (monthInput && !monthInput.value) {
         monthInput.value = new Date().toISOString().slice(0, 7);
       }
 
+      const selectedKelas = kelasSelect ? kelasSelect.value : '';
       const selectedMonthStr = monthInput ? monthInput.value : new Date().toISOString().slice(0, 7);
       const year = parseInt(selectedMonthStr.split('-')[0]);
       const month = parseInt(selectedMonthStr.split('-')[1]) - 1;
@@ -2733,19 +2757,40 @@
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       const attendanceLog = window.getStorageData('student_attendance_log') || [];
 
+      // Filter Students by selected class
+      let users = allStudents.filter(s => {
+        if (selectedKelas && s.kelas !== selectedKelas) return false;
+        return true;
+      });
+
       const thead = document.getElementById('thead-walas-days');
       if (thead) {
-        let thHtml = `<th class="p-2 border border-slate-300">No</th><th class="p-2 border border-slate-300 min-w-[120px]">Nama Siswa</th>`;
+        // Row 1: Group headers for TANGGAL and REKAP
+        let tr1 = `<tr>
+          <th rowspan="2" class="p-2 border border-slate-300 text-center">No</th>
+          <th rowspan="2" class="p-2 border border-slate-300 min-w-[120px]">Nama Siswa</th>
+          <th colspan="${daysInMonth}" class="p-1 border border-slate-300 text-center bg-blue-100 text-blue-900 font-extrabold uppercase tracking-wider">TANGGAL</th>
+          <th colspan="5" class="p-1 border border-slate-300 text-center bg-emerald-100 text-emerald-900 font-extrabold uppercase tracking-wider">REKAP</th>
+        </tr>`;
+
+        // Row 2: Dates 1..N and Rekap Columns
+        let tr2 = `<tr>`;
         for (let d = 1; d <= daysInMonth; d++) {
           const dateObj = new Date(year, month, d);
           const dayOfWeek = dateObj.getDay();
           const isSunday = dayOfWeek === 0;
           const isSaturday = dayOfWeek === 6;
           const blockClass = isSunday ? 'sunday-blocked' : isSaturday ? 'saturday-blocked' : '';
-          thHtml += `<th class="p-1 border border-slate-300 text-center w-7 ${blockClass}">${d}</th>`;
+          tr2 += `<th class="p-1 border border-slate-300 text-center w-7 ${blockClass}">${d}</th>`;
         }
-        thHtml += `<th class="p-1 border border-slate-300 text-center">H</th><th class="p-1 border border-slate-300 text-center">I</th><th class="p-1 border border-slate-300 text-center">S</th><th class="p-1 border border-slate-300 text-center">A</th><th class="p-1 border border-slate-300 text-center">%</th>`;
-        thead.innerHTML = thHtml;
+        tr2 += `<th class="p-1 border border-slate-300 text-center text-emerald-800">H</th>
+                <th class="p-1 border border-slate-300 text-center text-blue-800">I</th>
+                <th class="p-1 border border-slate-300 text-center text-amber-800">S</th>
+                <th class="p-1 border border-slate-300 text-center text-rose-800">A</th>
+                <th class="p-1 border border-slate-300 text-center">%</th>
+        </tr>`;
+
+        thead.innerHTML = tr1 + tr2;
       }
 
       const tbody = document.getElementById('tbody-walas-absensi');
@@ -2759,7 +2804,7 @@
 
       users.forEach((s, idx) => {
         let countH = 0, countI = 0, countS = 0, countA = 0;
-        let trHtml = `<td class="p-2 border border-slate-300 font-bold">${idx + 1}</td><td class="p-2 border border-slate-300 font-extrabold text-slate-900">${s.nama}</td>`;
+        let trHtml = `<td class="p-2 border border-slate-300 font-bold text-center">${idx + 1}</td><td class="p-2 border border-slate-300 font-extrabold text-slate-900">${s.nama}</td>`;
 
         for (let d = 1; d <= daysInMonth; d++) {
           const dateObj = new Date(year, month, d);
@@ -3041,7 +3086,8 @@
     }
 
     window.triggerPrintRekapBulananWalas = function() {
-      const users = window.getStorageData('users').filter(x => x.role === 'siswa');
+      const allStudents = window.getStorageData('users').filter(x => x.role === 'siswa');
+      const selectedKelas = document.getElementById('filter-walas-kelas')?.value || '';
       const selectedMonthStr = document.getElementById('filter-walas-month')?.value || new Date().toISOString().slice(0, 7);
       const year = parseInt(selectedMonthStr.split('-')[0]);
       const month = parseInt(selectedMonthStr.split('-')[1]) - 1;
@@ -3050,19 +3096,38 @@
       const printArea = document.getElementById('print-area');
       if (!printArea) return;
 
-      let thHtml = `<th class="p-1 border border-slate-800">No</th><th class="p-1 border border-slate-800">Nama Siswa</th>`;
+      let users = allStudents.filter(s => {
+        if (selectedKelas && s.kelas !== selectedKelas) return false;
+        return true;
+      });
+
+      // Header Row 1: TANGGAL & REKAP Grouping
+      let tr1 = `<tr class="bg-slate-100 uppercase">
+        <th rowspan="2" class="p-1 border border-slate-800 text-center">No</th>
+        <th rowspan="2" class="p-1 border border-slate-800">Nama Siswa</th>
+        <th colspan="${daysInMonth}" class="p-1 border border-slate-800 text-center bg-slate-200 font-extrabold">TANGGAL</th>
+        <th colspan="5" class="p-1 border border-slate-800 text-center bg-slate-200 font-extrabold">REKAP</th>
+      </tr>`;
+
+      // Header Row 2: Dates 1..N & H,I,S,A,%
+      let tr2 = `<tr class="bg-slate-100 uppercase">`;
       for (let d = 1; d <= daysInMonth; d++) {
         const dateObj = new Date(year, month, d);
         const dayOfWeek = dateObj.getDay();
         const blockClass = dayOfWeek === 0 ? 'sunday-blocked' : dayOfWeek === 6 ? 'saturday-blocked' : '';
-        thHtml += `<th class="p-1 border border-slate-800 text-center text-[9px] ${blockClass}">${d}</th>`;
+        tr2 += `<th class="p-1 border border-slate-800 text-center text-[9px] ${blockClass}">${d}</th>`;
       }
-      thHtml += `<th class="p-1 border border-slate-800 text-center text-[9px]">H</th><th class="p-1 border border-slate-800 text-center text-[9px]">I</th><th class="p-1 border border-slate-800 text-center text-[9px]">S</th><th class="p-1 border border-slate-800 text-center text-[9px]">A</th><th class="p-1 border border-slate-800 text-center text-[9px]">%</th>`;
+      tr2 += `<th class="p-1 border border-slate-800 text-center text-[9px]">H</th>
+              <th class="p-1 border border-slate-800 text-center text-[9px]">I</th>
+              <th class="p-1 border border-slate-800 text-center text-[9px]">S</th>
+              <th class="p-1 border border-slate-800 text-center text-[9px]">A</th>
+              <th class="p-1 border border-slate-800 text-center text-[9px]">%</th>
+      </tr>`;
 
       let trsHtml = '';
       users.forEach((s, idx) => {
         let countH = 0, countI = 0, countS = 0, countA = 0;
-        let tr = `<tr><td class="p-1 border border-slate-800 font-bold">${idx + 1}</td><td class="p-1 border border-slate-800 font-extrabold">${s.nama}</td>`;
+        let tr = `<tr><td class="p-1 border border-slate-800 font-bold text-center">${idx + 1}</td><td class="p-1 border border-slate-800 font-extrabold">${s.nama}</td>`;
 
         for (let d = 1; d <= daysInMonth; d++) {
           const dateObj = new Date(year, month, d);
@@ -3098,11 +3163,12 @@
       });
 
       const monthName = new Date(year, month, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+      const kelasTitle = selectedKelas ? ` - Kelas ${selectedKelas}` : ' - Semua Kelas';
 
       printArea.innerHTML = `
-        ${buildFormalReportHeader(`Rekapitulasi Kehadiran Bulanan Siswa (${monthName})`)}
+        ${buildFormalReportHeader(`Rekapitulasi Kehadiran Bulanan Siswa (${monthName}${kelasTitle})`)}
         <table class="w-full text-left text-[9px] font-bold border-collapse border-2 border-slate-800">
-          <thead><tr class="bg-slate-100 uppercase">${thHtml}</tr></thead>
+          <thead>${tr1}${tr2}</thead>
           <tbody>${trsHtml}</tbody>
         </table>
         ${buildFormalReportSignatures('Wali Kelas')}
