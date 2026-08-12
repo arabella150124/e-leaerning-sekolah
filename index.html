@@ -373,7 +373,7 @@
               <button onclick="deleteAllSiswa()" class="admin-only px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-extrabold border-2 border-rose-800 shadow">
                 <i class="fa-solid fa-trash-can mr-1"></i> Hapus Semua Siswa
               </button>
-              <button onclick="openModalSiswa()" class="admin-guru-only px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800 flex items-center space-x-1.5">
+              <button onclick="openModalSiswa()" class="admin-only px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800 flex items-center space-x-1.5">
                 <i class="fa-solid fa-plus"></i> <span>Tambah Siswa</span>
               </button>
             </div>
@@ -404,7 +404,7 @@
                     <th class="p-4 border-r border-slate-200">Jurusan</th>
                     <th class="p-4 border-r border-slate-200">Kelas</th>
                     <th class="p-4 border-r border-slate-200">No HP</th>
-                    <th class="p-4 admin-guru-only">Aksi</th>
+                    <th class="p-4 admin-only">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="tbody-siswa" class="divide-y-2 divide-slate-100 bg-white"></tbody>
@@ -683,12 +683,12 @@
     const IS_PREVIEW = false; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE CONFIG ASLI
 
     const firebaseConfig = {
-        apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
-        authDomain: "elearning44-67ef3.firebaseapp.com",
-        projectId: "elearning44-67ef3",
-        storageBucket: "elearning44-67ef3.firebasestorage.app",
-        messagingSenderId: "364078910579",
-        appId: "1:364078910579:web:04ff94b2cb8ef856c76e06"
+      apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
+      authDomain: "elearning44-67ef3.firebaseapp.com",
+      projectId: "elearning44-67ef3",
+      storageBucket: "elearning44-67ef3.firebasestorage.app",
+      messagingSenderId: "364078910579",
+      appId: "1:364078910579:web:04ff94b2cb8ef856c76e06"
     };
 
     let db = null;
@@ -2292,17 +2292,51 @@
 
       const users = window.getStorageData('users').filter(u => u.role === 'siswa');
       const filterKelasSelect = document.getElementById('filter-siswa-kelas');
+      const user = window.currentUser || {};
+      const isAdmin = user.role === 'admin';
+      const isTeacher = user.role === 'guru';
+      const isStudent = user.role === 'siswa';
 
-      if (filterKelasSelect && filterKelasSelect.options.length <= 1) {
+      // Determine allowed classes based on user role
+      let allowedClasses = [];
+      if (isStudent) {
+        allowedClasses = [user.kelas];
+      } else if (isTeacher) {
+        const mappings = window.getStorageData('mapping_guru') || [];
+        const teacherMaps = mappings.filter(m => m.guruUsername === user.username);
+        allowedClasses = Array.from(new Set(teacherMaps.map(m => m.kelasNama))).filter(Boolean);
+      } else {
         const kelases = window.getStorageData('master_kelas');
-        filterKelasSelect.innerHTML = '<option value="">Semua Kelas</option>' + kelases.map(k => `<option value="${k.nama}">${k.nama}</option>`).join('');
+        allowedClasses = kelases.map(k => k.nama);
+      }
+
+      // Populate filter dropdown based on role
+      if (filterKelasSelect) {
+        if (isStudent) {
+          filterKelasSelect.innerHTML = `<option value="${user.kelas}">${user.kelas}</option>`;
+          filterKelasSelect.disabled = true;
+        } else if (isTeacher) {
+          filterKelasSelect.disabled = false;
+          filterKelasSelect.innerHTML = '<option value="">Semua Rombel Saya</option>' + allowedClasses.map(k => `<option value="${k}">${k}</option>`).join('');
+        } else {
+          filterKelasSelect.disabled = false;
+          const kelases = window.getStorageData('master_kelas');
+          filterKelasSelect.innerHTML = '<option value="">Semua Kelas</option>' + kelases.map(k => `<option value="${k.nama}">${k.nama}</option>`).join('');
+        }
       }
 
       const selectedKelas = filterKelasSelect ? filterKelasSelect.value : '';
       const searchQuery = (document.getElementById('search-siswa')?.value || '').toLowerCase().trim();
 
       let filtered = users.filter(s => {
+        // First, restrict by allowed classes for role
+        if (isStudent && s.kelas !== user.kelas) return false;
+        if (isTeacher && allowedClasses.length > 0 && !allowedClasses.includes(s.kelas)) return false;
+
+        // Second, apply dropdown filter if selected
         if (selectedKelas && s.kelas !== selectedKelas) return false;
+
+        // Third, apply search query
         if (searchQuery) {
           return (s.username || '').toLowerCase().includes(searchQuery) || (s.nama || '').toLowerCase().includes(searchQuery);
         }
@@ -2311,7 +2345,7 @@
 
       tbody.innerHTML = '';
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400 font-bold">Data siswa tidak ditemukan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${isAdmin ? 8 : 7}" class="p-4 text-center text-slate-400 font-bold">Data siswa tidak ditemukan.</td></tr>`;
         document.getElementById('siswa-page-info').textContent = 'Menampilkan 0 data';
         return;
       }
@@ -2330,12 +2364,14 @@
           <td class="p-4 border-r border-slate-200">${s.jurusan || 'IIS'}</td>
           <td class="p-4 border-r border-slate-200"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-extrabold">${s.kelas || '-'}</span></td>
           <td class="p-4 border-r border-slate-200">${s.noHp || '-'}</td>
-          <td class="p-4 admin-guru-only">
-            <div class="flex space-x-1.5">
-              <button onclick="openModalSiswa('${s.username}')" class="px-2.5 py-1 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="deleteSiswa('${s.username}')" class="px-2.5 py-1 bg-rose-100 text-rose-800 hover:bg-rose-200 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-trash"></i></button>
-            </div>
-          </td>
+          ${isAdmin ? `
+            <td class="p-4 admin-only">
+              <div class="flex space-x-1.5">
+                <button onclick="openModalSiswa('${s.username}')" class="px-2.5 py-1 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-pen"></i></button>
+                <button onclick="deleteSiswa('${s.username}')" class="px-2.5 py-1 bg-rose-100 text-rose-800 hover:bg-rose-200 rounded-lg text-xs font-extrabold"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </td>
+          ` : ''}
         `;
         tbody.appendChild(tr);
       });
@@ -3233,16 +3269,22 @@
         return true;
       });
 
-      // Jika modul belum dibuat, buat fallback P1 - P5
+      // Sort moduls logically by title / id to ensure correct sequential order P1, P2, P3, P4, ... Pn
+      mapelModuls.sort((a, b) => {
+        const aNum = parseInt((a.pertemuan || '').replace(/\D/g, '')) || 0;
+        const bNum = parseInt((b.pertemuan || '').replace(/\D/g, '')) || 0;
+        if (aNum !== bNum) return aNum - bNum;
+        return (a.id || '').localeCompare(b.id || '');
+      });
+
+      // If no module created yet, generate P1 as fallback
       if (mapelModuls.length === 0) {
         mapelModuls = [
-          { id: 'demo-p1', pertemuan: 'Pertemuan 1', materiPokok: 'Pengantar' },
-          { id: 'demo-p2', pertemuan: 'Pertemuan 2', materiPokok: 'Struktur' },
-          { id: 'demo-p3', pertemuan: 'Pertemuan 3', materiPokok: 'Penerapan' }
+          { id: 'demo-p1', pertemuan: 'Pertemuan 1', materiPokok: 'Pertemuan 1' }
         ];
       }
 
-      // Generate Header P1, P2, P3...
+      // Generate Header P1, P2, P3, P4 ... Pn dynamically based on total created modules
       let thPertemuanHtml = mapelModuls.map((m, i) => `
         <th class="p-1 border border-slate-800 text-center text-[10px] min-w-[32px]" title="${m.materiPokok}">P${i + 1}</th>
       `).join('');
