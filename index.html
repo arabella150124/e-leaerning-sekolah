@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>E-Learning Candy System</title>
+  <title>E-Learning System</title>
   
   <!-- PWA Manifest Data URI -->
   <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkUtTGVhcm5pbmcgQ2FuZHkgU3lzdGVtIiwKICAic2hvcnRfbmFtZSI6ICJFLUxlYXJuaW5nIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGZhZmMiLAogICJ0aGVtZV9jb2xvciI6ICIjMGI1N2QwIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMzQyOS8zNDI5MDcwLnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
@@ -122,7 +122,7 @@
           <div class="w-16 h-16 mx-auto md:mx-0 flex items-center justify-center bg-white p-2 rounded-2xl shadow-md border-2 border-slate-200">
             <img id="login-school-logo-img" src="https://cdn-icons-png.flaticon.com/512/3429/3429070.png" class="w-full h-full object-contain" alt="Logo Sekolah">
           </div>
-          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning Candy</h1>
+          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning</h1>
           <p class="text-xs font-bold text-blue-700 uppercase tracking-widest">Portal Akademik Terpadu</p>
           <p class="text-xs font-bold text-slate-600 leading-relaxed bg-white/60 backdrop-blur p-3 rounded-xl border border-slate-200 shadow-sm">
             Platform pembelajaran digital terintegrasi untuk penyampaian modul interaktif, kuis online, rekapitulasi presensi harian, dan pemantauan KBM secara real-time.
@@ -186,7 +186,7 @@
           </div>
           <div class="overflow-hidden">
             <h2 id="sidebar-school-name" class="font-extrabold text-slate-900 leading-tight tracking-tight truncate text-sm">E-Learning</h2>
-            <span class="text-[10px] text-blue-700 font-bold uppercase tracking-wider">Candy System</span>
+            <span class="text-[10px] text-blue-700 font-bold uppercase tracking-wider">Elearning System</span>
           </div>
         </div>
 
@@ -256,7 +256,7 @@
         <section id="view-beranda" class="view-content space-y-6">
           <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b-2 border-slate-200 gap-4">
             <div>
-              <h1 id="header-school-name-title" class="text-2xl font-extrabold text-slate-900 tracking-tight">E-Learning Candy</h1>
+              <h1 id="header-school-name-title" class="text-2xl font-extrabold text-slate-900 tracking-tight">E-Learning System</h1>
               <p class="text-xs font-bold text-slate-500 mt-0.5">Selamat datang di portal pembelajaran digital interaktif sekolah.</p>
             </div>
             <button onclick="openModalPengumuman()" class="admin-guru-only px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow-lg border-2 border-blue-800 flex items-center space-x-2">
@@ -400,6 +400,7 @@
                     <th class="p-4 border-r border-slate-200">No</th>
                     <th class="p-4 border-r border-slate-200">NIS</th>
                     <th class="p-4 border-r border-slate-200">Nama Siswa</th>
+                    <th class="p-4 border-r border-slate-200">L/P</th>
                     <th class="p-4 border-r border-slate-200">Level</th>
                     <th class="p-4 border-r border-slate-200">Jurusan</th>
                     <th class="p-4 border-r border-slate-200">Kelas</th>
@@ -410,7 +411,7 @@
                 <tbody id="tbody-siswa" class="divide-y-2 divide-slate-100 bg-white"></tbody>
               </table>
             </div>
-            <div class="p-4 border-t-2 border-slate-200 bg-slate-50 flex items-center justify-between text-xs font-extrabold">
+            <div class="p-4 border-t-2 border-slate-200 bg-slate-50 flex flex-col md:flex-row items-center justify-between text-xs font-extrabold gap-3">
               <span id="siswa-page-info" class="text-slate-600">Menampilkan 0 data</span>
               <div class="flex items-center space-x-1" id="siswa-pagination-btns"></div>
             </div>
@@ -689,7 +690,7 @@
     const IS_PREVIEW = false; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE CONFIG ASLI
 
     const firebaseConfig = {
-        apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
+      apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
         authDomain: "elearning44-67ef3.firebaseapp.com",
         projectId: "elearning44-67ef3",
         storageBucket: "elearning44-67ef3.firebasestorage.app",
@@ -817,8 +818,8 @@
       };
 
       const initialUsers = [
-        { username: '3101', password: 'ryan', nama: 'Ryan Mahfud', role: 'siswa', level: 'X', jurusan: 'IIS', kelas: 'X IIS 1', noHp: '0812345678' },
-        { username: 'siswa', password: 'siswa', nama: 'Siswa Contoh', role: 'siswa', level: 'X', jurusan: 'IIS', kelas: 'X IIS 1', noHp: '0812345679' },
+        { username: '3101', password: 'ryan', nama: 'Ryan Mahfud', role: 'siswa', level: 'X', jurusan: 'IIS', kelas: 'X IIS 1', noHp: '0812345678', jk: 'L' },
+        { username: 'siswa', password: 'siswa', nama: 'Siswa Contoh', role: 'siswa', level: 'X', jurusan: 'IIS', kelas: 'X IIS 1', noHp: '0812345679', jk: 'P' },
         { username: 'sulis', password: 'sulis', nama: 'Sulis, S.Pd', role: 'guru', level: '-', jurusan: '-', kelas: '-', noHp: '0852001122' },
         { username: 'walas1', password: 'walas', nama: 'Guru Walas, M.Pd', role: 'guru', isWalas: true, kelasBinaan: 'X IIS 1', level: '-', jurusan: '-', kelas: '-', noHp: '0852001133' },
         { username: 'kepsek', password: 'kepsek', nama: 'Drs. H. M. Ridwan, M.Pd', role: 'kepsek', level: '-', jurusan: '-', kelas: '-', noHp: '0852001144' }
@@ -888,7 +889,7 @@
     }
 
     function updateSchoolBrandingUI() {
-      const st = window.getStorageData('school_settings')[0] || { namaSekolah: 'E-Learning Candy', logoSekolah: 'https://cdn-icons-png.flaticon.com/512/3429/3429070.png' };
+      const st = window.getStorageData('school_settings')[0] || { namaSekolah: 'E-Learning', logoSekolah: 'https://cdn-icons-png.flaticon.com/512/3429/3429070.png' };
       
       const logoImgs = [document.getElementById('login-school-logo-img'), document.getElementById('sidebar-school-logo')];
       logoImgs.forEach(img => { if (img) img.src = st.logoSekolah; });
@@ -1293,6 +1294,9 @@
         const isKuisVisible = isTeacher || (m.kuisAktif !== 'Tidak Aktif');
 
         const isOverallActive = m.statusModul !== 'Tidak Aktif';
+        const isAdmin = user.role === 'admin';
+        const isOwner = m.guruUsername ? (m.guruUsername === user.username) : (m.guruNama === user.nama);
+        const canEditDelete = isAdmin || (user.role === 'guru' && isOwner);
 
         return `
         <div class="glass-card-pro p-5 rounded-2xl space-y-3 bg-white flex flex-col justify-between shadow-lg border-2 border-slate-200 hover:border-blue-300 transition ${!isOverallActive ? 'opacity-75 bg-slate-50' : ''}">
@@ -1301,13 +1305,13 @@
               <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-[10px] font-extrabold uppercase tracking-wide">
                 ${m.mapel} &bull; ${displayKelas}
               </span>
-              ${isTeacher ? `
-                <div class="flex space-x-1 items-center">
-                  <span class="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase ${isOverallActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${m.statusModul || 'Aktif'}</span>
-                  <button onclick="openModalPembelajaran('${m.id}')" class="text-amber-600 hover:text-amber-800 text-xs font-bold p-1" title="Edit Modul"><i class="fa-solid fa-pen"></i></button>
-                  <button onclick="deletePembelajaran('${m.id}')" class="text-rose-600 hover:text-rose-800 text-xs font-bold p-1" title="Hapus Modul"><i class="fa-solid fa-trash"></i></button>
-                </div>
-              ` : ''}
+              <div class="flex space-x-1 items-center">
+                <span class="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase ${isOverallActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${m.statusModul || 'Aktif'}</span>
+                ${canEditDelete ? `
+                  <button onclick="openModalPembelajaran('${m.id}')" class="text-amber-600 hover:text-amber-800 text-xs font-bold p-1" title="Edit Modul Saya"><i class="fa-solid fa-pen"></i></button>
+                  <button onclick="deletePembelajaran('${m.id}')" class="text-rose-600 hover:text-rose-800 text-xs font-bold p-1" title="Hapus Modul Saya"><i class="fa-solid fa-trash"></i></button>
+                ` : ''}
+              </div>
             </div>
 
             <h3 class="font-extrabold text-slate-900 text-sm mt-3 leading-snug">${m.materiPokok}</h3>
@@ -1564,6 +1568,7 @@
         kuisAktif: document.getElementById('pm-kuis-aktif').value,
         pembahasan: editorContent,
         tugasDeskripsi: document.getElementById('pm-tugas-desk').value.trim(),
+        guruUsername: user.username || 'guru',
         guruNama: user.nama || 'Guru Pengampu',
         quizQuestions: target && target.quizQuestions ? target.quizQuestions : [
           {
@@ -2500,12 +2505,20 @@
         return true;
       });
 
+      const totalSiswaFiltered = filtered.length;
+      const countL = filtered.filter(s => (s.jk || 'L').toUpperCase() === 'L').length;
+      const countP = filtered.filter(s => (s.jk || 'L').toUpperCase() === 'P').length;
+
       tbody.innerHTML = '';
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="${isAdmin ? 8 : 7}" class="p-4 text-center text-slate-400 font-bold">Data siswa tidak ditemukan.</td></tr>`;
-        document.getElementById('siswa-page-info').textContent = 'Menampilkan 0 data';
+        tbody.innerHTML = `<tr><td colspan="${isAdmin ? 9 : 8}" class="p-4 text-center text-slate-400 font-bold">Data siswa tidak ditemukan.</td></tr>`;
+        document.getElementById('siswa-page-info').textContent = 'Menampilkan 0 data (L: 0, P: 0)';
+        document.getElementById('siswa-pagination-btns').innerHTML = '';
         return;
       }
+
+      const totalPages = Math.ceil(totalSiswaFiltered / window.siswaItemsPerPage) || 1;
+      if (window.siswaCurrentPage > totalPages) window.siswaCurrentPage = totalPages;
 
       const startIndex = (window.siswaCurrentPage - 1) * window.siswaItemsPerPage;
       const paginated = filtered.slice(startIndex, startIndex + window.siswaItemsPerPage);
@@ -2517,6 +2530,7 @@
           <td class="p-4 border-r border-slate-200">${startIndex + idx + 1}</td>
           <td class="p-4 border-r border-slate-200 font-extrabold text-slate-900">${s.username}</td>
           <td class="p-4 border-r border-slate-200">${s.nama}</td>
+          <td class="p-4 border-r border-slate-200 text-center"><span class="px-2 py-0.5 ${s.jk === 'P' ? 'bg-pink-100 text-pink-800' : 'bg-blue-100 text-blue-800'} rounded-md font-extrabold">${s.jk || 'L'}</span></td>
           <td class="p-4 border-r border-slate-200">${s.level || 'X'}</td>
           <td class="p-4 border-r border-slate-200">${s.jurusan || 'IIS'}</td>
           <td class="p-4 border-r border-slate-200"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-extrabold">${s.kelas || '-'}</span></td>
@@ -2533,9 +2547,33 @@
         tbody.appendChild(tr);
       });
 
-      document.getElementById('siswa-page-info').textContent = `Menampilkan ${paginated.length} dari ${filtered.length} data`;
+      document.getElementById('siswa-page-info').innerHTML = `Menampilkan <b>${paginated.length}</b> dari <b>${totalSiswaFiltered}</b> total siswa &bull; <span class="text-blue-700 font-extrabold">L: ${countL}</span> | <span class="text-pink-700 font-extrabold">P: ${countP}</span>`;
+
+      // Render Pagination Buttons
+      const pagContainer = document.getElementById('siswa-pagination-btns');
+      if (pagContainer) {
+        let pagHtml = '';
+        pagHtml += `<button onclick="window.changeSiswaPage(${window.siswaCurrentPage - 1})" ${window.siswaCurrentPage === 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border-2 border-slate-200 bg-white text-slate-700 disabled:opacity-50 hover:bg-slate-100"><i class="fa-solid fa-chevron-left"></i></button>`;
+        
+        for (let p = 1; p <= totalPages; p++) {
+          if (p === 1 || p === totalPages || (p >= window.siswaCurrentPage - 1 && p <= window.siswaCurrentPage + 1)) {
+            pagHtml += `<button onclick="window.changeSiswaPage(${p})" class="px-3 py-1.5 rounded-lg border-2 ${p === window.siswaCurrentPage ? 'bg-blue-600 text-white border-blue-700 font-extrabold shadow' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'}">${p}</button>`;
+          } else if (p === window.siswaCurrentPage - 2 || p === window.siswaCurrentPage + 2) {
+            pagHtml += `<span class="px-1 text-slate-400">..</span>`;
+          }
+        }
+
+        pagHtml += `<button onclick="window.changeSiswaPage(${window.siswaCurrentPage + 1})" ${window.siswaCurrentPage === totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border-2 border-slate-200 bg-white text-slate-700 disabled:opacity-50 hover:bg-slate-100"><i class="fa-solid fa-chevron-right"></i></button>`;
+        pagContainer.innerHTML = pagHtml;
+      }
     }
     window.renderSiswaTable = renderSiswaTable;
+
+    window.changeSiswaPage = function(page) {
+      if (page < 1) return;
+      window.siswaCurrentPage = page;
+      renderSiswaTable();
+    };
 
     window.openModalSiswa = function(editUsername = null) {
       const users = window.getStorageData('users');
@@ -2555,6 +2593,13 @@
               <div>
                 <label class="text-slate-700 uppercase">Nama Lengkap Siswa</label>
                 <input type="text" id="sw-nama" required value="${target ? target.nama : ''}" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs">
+              </div>
+              <div>
+                <label class="text-slate-700 uppercase">Jenis Kelamin</label>
+                <select id="sw-jk" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
+                  <option value="L" ${!target || target.jk === 'L' ? 'selected' : ''}>Laki-laki (L)</option>
+                  <option value="P" ${target && target.jk === 'P' ? 'selected' : ''}>Perempuan (P)</option>
+                </select>
               </div>
               <div>
                 <label class="text-slate-700 uppercase">Password Login</label>
@@ -2596,6 +2641,7 @@
       const sObj = {
         username: editUsername || document.getElementById('sw-username').value.trim(),
         nama: document.getElementById('sw-nama').value.trim(),
+        jk: document.getElementById('sw-jk').value,
         password: document.getElementById('sw-password').value.trim(),
         role: 'siswa',
         level: 'X',
@@ -3042,7 +3088,22 @@
       }
 
       filtered.forEach((s, idx) => {
-        const isAttended = attendanceLog.some(a => a.studentUsername === s.username && a.date === todayStr);
+        const att = attendanceLog.find(a => a.studentUsername === s.username && a.date === todayStr);
+        const currentStatus = att ? (att.status || 'Hadir') : '';
+
+        let badgeHtml = '';
+        if (currentStatus === 'Hadir') {
+          badgeHtml = `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg font-extrabold inline-flex items-center space-x-1"><i class="fa-solid fa-circle-check text-emerald-600"></i><span>Hadir (${att?.isManual ? 'Manual' : 'Mandiri'})</span></span>`;
+        } else if (currentStatus === 'Sakit') {
+          badgeHtml = `<span class="px-2.5 py-1 bg-blue-100 text-blue-800 border border-blue-300 rounded-lg font-extrabold inline-flex items-center space-x-1"><i class="fa-solid fa-notes-medical text-blue-600"></i><span>Sakit (Manual)</span></span>`;
+        } else if (currentStatus === 'Izin') {
+          badgeHtml = `<span class="px-2.5 py-1 bg-amber-100 text-amber-800 border border-amber-300 rounded-lg font-extrabold inline-flex items-center space-x-1"><i class="fa-solid fa-envelope-open-text text-amber-600"></i><span>Izin (Manual)</span></span>`;
+        } else if (currentStatus === 'Alfa') {
+          badgeHtml = `<span class="px-2.5 py-1 bg-rose-100 text-rose-800 border border-rose-300 rounded-lg font-extrabold inline-flex items-center space-x-1"><i class="fa-solid fa-circle-xmark text-rose-600"></i><span>Alfa (Manual)</span></span>`;
+        } else {
+          badgeHtml = `<span class="px-2.5 py-1 bg-slate-100 text-slate-600 border border-slate-300 rounded-lg font-extrabold inline-flex items-center space-x-1"><i class="fa-solid fa-clock text-slate-400"></i><span>-- Belum Absen --</span></span>`;
+        }
+
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-50 border-b border-slate-200';
         tr.innerHTML = `
@@ -3051,15 +3112,13 @@
           <td class="p-3.5 border-r border-slate-200 font-bold">${s.nama}</td>
           <td class="p-3.5 border-r border-slate-200"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-extrabold">${s.kelas || '-'}</span></td>
           <td class="p-3.5 border-r border-slate-200 font-bold text-emerald-800">${selectedMapel || 'Geografi'}</td>
-          <td class="p-3.5 border-r border-slate-200">
-            ${isAttended ? '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg font-extrabold inline-flex items-center space-x-1"><i class="fa-solid fa-circle-check text-emerald-600"></i><span>Hadir (Mandiri)</span></span>' : '<span class="px-2.5 py-1 bg-amber-100 text-amber-800 border border-amber-300 rounded-lg font-extrabold inline-flex items-center space-x-1"><i class="fa-solid fa-clock text-amber-600"></i><span>-- Belum Absen --</span></span>'}
-          </td>
+          <td class="p-3.5 border-r border-slate-200">${badgeHtml}</td>
           <td class="p-3.5">
-            <select onchange="window.showToast('Presensi manual diperbarui', 'success')" class="px-3 py-1.5 bg-white border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-800">
-              <option value="Hadir" ${isAttended ? 'selected' : ''}>Hadir</option>
-              <option value="Sakit">Sakit</option>
-              <option value="Izin">Izin</option>
-              <option value="Alfa">Alfa</option>
+            <select onchange="window.updateManualAbsensi('${s.username}', '${s.nama.replace(/'/g, "\\'")}', this.value)" class="px-3 py-1.5 bg-white border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:border-blue-600 focus:outline-none">
+              <option value="Hadir" ${currentStatus === 'Hadir' ? 'selected' : ''}>Hadir</option>
+              <option value="Sakit" ${currentStatus === 'Sakit' ? 'selected' : ''}>Sakit</option>
+              <option value="Izin" ${currentStatus === 'Izin' ? 'selected' : ''}>Izin</option>
+              <option value="Alfa" ${currentStatus === 'Alfa' ? 'selected' : ''}>Alfa</option>
             </select>
           </td>
         `;
@@ -3068,77 +3127,32 @@
     }
     window.loadAbsensiGuruMapelData = loadAbsensiGuruMapelData;
 
-    function loadMonitoringData() {
-      const container = document.getElementById('monitoring-kbm-list');
-      if (!container) return;
+    window.updateManualAbsensi = function(studentUsername, studentNama, status) {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      let attendanceLog = window.getStorageData('student_attendance_log') || [];
+      const idx = attendanceLog.findIndex(a => a.studentUsername === studentUsername && a.date === todayStr);
 
-      const list = window.getStorageData('pembelajaran');
-      const readLogs = window.getStorageData('student_read_logs') || [];
-      const scores = window.getStorageData('quiz_scores') || [];
+      const attObj = {
+        id: 'att-' + studentUsername + '-' + todayStr,
+        studentUsername: studentUsername,
+        studentNama: studentNama,
+        date: todayStr,
+        status: status,
+        isManual: true,
+        timestamp: new Date().toLocaleTimeString('id-ID')
+      };
 
-      if (list.length === 0) {
-        container.innerHTML = `<p class="text-slate-400 font-bold text-xs text-center py-4">Belum ada modul pembelajaran yang dipantau.</p>`;
-        return;
+      if (idx !== -1) {
+        attendanceLog[idx] = attObj;
+      } else {
+        attendanceLog.push(attObj);
       }
 
-      container.innerHTML = list.map(m => {
-        const myReadLogs = readLogs.filter(r => r.materiId === m.id);
-        const myScores = scores.filter(s => s.materiId === m.id);
-        const displayKelas = Array.isArray(m.kelas) ? m.kelas.join(', ') : (m.kelas || 'Semua');
-
-        return `
-          <div class="p-4 bg-white border-2 border-slate-200 rounded-2xl space-y-2">
-            <div class="flex justify-between items-center">
-              <h3 class="font-extrabold text-slate-900 text-sm">${m.materiPokok} (${m.mapel} - ${displayKelas})</h3>
-              <span class="text-xs font-bold text-blue-700">${m.guruNama}</span>
-            </div>
-            <div class="grid grid-cols-2 gap-2 text-xs font-bold pt-2 border-t border-slate-200">
-              <div class="p-2 bg-slate-50 rounded-lg">
-                <p class="text-[10px] text-slate-400 uppercase">Siswa Membaca Modul</p>
-                <p class="text-slate-800 mt-0.5">${myReadLogs.length} Siswa Akses</p>
-              </div>
-              <div class="p-2 bg-slate-50 rounded-lg">
-                <p class="text-[10px] text-slate-400 uppercase">Siswa Mengerjakan Kuis</p>
-                <p class="text-slate-800 mt-0.5">${myScores.length} Siswa Submit</p>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-    window.loadMonitoringData = loadMonitoringData;
-
-    window.openModalPengumuman = function() {
-      const html = `
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div class="glass-card-pro w-full max-w-md p-6 rounded-3xl bg-white shadow-2xl space-y-4 border-2 border-slate-300">
-            <h2 class="text-base font-extrabold text-slate-900 pb-2 border-b-2 border-slate-200">Buat Pengumuman Sekolah</h2>
-            <form onsubmit="savePengumuman(event)" class="space-y-3 font-bold text-xs">
-              <div>
-                <label class="text-slate-700 uppercase">Judul Pengumuman</label>
-                <input type="text" id="peng-judul" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs">
-              </div>
-              <div>
-                <label class="text-slate-700 uppercase">Target Sasaran Penerima</label>
-                <select id="peng-target" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
-                  <option value="semua">Semua Pengguna</option>
-                  <option value="siswa">Khusus Siswa</option>
-                  <option value="guru">Khusus Guru & Walas</option>
-                </select>
-              </div>
-              <div>
-                <label class="text-slate-700 uppercase">Isi Pesan Pengumuman</label>
-                <textarea id="peng-isi" required class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs" rows="3"></textarea>
-              </div>
-              <div class="flex justify-end space-x-2 pt-2 border-t-2 border-slate-200">
-                <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">Batal</button>
-                <button type="submit" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow border-2 border-blue-800">Terbitkan</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      `;
-      document.getElementById('modal-container').innerHTML = html;
+      window.setStorageData('student_attendance_log', attendanceLog);
+      window.syncToFirestore('student_attendance_log', attObj.id, attObj);
+      window.showToast(`Presensi manual [${studentNama}] diubah ke ${status}`, 'success');
+      loadAbsensiGuruMapelData();
+      if (typeof window.loadBerandaData === 'function') window.loadBerandaData();
     };
 
     window.savePengumuman = function(e) {
@@ -3614,7 +3628,7 @@
 
       if ('serviceWorker' in navigator) {
         const swCode = `
-          const CACHE_NAME = 'elearning-candy-v5';
+          const CACHE_NAME = 'elearning-system-v5';
           self.addEventListener('install', (e) => {
             e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./'])));
           });
