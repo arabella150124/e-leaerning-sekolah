@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>E-Learning System</title>
+  <title>E-Learning Candy System</title>
   
   <!-- PWA Manifest Data URI -->
   <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkUtTGVhcm5pbmcgQ2FuZHkgU3lzdGVtIiwKICAic2hvcnRfbmFtZSI6ICJFLUxlYXJuaW5nIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGZhZmMiLAogICJ0aGVtZV9jb2xvciI6ICIjMGI1N2QwIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMzQyOS8zNDI5MDcwLnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
@@ -122,7 +122,7 @@
           <div class="w-16 h-16 mx-auto md:mx-0 flex items-center justify-center bg-white p-2 rounded-2xl shadow-md border-2 border-slate-200">
             <img id="login-school-logo-img" src="https://cdn-icons-png.flaticon.com/512/3429/3429070.png" class="w-full h-full object-contain" alt="Logo Sekolah">
           </div>
-          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning</h1>
+          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning Candy</h1>
           <p class="text-xs font-bold text-blue-700 uppercase tracking-widest">Portal Akademik Terpadu</p>
           <p class="text-xs font-bold text-slate-600 leading-relaxed bg-white/60 backdrop-blur p-3 rounded-xl border border-slate-200 shadow-sm">
             Platform pembelajaran digital terintegrasi untuk penyampaian modul interaktif, kuis online, rekapitulasi presensi harian, dan pemantauan KBM secara real-time.
@@ -186,7 +186,7 @@
           </div>
           <div class="overflow-hidden">
             <h2 id="sidebar-school-name" class="font-extrabold text-slate-900 leading-tight tracking-tight truncate text-sm">E-Learning</h2>
-            <span class="text-[10px] text-blue-700 font-bold uppercase tracking-wider">Elearning System</span>
+            <span class="text-[10px] text-blue-700 font-bold uppercase tracking-wider">Candy System</span>
           </div>
         </div>
 
@@ -256,7 +256,7 @@
         <section id="view-beranda" class="view-content space-y-6">
           <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b-2 border-slate-200 gap-4">
             <div>
-              <h1 id="header-school-name-title" class="text-2xl font-extrabold text-slate-900 tracking-tight">E-Learning System</h1>
+              <h1 id="header-school-name-title" class="text-2xl font-extrabold text-slate-900 tracking-tight">E-Learning Candy</h1>
               <p class="text-xs font-bold text-slate-500 mt-0.5">Selamat datang di portal pembelajaran digital interaktif sekolah.</p>
             </div>
             <button onclick="openModalPengumuman()" class="admin-guru-only px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow-lg border-2 border-blue-800 flex items-center space-x-2">
@@ -687,7 +687,7 @@
   <div id="toast-box" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
   <script>
-    const IS_PREVIEW = false; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE CONFIG ASLI
+    const IS_PREVIEW = true; // Set false JIKA SUDAH TERHUBUNG KE FIREBASE CONFIG ASLI
 
     const firebaseConfig = {
       apiKey: "AIzaSyCE4nMKYnEu52RLQmQMnhadLKYxjDXhPj4",
@@ -889,7 +889,7 @@
     }
 
     function updateSchoolBrandingUI() {
-      const st = window.getStorageData('school_settings')[0] || { namaSekolah: 'E-Learning', logoSekolah: 'https://cdn-icons-png.flaticon.com/512/3429/3429070.png' };
+      const st = window.getStorageData('school_settings')[0] || { namaSekolah: 'E-Learning Candy', logoSekolah: 'https://cdn-icons-png.flaticon.com/512/3429/3429070.png' };
       
       const logoImgs = [document.getElementById('login-school-logo-img'), document.getElementById('sidebar-school-logo')];
       logoImgs.forEach(img => { if (img) img.src = st.logoSekolah; });
@@ -1298,8 +1298,11 @@
         const isOwner = m.guruUsername ? (m.guruUsername === user.username) : (m.guruNama === user.nama);
         const canEditDelete = isAdmin || (user.role === 'guru' && isOwner);
 
+        // Jika Guru B melihat modul Guru A, tombol-tombol modul akan di-disable (read-only / terkunci)
+        const isOtherTeacher = user.role === 'guru' && !isOwner && !isAdmin;
+
         return `
-        <div class="glass-card-pro p-5 rounded-2xl space-y-3 bg-white flex flex-col justify-between shadow-lg border-2 border-slate-200 hover:border-blue-300 transition ${!isOverallActive ? 'opacity-75 bg-slate-50' : ''}">
+        <div class="glass-card-pro p-5 rounded-2xl space-y-3 bg-white flex flex-col justify-between shadow-lg border-2 border-slate-200 hover:border-blue-300 transition ${!isOverallActive ? 'opacity-75 bg-slate-50' : ''} ${isOtherTeacher ? 'bg-slate-50/80 border-slate-200' : ''}">
           <div>
             <div class="flex justify-between items-start gap-2">
               <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-[10px] font-extrabold uppercase tracking-wide">
@@ -1315,7 +1318,7 @@
             </div>
 
             <h3 class="font-extrabold text-slate-900 text-sm mt-3 leading-snug">${m.materiPokok}</h3>
-            <p class="text-xs font-bold text-slate-500 mt-1"><i class="fa-solid fa-chalkboard-user mr-1 text-blue-600"></i> Pengajar: ${m.guruNama}</p>
+            <p class="text-xs font-bold text-slate-500 mt-1"><i class="fa-solid fa-chalkboard-user mr-1 text-blue-600"></i> Pengajar: ${m.guruNama} ${isOtherTeacher ? '<span class="text-[9px] px-1.5 py-0.5 bg-slate-200 text-slate-600 rounded font-extrabold ml-1">(Non-Akses)</span>' : ''}</p>
             <div class="flex flex-wrap gap-1 mt-1.5">
               <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-md text-[10px] font-extrabold"><i class="fa-solid fa-layer-group mr-1"></i>${m.pertemuan || 'Pertemuan 1'}</span>
               <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded-md text-[10px] font-extrabold"><i class="fa-solid fa-bullseye mr-1"></i>${m.tp || 'TP1 - Pemahaman Dasar'}</span>
@@ -1333,21 +1336,21 @@
             <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Aktivitas Pembelajaran:</p>
             <div class="grid grid-cols-3 gap-1.5">
               ${isModulVisible ? `
-                <button onclick="viewPembelajaranDetail('${m.id}')" class="px-2 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-extrabold shadow flex items-center justify-center space-x-1 transition">
+                <button ${isOtherTeacher ? 'disabled title="Modul milik Guru lain"' : `onclick="viewPembelajaranDetail('${m.id}')"`} class="px-2 py-2 ${isOtherTeacher ? 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60' : 'bg-blue-600 hover:bg-blue-700 text-white shadow'} rounded-xl text-xs font-extrabold flex items-center justify-center space-x-1 transition">
                   <i class="fa-solid fa-book-open text-[11px]"></i>
                   <span>Modul ${isTeacher && m.modulAktif === 'Tidak Aktif' ? '(Off)' : ''}</span>
                 </button>
               ` : ''}
               
               ${isTugasVisible ? `
-                <button onclick="openTugasModal('${m.id}')" class="px-2 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-extrabold shadow flex items-center justify-center space-x-1 transition">
+                <button ${isOtherTeacher ? 'disabled title="Tugas milik Guru lain"' : `onclick="openTugasModal('${m.id}')"`} class="px-2 py-2 ${isOtherTeacher ? 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow'} rounded-xl text-xs font-extrabold flex items-center justify-center space-x-1 transition">
                   <i class="fa-solid fa-pen-to-square text-[11px]"></i>
                   <span>Tugas ${isTeacher && m.tugasAktif === 'Tidak Aktif' ? '(Off)' : ''}</span>
                 </button>
               ` : ''}
               
               ${isKuisVisible ? `
-                <button onclick="openQuizModal('${m.id}')" class="px-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold shadow flex items-center justify-center space-x-1 transition">
+                <button ${isOtherTeacher ? 'disabled title="Kuis milik Guru lain"' : `onclick="openQuizModal('${m.id}')"`} class="px-2 py-2 ${isOtherTeacher ? 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow'} rounded-xl text-xs font-extrabold flex items-center justify-center space-x-1 transition">
                   <i class="fa-solid fa-circle-question text-[11px]"></i>
                   <span>Quiz ${isTeacher && m.kuisAktif === 'Tidak Aktif' ? '(Off)' : `(${quizCount})`}</span>
                 </button>
@@ -1360,17 +1363,47 @@
     }
     window.loadPembelajaranData = loadPembelajaranData;
 
+    window.toggleAllKelasPembelajaran = function(masterCb) {
+      const cbs = document.querySelectorAll('input[name="pm_kelas"]');
+      cbs.forEach(cb => {
+        if (!cb.disabled) {
+          cb.checked = masterCb.checked;
+        }
+      });
+    };
+
     window.openModalPembelajaran = function(editId = null) {
       const mapels = window.getStorageData('master_mapel');
       const kelases = window.getStorageData('master_kelas');
       const list = window.getStorageData('pembelajaran') || [];
       const target = editId ? list.find(x => x.id === editId) : null;
+      const user = window.currentUser || {};
+      const isAdmin = user.role === 'admin';
+
+      // Ambil daftar kelas yang dipetakan khusus untuk Guru ini
+      let teacherMappedClasses = [];
+      if (user.role === 'guru' && !isAdmin) {
+        const mappings = window.getStorageData('mapping_guru') || [];
+        const myMaps = mappings.filter(m => (m.guruUsername && m.guruUsername === user.username) || (m.guruNama && m.guruNama === user.nama));
+        teacherMappedClasses = Array.from(new Set(myMaps.map(m => m.kelasNama))).filter(Boolean);
+
+        const walasMaps = window.getStorageData('mapping_walas') || [];
+        const myWalas = walasMaps.find(w => (w.guruUsername && w.guruUsername === user.username) || (w.guruNama && w.guruNama === user.nama));
+        if (myWalas && myWalas.kelasNama && !teacherMappedClasses.includes(myWalas.kelasNama)) {
+          teacherMappedClasses.push(myWalas.kelasNama);
+        }
+        if (user.kelasBinaan && !teacherMappedClasses.includes(user.kelasBinaan)) {
+          teacherMappedClasses.push(user.kelasBinaan);
+        }
+      }
 
       let targetKelases = [];
       if (target && target.kelas) {
         if (Array.isArray(target.kelas)) targetKelases = target.kelas;
         else if (typeof target.kelas === 'string') targetKelases = target.kelas.split(',').map(s => s.trim());
       }
+
+      const disableSemua = user.role === 'guru' && !isAdmin;
 
       const html = `
         <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 modal-overlay-scroll">
@@ -1389,6 +1422,26 @@
                   <select id="pm-mapel" class="w-full px-3.5 py-2.5 border-2 border-slate-300 rounded-xl mt-1 text-xs bg-white">
                     ${mapels.map(m => `<option value="${m.nama}" ${target && target.mapel === m.nama ? 'selected' : ''}>${m.nama}</option>`).join('')}
                   </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="text-slate-700 uppercase mb-1 block">Kelas Target (Multi-Checklist Kelas Sesuai Mapping Anda)</label>
+                <div class="p-3 bg-slate-50 border-2 border-slate-200 rounded-xl max-h-32 overflow-y-auto space-y-1.5">
+                  <label class="flex items-center space-x-2 pb-1 border-b border-slate-200 ${disableSemua ? 'opacity-50 cursor-not-allowed' : ''}">
+                    <input type="checkbox" id="pm-kelas-semua" onchange="toggleAllKelasPembelajaran(this)" ${targetKelases.includes('Semua') ? 'checked' : ''} ${disableSemua ? 'disabled' : ''} class="rounded text-blue-600 focus:ring-blue-500">
+                    <span class="text-slate-900 font-extrabold">Semua Kelas ${disableSemua ? '(Khusus Admin)' : ''}</span>
+                  </label>
+                  ${kelases.map(k => {
+                    const isMapped = isAdmin || teacherMappedClasses.length === 0 || teacherMappedClasses.includes(k.nama);
+                    const isChecked = targetKelases.includes(k.nama) || (targetKelases.includes('Semua') && isMapped);
+                    return `
+                      <label class="flex items-center space-x-2 ${!isMapped ? 'opacity-40 cursor-not-allowed' : ''}">
+                        <input type="checkbox" name="pm_kelas" value="${k.nama}" ${isChecked ? 'checked' : ''} ${!isMapped ? 'disabled' : ''} class="rounded text-blue-600 focus:ring-blue-500">
+                        <span class="text-slate-800">${k.nama} ${!isMapped ? '<span class="text-[10px] text-rose-500 font-bold">(Bukan Mapping Anda)</span>' : ''}</span>
+                      </label>
+                    `;
+                  }).join('')}
                 </div>
               </div>
 
@@ -2031,9 +2084,18 @@
       } else if (tab === 'kelas') {
         const list = window.getStorageData('master_kelas') || [];
         container.innerHTML = `
-          <div class="flex justify-between items-center pb-3 border-b-2 border-slate-200 mb-4">
+          <div class="flex flex-wrap justify-between items-center gap-2 pb-3 border-b-2 border-slate-200 mb-4">
             <h2 class="text-base font-extrabold text-slate-900">Data Kelas</h2>
-            <button onclick="openModalMaster('kelas')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Kelas</button>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="downloadCSVTemplateMaster('kelas')" class="px-3.5 py-2 bg-emerald-50 text-emerald-700 border-2 border-emerald-300 rounded-xl text-xs font-extrabold flex items-center space-x-1.5 shadow-sm">
+                <i class="fa-solid fa-file-excel text-emerald-600"></i> <span>Template CSV</span>
+              </button>
+              <label class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold cursor-pointer flex items-center space-x-1.5 shadow border-2 border-emerald-700">
+                <i class="fa-solid fa-file-import"></i> <span>Upload CSV</span>
+                <input type="file" accept=".csv" class="hidden" onchange="importMasterCSV(event, 'kelas')">
+              </label>
+              <button onclick="openModalMaster('kelas')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Kelas</button>
+            </div>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs font-bold text-slate-700 border-collapse">
@@ -2049,9 +2111,18 @@
       } else if (tab === 'mapel') {
         const list = window.getStorageData('master_mapel') || [];
         container.innerHTML = `
-          <div class="flex justify-between items-center pb-3 border-b-2 border-slate-200 mb-4">
+          <div class="flex flex-wrap justify-between items-center gap-2 pb-3 border-b-2 border-slate-200 mb-4">
             <h2 class="text-base font-extrabold text-slate-900">Data Mata Pelajaran</h2>
-            <button onclick="openModalMaster('mapel')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Mapel</button>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="downloadCSVTemplateMaster('mapel')" class="px-3.5 py-2 bg-emerald-50 text-emerald-700 border-2 border-emerald-300 rounded-xl text-xs font-extrabold flex items-center space-x-1.5 shadow-sm">
+                <i class="fa-solid fa-file-excel text-emerald-600"></i> <span>Template CSV</span>
+              </button>
+              <label class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold cursor-pointer flex items-center space-x-1.5 shadow border-2 border-emerald-700">
+                <i class="fa-solid fa-file-import"></i> <span>Upload CSV</span>
+                <input type="file" accept=".csv" class="hidden" onchange="importMasterCSV(event, 'mapel')">
+              </label>
+              <button onclick="openModalMaster('mapel')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Mapel</button>
+            </div>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs font-bold text-slate-700 border-collapse">
@@ -2067,9 +2138,18 @@
       } else if (tab === 'guru') {
         const teachers = getCombinedTeachersList();
         container.innerHTML = `
-          <div class="flex justify-between items-center pb-3 border-b-2 border-slate-200 mb-4">
+          <div class="flex flex-wrap justify-between items-center gap-2 pb-3 border-b-2 border-slate-200 mb-4">
             <h2 class="text-base font-extrabold text-slate-900">Data Guru</h2>
-            <button onclick="openModalMaster('guru')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Guru</button>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="downloadCSVTemplateMaster('guru')" class="px-3.5 py-2 bg-emerald-50 text-emerald-700 border-2 border-emerald-300 rounded-xl text-xs font-extrabold flex items-center space-x-1.5 shadow-sm">
+                <i class="fa-solid fa-file-excel text-emerald-600"></i> <span>Template CSV</span>
+              </button>
+              <label class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold cursor-pointer flex items-center space-x-1.5 shadow border-2 border-emerald-700">
+                <i class="fa-solid fa-file-import"></i> <span>Upload CSV</span>
+                <input type="file" accept=".csv" class="hidden" onchange="importMasterCSV(event, 'guru')">
+              </label>
+              <button onclick="openModalMaster('guru')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Guru</button>
+            </div>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs font-bold text-slate-700 border-collapse">
@@ -2085,9 +2165,18 @@
       } else if (tab === 'walas') {
         const list = window.getStorageData('mapping_walas') || [];
         container.innerHTML = `
-          <div class="flex justify-between items-center pb-3 border-b-2 border-slate-200 mb-4">
+          <div class="flex flex-wrap justify-between items-center gap-2 pb-3 border-b-2 border-slate-200 mb-4">
             <h2 class="text-base font-extrabold text-slate-900">Data Wali Kelas</h2>
-            <button onclick="openModalMaster('walas')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Walas</button>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="downloadCSVTemplateMaster('walas')" class="px-3.5 py-2 bg-emerald-50 text-emerald-700 border-2 border-emerald-300 rounded-xl text-xs font-extrabold flex items-center space-x-1.5 shadow-sm">
+                <i class="fa-solid fa-file-excel text-emerald-600"></i> <span>Template CSV</span>
+              </button>
+              <label class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold cursor-pointer flex items-center space-x-1.5 shadow border-2 border-emerald-700">
+                <i class="fa-solid fa-file-import"></i> <span>Upload CSV</span>
+                <input type="file" accept=".csv" class="hidden" onchange="importMasterCSV(event, 'walas')">
+              </label>
+              <button onclick="openModalMaster('walas')" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-xs font-extrabold shadow border-2 border-blue-800"><i class="fa-solid fa-plus mr-1"></i> Tambah Walas</button>
+            </div>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs font-bold text-slate-700 border-collapse">
@@ -2692,6 +2781,125 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    };
+
+    window.downloadCSVTemplateMaster = function(type) {
+      let csvContent = "";
+      let fileName = `template_master_${type}.csv`;
+
+      if (type === 'kelas') {
+        csvContent = "data:text/csv;charset=utf-8,NamaKelas\nX TEI 1\nX TEI 2";
+      } else if (type === 'mapel') {
+        csvContent = "data:text/csv;charset=utf-8,NamaMapel\nMatematika\nGeografi";
+      } else if (type === 'guru') {
+        csvContent = "data:text/csv;charset=utf-8,Nama,Username,Password\nSulis S.Pd,sulis,guru123";
+      } else if (type === 'walas') {
+        csvContent = "data:text/csv;charset=utf-8,UsernameGuru,NamaKelas\nsulis,X TEI 1";
+      }
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    window.importMasterCSV = function(e, type) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const text = evt.target.result;
+        const lines = text.split('\n');
+        let count = 0;
+
+        if (type === 'kelas') {
+          let list = window.getStorageData('master_kelas') || [];
+          for (let i = 1; i < lines.length; i++) {
+            const cols = lines[i].split(',').map(c => c.trim());
+            if (cols[0]) {
+              const itemObj = { id: 'kls-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4), nama: cols[0] };
+              if (!list.some(x => x.nama.toLowerCase() === cols[0].toLowerCase())) {
+                list.push(itemObj);
+                window.syncToFirestore('master_kelas', itemObj.id, itemObj);
+                count++;
+              }
+            }
+          }
+          window.setStorageData('master_kelas', list);
+        } else if (type === 'mapel') {
+          let list = window.getStorageData('master_mapel') || [];
+          for (let i = 1; i < lines.length; i++) {
+            const cols = lines[i].split(',').map(c => c.trim());
+            if (cols[0]) {
+              const itemObj = { id: 'mpl-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4), nama: cols[0] };
+              if (!list.some(x => x.nama.toLowerCase() === cols[0].toLowerCase())) {
+                list.push(itemObj);
+                window.syncToFirestore('master_mapel', itemObj.id, itemObj);
+                count++;
+              }
+            }
+          }
+          window.setStorageData('master_mapel', list);
+        } else if (type === 'guru') {
+          let gurus = window.getStorageData('master_guru') || [];
+          let users = window.getStorageData('users') || [];
+          for (let i = 1; i < lines.length; i++) {
+            const cols = lines[i].split(',').map(c => c.trim());
+            if (cols.length >= 2 && cols[0] && cols[1]) {
+              const nama = cols[0];
+              const username = cols[1];
+              const password = cols[2] || 'guru123';
+
+              const gObj = { id: 'guru-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4), nama, username, password };
+              const uObj = { username, password, nama, role: 'guru', level: '-', jurusan: '-', kelas: '-' };
+
+              const gIdx = gurus.findIndex(g => g.username === username);
+              if (gIdx !== -1) gurus[gIdx] = gObj;
+              else gurus.push(gObj);
+
+              const uIdx = users.findIndex(u => u.username === username);
+              if (uIdx !== -1) users[uIdx] = uObj;
+              else users.push(uObj);
+
+              window.syncToFirestore('master_guru', gObj.id, gObj);
+              window.syncToFirestore('users', username, uObj);
+              count++;
+            }
+          }
+          window.setStorageData('master_guru', gurus);
+          window.setStorageData('users', users);
+        } else if (type === 'walas') {
+          let walas = window.getStorageData('mapping_walas') || [];
+          const teachers = getCombinedTeachersList();
+          for (let i = 1; i < lines.length; i++) {
+            const cols = lines[i].split(',').map(c => c.trim());
+            if (cols.length >= 2 && cols[0] && cols[1]) {
+              const guruUsername = cols[0];
+              const kelasNama = cols[1];
+              const selectedTeacher = teachers.find(t => t.username === guruUsername);
+
+              const newWalas = {
+                id: 'mw-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+                guruUsername,
+                guruNama: selectedTeacher ? selectedTeacher.nama : guruUsername,
+                kelasNama
+              };
+              walas.push(newWalas);
+              window.syncToFirestore('mapping_walas', newWalas.id, newWalas);
+              count++;
+            }
+          }
+          window.setStorageData('mapping_walas', walas);
+        }
+
+        window.showToast(`Berhasil mengimpor ${count} data master ${type}!`, 'success');
+        window.renderMasterMappingView();
+      };
+      reader.readAsText(file);
     };
 
     window.importSiswaCSV = function(e) {
@@ -3628,7 +3836,7 @@
 
       if ('serviceWorker' in navigator) {
         const swCode = `
-          const CACHE_NAME = 'elearning-system-v5';
+          const CACHE_NAME = 'elearning-candy-v5';
           self.addEventListener('install', (e) => {
             e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./'])));
           });
