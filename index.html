@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>E-Learning Sekolah</title>
+  <title>E-Learning System</title>
   
   <!-- PWA Manifest Data URI -->
   <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkUtTGVhcm5pbmcgQ2FuZHkgU3lzdGVtIiwKICAic2hvcnRfbmFtZSI6ICJFLUxlYXJuaW5nIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGZhZmMiLAogICJ0aGVtZV9jb2xvciI6ICIjMGI1N2QwIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMzQyOS8zNDI5MDcwLnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
@@ -122,7 +122,7 @@
           <div class="w-16 h-16 mx-auto md:mx-0 flex items-center justify-center bg-white p-2 rounded-2xl shadow-md border-2 border-slate-200">
             <img id="login-school-logo-img" src="https://cdn-icons-png.flaticon.com/512/3429/3429070.png" class="w-full h-full object-contain" alt="Logo Sekolah">
           </div>
-          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning Sekolah</h1>
+          <h1 id="login-school-name" class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">E-Learning </h1>
           <p class="text-xs font-bold text-blue-700 uppercase tracking-widest">E-LEARNING SEKOLAH</p>
           <p class="text-xs font-bold text-slate-600 leading-relaxed bg-white/60 backdrop-blur p-3 rounded-xl border border-slate-200 shadow-sm text-justify">
   Nikmati kemudahan proses belajar mengajar dalam satu platform lewat Sistem E-Learning Terintegrasi, yang menghadirkan modul interaktif, kuis online, rekap presensi otomatis, serta pemantauan KBM secara real-time.
@@ -186,7 +186,7 @@
           </div>
           <div class="overflow-hidden">
             <h2 id="sidebar-school-name" class="font-extrabold text-slate-900 leading-tight tracking-tight truncate text-sm">E-Learning</h2>
-            <span class="text-[10px] text-blue-700 font-bold uppercase tracking-wider">E-learning</span>
+            <span class="text-[10px] text-blue-700 font-bold uppercase tracking-wider">E-Learning System</span>
           </div>
         </div>
 
@@ -889,7 +889,7 @@
     }
 
     function updateSchoolBrandingUI() {
-      const st = window.getStorageData('school_settings')[0] || { namaSekolah: 'E-Learning', logoSekolah: 'https://cdn-icons-png.flaticon.com/512/3429/3429070.png' };
+      const st = window.getStorageData('school_settings')[0] || { namaSekolah: 'E-Learning Candy', logoSekolah: 'https://cdn-icons-png.flaticon.com/512/3429/3429070.png' };
       
       const logoImgs = [document.getElementById('login-school-logo-img'), document.getElementById('sidebar-school-logo')];
       logoImgs.forEach(img => { if (img) img.src = st.logoSekolah; });
@@ -2764,10 +2764,20 @@
     };
 
     window.deleteAllSiswa = function() {
-      window.showConfirm('Apakah Anda YAKIN ingin menghapus SELURUH data siswa?', () => {
-        let users = window.getStorageData('users').filter(u => u.role !== 'siswa');
+      window.showConfirm('Apakah Anda YAKIN ingin menghapus SELURUH data siswa dari Web & Firebase?', async () => {
+        let users = window.getStorageData('users');
+        const studentUsers = users.filter(u => u.role === 'siswa');
+        
+        // Hapus seluruh dokumen siswa dari Firebase Firestore secara berurutan
+        for (const s of studentUsers) {
+          await window.removeFromFirestore('users', s.username);
+        }
+
+        // Hapus data siswa dari LocalStorage
+        users = users.filter(u => u.role !== 'siswa');
         window.setStorageData('users', users);
-        window.showToast('Seluruh data siswa telah dihapus.');
+        
+        window.showToast('Seluruh data siswa telah berhasil dihapus dari Web & Firebase!', 'success');
         window.renderSiswaTable();
       });
     };
@@ -3836,7 +3846,7 @@
 
       if ('serviceWorker' in navigator) {
         const swCode = `
-          const CACHE_NAME = 'elearning-v5';
+          const CACHE_NAME = 'elearning-candy-v5';
           self.addEventListener('install', (e) => {
             e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./'])));
           });
